@@ -859,7 +859,7 @@ class HeadingTuner extends OpMode {
  * @version 1.0, 3/12/2024
  */
 class DriveTuner extends OpMode {
-    public static double DISTANCE = 40;
+    public static double DISTANCE = 120;
     private boolean forward = true;
 
     private PathChain forwards;
@@ -937,7 +937,7 @@ class DriveTuner extends OpMode {
  * @version 1.0, 3/12/2024
  */
 class Line extends OpMode {
-    public static double DISTANCE = 40;
+    public static double DISTANCE = 80;
     private boolean forward = true;
 
     private Path forwards;
@@ -1002,7 +1002,7 @@ class Line extends OpMode {
  * @version 1.0, 3/13/2024
  */
 class CentripetalTuner extends OpMode {
-    public static double DISTANCE = 20;
+    public static double DISTANCE = 38;
     private boolean forward = true;
 
     private Path forwards;
@@ -1068,7 +1068,7 @@ class CentripetalTuner extends OpMode {
  * @author Samarth Mahapatra - 1002 CircuitRunners Robotics Surge
  * @version 1.0, 12/30/2024
  */
-class Triangle extends OpMode {
+class  Triangle extends OpMode {
 
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
     private final Pose interPose = new Pose(24, -24, Math.toRadians(90));
