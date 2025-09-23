@@ -51,7 +51,7 @@ public class Constants {
             .hardwareMapName("pinpoint")
             //.encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             //FIX THE CUSTOM RESOLUTION, TUNING IS GOOD
-            .customEncoderResolution(2.4)
+            .customEncoderResolution(2)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
