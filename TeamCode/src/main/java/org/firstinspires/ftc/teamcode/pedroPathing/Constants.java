@@ -17,13 +17,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
     .mass(9.752236)
-            .forwardZeroPowerAcceleration(-154.187855624)
-            .lateralZeroPowerAcceleration(-138.1881907383769)
+            .forwardZeroPowerAcceleration(-104.187855624)
+            .lateralZeroPowerAcceleration(-108.1881907383769)
             .centripetalScaling(0.00015)
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.0023,0,0.000025,0.6,0.005))
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.11, 0, 0.01, 0.03))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.003,0,0.000003,0.6,0.005))
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0.015, 0.1))
             .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.1,0,0.01,0.01))
-            .headingPIDFCoefficients(new PIDFCoefficients(1, 0, 0.1, 0.03));
+            .headingPIDFCoefficients(new PIDFCoefficients(0.8, 0, 0.06, 0.02));
     //intakeAngle -> angle of intake
     //intake -> active intake (pinpoint???)
     //bottom lift -> liftB
@@ -49,7 +49,9 @@ public class Constants {
             .strafePodX(-1)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")
-            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
+            //.encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
+            //FIX THE CUSTOM RESOLUTION, TUNING IS GOOD
+            .customEncoderResolution(2.4)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
