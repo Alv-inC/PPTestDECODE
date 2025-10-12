@@ -10,6 +10,8 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
+
 //Visualizer: https://visualizer.pedropathing.com/
 @Autonomous(name = "autoTest", group = "Tests")
 public class autoTest extends OpMode {
@@ -22,6 +24,9 @@ public class autoTest extends OpMode {
     private PathChain firstArtPos;
     private PathChain grabArtLine;
     private PathChain firstStartPos;
+
+    //subsystems
+    private flyWheel flyWheel;
 
 
     //DEFINE THE PATHS --> REPLACE POSE WITH FINAL POS LATER
@@ -60,6 +65,8 @@ public class autoTest extends OpMode {
         switch (pathState) {
             case 0:
                 follower.holdPoint(follower.getPose());
+                //change later
+                //flyWheel.setTargetVelocity(300);
                 follower.followPath(firstArtPos);
                 setPathState(1);
                 break;
@@ -81,8 +88,14 @@ public class autoTest extends OpMode {
                     setPathState(3);
                 }
                 break;
+        }
+    }
 
-        }}
+
+
+
+
+
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
@@ -90,6 +103,7 @@ public class autoTest extends OpMode {
 
     @Override
     public void init() {
+        flyWheel = new flyWheel(hardwareMap);
         pathTimer = new Timer();
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
@@ -102,6 +116,7 @@ public class autoTest extends OpMode {
     public void loop() {
 
         follower.update();
+        flyWheel.update();
         autonomousPathUpdate();
 
         //Feedback to Driver Hub for debugging
