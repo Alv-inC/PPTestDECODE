@@ -18,8 +18,8 @@ import java.util.List;
 public class flyWheel {
     private final HardwareMap hardwareMap;
     private static PIDController spinPID;
-    public DcMotorEx fly1;
-    private DcMotorEx fly2;
+    public CachingDcMotorEx fly1;
+    private CachingDcMotorEx fly2;
     public static double p = 0, i = 0, d = 0;
     public static double ff = 0;
     public static double targetVelocity = 0;
