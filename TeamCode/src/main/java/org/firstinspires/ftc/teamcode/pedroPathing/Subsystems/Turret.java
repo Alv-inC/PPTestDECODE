@@ -39,6 +39,8 @@ public class Turret {
         int pos = turretMotor.getCurrentPosition();
 
         double power = (turretPID.calculate(pos, targetPosition));
+        power = Math.max(-1.0, Math.min(1.0, power));
+
         turretMotor.setPower(power);
 
     }

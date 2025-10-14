@@ -33,7 +33,7 @@ if(gamepad1.x){
     rf.setPower(1);
 }
 if(gamepad1.y){
-    rb.setPower(1);
+    lf.setPower(1);
 }
     }
 }
