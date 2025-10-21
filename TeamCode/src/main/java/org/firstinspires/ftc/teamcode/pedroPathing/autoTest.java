@@ -103,7 +103,7 @@ public class autoTest extends OpMode {
 
     @Override
     public void init() {
-        flyWheel = new flyWheel(hardwareMap);
+        flyWheel = new flyWheel(hardwareMap, telemetry);
         pathTimer = new Timer();
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();

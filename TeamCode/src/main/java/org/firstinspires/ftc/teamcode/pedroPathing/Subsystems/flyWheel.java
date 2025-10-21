@@ -23,27 +23,33 @@ public class flyWheel {
     public static double p = 0, i = 0, d = 0;
     public static double ff = 0;
     public static double targetVelocity = 0;
+    public static double power = 0;
+    public static double currentVelocity = 0;
     private Telemetry telemetry;
 
     //ff
     public static double kS = 0, kV = 0, kA = 0;
     private SimpleMotorFeedforward feedforward;
-    public flyWheel(HardwareMap hardwareMap) {
+    public flyWheel(HardwareMap hardwareMap, Telemetry t) {
         this.hardwareMap = hardwareMap;
+        this.telemetry = t;
 
         spinPID = new PIDController(p, i, d);
         spinPID.setPID(p,i,d);
 
         feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
-        fly1 = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, "lift1"), 0.005);
-        fly2 = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, "lift2"), 0.005);
+        fly1 = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, "shooterRight"), 0.005);
+        fly2 = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, "shooterLeft"), 0.005);
 
+
+        fly1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fly2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fly1.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         fly2.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         //maybe
-        fly1.setDirection(DcMotorSimple.Direction.REVERSE);
+        fly2.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void update() {
@@ -53,13 +59,13 @@ public class flyWheel {
 
             double power = pidOutput + ffOutput;
 
-            power = Math.max(-1.0, Math.min(1.0, power));
+            //power = Math.max(-1.0, Math.min(1.0, power));
 
             // Apply power to motor
             fly1.setPower(power);
             fly2.setPower(power);
 
-            // Optional telemetry for tuning
+           //  Optional telemetry for tuning
             telemetry.addData("Target Velocity", targetVelocity);
             telemetry.addData("Current Velocity", currentVelocity);
             telemetry.addData("Power", power);

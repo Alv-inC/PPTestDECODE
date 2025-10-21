@@ -23,12 +23,13 @@ public class Turret {
     public static double divide;
 
 
-    public Turret(HardwareMap hardwareMap) {
+    public Turret(HardwareMap hardwareMap, Telemetry t) {
+        telemetry = t;
         turretPID = new PIDController(p, i, d);
         turretPID.setPID(p, i, d);
         turretMotor = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, "turret"), 0.005);
-        turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        turretMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+       turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 //        this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     }
@@ -39,7 +40,7 @@ public class Turret {
         int pos = turretMotor.getCurrentPosition();
 
         double power = (turretPID.calculate(pos, targetPosition));
-        power = Math.max(-1.0, Math.min(1.0, power));
+        //power = Math.max(-1.0, Math.min(1.0, power));
 
         turretMotor.setPower(power);
 
