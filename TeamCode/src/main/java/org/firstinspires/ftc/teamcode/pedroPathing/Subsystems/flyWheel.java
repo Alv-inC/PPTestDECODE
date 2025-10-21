@@ -53,11 +53,14 @@ public class flyWheel {
     }
 
     public void update() {
-            double currentVelocity = fly1.getVelocity();
+            spinPID.setPID(p,i,d);
+             currentVelocity = fly1.getVelocity();
             double pidOutput = spinPID.calculate(currentVelocity, targetVelocity);
+
+            //make sure its correct units
             double ffOutput = feedforward.calculate(targetVelocity);
 
-            double power = pidOutput + ffOutput;
+             power = pidOutput + ffOutput;
 
             //power = Math.max(-1.0, Math.min(1.0, power));
 
