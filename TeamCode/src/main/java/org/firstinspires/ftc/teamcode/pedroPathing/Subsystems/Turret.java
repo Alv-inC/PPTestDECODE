@@ -16,7 +16,8 @@ public class Turret {
     private static PIDController turretPID;
     CachingDcMotorEx turretMotor;
 
-    public static double p = 0, i = 0, d = 0;
+    //change back
+    public static double p = 0.1, i = 0, d = 0.01;
     public static double targetPosition = 0;
     //what is for what
     private Telemetry telemetry;
@@ -46,6 +47,11 @@ public class Turret {
 
     }
 
+    public void override(){
+        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turretMotor.setTargetPosition(0);
+    }
+
     public void setTargetPosition(double targetPosition) {
         this.targetPosition = targetPosition;
     }
@@ -60,5 +66,12 @@ public class Turret {
 
     public void setPower(double power) {
         this.setPower(power);
+    }
+
+    public void reset(){
+        turretMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        turretMotor.setTargetPosition(0);
+        turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
     }
 }

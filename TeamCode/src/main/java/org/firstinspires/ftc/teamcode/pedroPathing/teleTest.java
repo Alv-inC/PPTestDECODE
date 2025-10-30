@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -10,6 +11,12 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 
 import java.util.function.Supplier;
 
@@ -23,9 +30,43 @@ public class teleTest extends OpMode {
     private TelemetryManager telemetryM;
     private boolean slowMode = false;
     private double slowModeMultiplier = 0.5;
+    private ElapsedTime timer = new ElapsedTime();
+
+    private DcMotorEx intake;
+    private DcMotorEx shooterL;
+    private DcMotorEx shooterR;
+    private Servo block;
+
+    private Servo hood;
+
+    private Turret turret;
+
+    boolean flag = false;
+    boolean previousButtonState2a = false;
+
+
+
+
+    //final constants
+    private final double block_open = 0;
+    private final double block_close = 0.25;
+    private final double hood_high = 0;
+    private final double hood_mid = 0;
+    private final double hood_low = 0;
 
     @Override
     public void init() {
+
+        //delete later prob
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
+        shooterL = hardwareMap.get(DcMotorEx.class, "shooterLeft");
+        shooterR = hardwareMap.get(DcMotorEx.class, "shooterRight");
+        block = hardwareMap.get(Servo.class, "block");
+        hood = hardwareMap.get(Servo.class, "hood");
+        shooterL.setDirection(DcMotorSimple.Direction.REVERSE);
+        turret = new Turret(hardwareMap, telemetry);
+
+
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startingPose == null ? new Pose() : startingPose);
         follower.update();
@@ -47,9 +88,60 @@ public class teleTest extends OpMode {
 
     @Override
     public void loop() {
+
         //Call this once per loop
         follower.update();
         telemetryM.update();
+
+
+        if (gamepad1.a && !previousButtonState2a) {
+            if(!flag) {
+             intake.setPower(0.8);
+            }
+            else{
+                flag = false;
+               intake.setPower(0);
+            }
+        }
+        previousButtonState2a = gamepad1.a;
+
+        if(gamepad1.dpad_right){
+            intake.setPower(1);
+        }
+
+        if(gamepad1.b){
+            intake.setPower(-1);
+        }
+        if(gamepad1.y){
+            shooterR.setPower(1);
+            shooterL.setPower(1);
+            new WaitCommand(1000);
+            block.setPosition(block_open);
+        }
+        if(gamepad1.x) {
+            shooterR.setPower(0);
+            shooterL.setPower(0);
+            new WaitCommand(1000);
+            block.setPosition(block_close);
+        }
+
+        if(gamepad1.dpad_up){
+            hood.setPosition(hood_high);
+        }
+        if(gamepad1.dpad_left){
+            hood.setPosition(hood_mid);
+        }
+        if(gamepad1.dpad_down){
+            hood.setPosition(hood_low);
+        }
+
+        if(gamepad1.left_bumper){
+            turret.override();
+        }
+        if(gamepad1.right_bumper){
+            //reverse direction
+            turret.reset();
+        }
 
         if (!automatedDrive) {
             //Make the last parameter false for field-centric
@@ -72,11 +164,11 @@ public class teleTest extends OpMode {
             );
         }
 
-        //Automated PathFollowing
-        if (gamepad1.aWasPressed()) {
-            follower.followPath(pathChain.get());
-            automatedDrive = true;
-        }
+//        //Automated PathFollowing
+//        if (gamepad1.aWasPressed()) {
+//            follower.followPath(pathChain.get());
+//            automatedDrive = true;
+//        }
 
 
         //Stop automated following if the follower is done
@@ -86,20 +178,20 @@ public class teleTest extends OpMode {
         }
 
         //Slow Mode
-        if (gamepad1.rightBumperWasPressed()) {
-            slowMode = !slowMode;
-        }
+//        if (gamepad1.rightBumperWasPressed()) {
+//            slowMode = !slowMode;
+//        }
 
         //Optional way to change slow mode strength
-        if (gamepad1.xWasPressed()) {
-//            slowModeMultiplier += 0.25;
-            follower.holdPoint(follower.getPose());
-        }
+//        if (gamepad1.xWasPressed()) {
+////            slowModeMultiplier += 0.25;
+//            follower.holdPoint(follower.getPose());
+//        }
 
-        //Optional way to change slow mode strength
-        if (gamepad2.yWasPressed()) {
-            slowModeMultiplier -= 0.25;
-        }
+//        //Optional way to change slow mode strength
+//        if (gamepad2.yWasPressed()) {
+//            slowModeMultiplier -= 0.25;
+//        }
 
         telemetryM.debug("position", follower.getPose());
         telemetryM.debug("velocity", follower.getVelocity());
