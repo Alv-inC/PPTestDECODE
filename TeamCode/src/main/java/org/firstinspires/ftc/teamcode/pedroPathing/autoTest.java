@@ -104,18 +104,14 @@ public class autoTest extends OpMode {
 
                 if(pathTimer.getElapsedTimeSeconds() > 4) {
                     flyWheel.constantStop();
-                    intake.stop();
                     follower.followPath(firstArtPos);
                     setPathState(1);
                 }
-
-
                 break;
             case 1:
 
                 if (!follower.isBusy()) {
                     follower.followPath(grabArtLine, true);
-                    intake.go();
                     setPathState(2);
                 }
                 break;
@@ -135,13 +131,13 @@ public class autoTest extends OpMode {
             case 3:
                 if(!follower.isBusy()){
                     follower.followPath(secondArtPos, true);
+                    intake.go();
                     setPathState(4);
                 }
                 break;
             case 4:
                 if(!follower.isBusy()){
                     follower.followPath(grabArtLine2, true);
-                    intake.go();
                     setPathState(5);
                 }
                 break;
