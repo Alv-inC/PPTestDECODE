@@ -15,6 +15,11 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 
 //Visualizer: https://visualizer.pedropathing.com/
+            /* You could check for
+            - Follower State: "if(!follower.isBusy()) {}"
+            - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
+            - Robot Position: "if(follower.getPose().getX() > 36) {}"
+            */
 @Autonomous(name = "autoTest", group = "Tests")
 public class autoTest extends OpMode {
     private Follower follower;
@@ -27,6 +32,10 @@ public class autoTest extends OpMode {
     private PathChain grabArtLine;
     private PathChain firstStartPos;
 
+    private PathChain secondArtPos;
+    private PathChain grabArtLine2;
+    private PathChain secondStartPos;
+
     //subsystems
     private flyWheel flyWheel;
     private intake intake;
@@ -37,9 +46,9 @@ public class autoTest extends OpMode {
         firstArtPos = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(62.000, 20.000),
-                                new Pose(63.499, 36.666),
-                                new Pose(36.666, 35.437)
+                                new Pose(62.524, 17.585),
+                                new Pose(64.478, 36.733),
+                                new Pose(33.216, 35.951)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
@@ -47,18 +56,40 @@ public class autoTest extends OpMode {
 
         grabArtLine = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(36.666, 35.437),
-                        new Pose(15.158, 35.642)
-                ))
+                        new Pose(33.216, 35.951),
+                        new Pose(13.286, 35.951)))
+                .setTangentHeadingInterpolation()
                 .setTangentHeadingInterpolation()
                 .build();
 
         /* This is line3. Another BezierLine, but reversed. */
         firstStartPos = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(15.158, 35.642),
-                        new Pose(61.656, 19.664)
-                ))
+                        new Pose(13.286, 35.951),
+                        new Pose(62.524, 17.585)))
+                .setTangentHeadingInterpolation()
+                .setReversed()
+                .build();
+
+        secondArtPos = follower.pathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Pose(62.524, 17.585),
+                                new Pose(63.696, 63.891),
+                                new Pose(33.997, 59.788)
+                        )
+                )
+                .setTangentHeadingInterpolation()
+                .build();
+        grabArtLine2 = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        new Pose(33.997, 59.788),
+                        new Pose(14.459, 59.788)))
+                .setTangentHeadingInterpolation()
+                .build();
+
+        secondStartPos = follower.pathBuilder()
+                .addPath(new BezierLine(new Pose(14.459, 59.788), new Pose(62.524, 17.585)))
                 .setTangentHeadingInterpolation()
                 .setReversed()
                 .build();
@@ -81,11 +112,7 @@ public class autoTest extends OpMode {
 
                 break;
             case 1:
-            /* You could check for
-            - Follower State: "if(!follower.isBusy()) {}"
-            - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
-            - Robot Position: "if(follower.getPose().getX() > 36) {}"
-            */
+
                 if (!follower.isBusy()) {
                     follower.followPath(grabArtLine, true);
                     intake.go();
@@ -95,7 +122,40 @@ public class autoTest extends OpMode {
             case 2:
                 if (!follower.isBusy()) {
                     follower.followPath(firstStartPos, true);
-                    setPathState(3);
+                    intake.go();
+                    flyWheel.constantShoot();
+
+                    if(pathTimer.getElapsedTimeSeconds() > 4) {
+                        flyWheel.constantStop();
+                        intake.stop();
+                        setPathState(3);
+                    }
+                }
+                break;
+            case 3:
+                if(!follower.isBusy()){
+                    follower.followPath(secondArtPos, true);
+                    setPathState(4);
+                }
+                break;
+            case 4:
+                if(!follower.isBusy()){
+                    follower.followPath(grabArtLine2, true);
+                    intake.go();
+                    setPathState(5);
+                }
+                break;
+            case 5:
+                if(!follower.isBusy()){
+                    intake.go();
+                    flyWheel.constantShoot();
+
+                    if(pathTimer.getElapsedTimeSeconds() > 4) {
+                        flyWheel.constantStop();
+                        intake.stop();
+                        //next path
+                        setPathState(6);
+                    }
                 }
                 break;
         }
