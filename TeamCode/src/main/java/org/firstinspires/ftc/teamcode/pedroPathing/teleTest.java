@@ -11,6 +11,7 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -35,7 +36,7 @@ public class teleTest extends OpMode {
     private DcMotorEx intake;
     private DcMotorEx shooterL;
     private DcMotorEx shooterR;
-    private Servo block;
+    private CRServo block;
 
     private Servo hood;
 
@@ -48,8 +49,8 @@ public class teleTest extends OpMode {
 
 
     //final constants
-    private final double block_open = 0;
-    private final double block_close = 0.25;
+    private final double block_open = -1;
+    private final double block_close = 1;
     private final double hood_high = 0;
     private final double hood_mid = 0;
     private final double hood_low = 0;
@@ -61,7 +62,7 @@ public class teleTest extends OpMode {
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         shooterL = hardwareMap.get(DcMotorEx.class, "shooterLeft");
         shooterR = hardwareMap.get(DcMotorEx.class, "shooterRight");
-        block = hardwareMap.get(Servo.class, "block");
+        block = hardwareMap.get(CRServo.class, "block");
         hood = hardwareMap.get(Servo.class, "hood");
         shooterL.setDirection(DcMotorSimple.Direction.REVERSE);
         turret = new Turret(hardwareMap, telemetry);
@@ -116,13 +117,12 @@ public class teleTest extends OpMode {
             shooterR.setPower(1);
             shooterL.setPower(1);
             new WaitCommand(1000);
-            block.setPosition(block_open);
+            block.setPower(block_open);
         }
         if(gamepad1.x) {
             shooterR.setPower(0);
             shooterL.setPower(0);
-            new WaitCommand(1000);
-            block.setPosition(block_close);
+            block.setPower(block_close);
         }
 
         if(gamepad1.dpad_up){
@@ -136,7 +136,7 @@ public class teleTest extends OpMode {
         }
 
         if(gamepad1.left_bumper){
-            turret.override();
+            turret.setTargetPosition(0);
         }
         if(gamepad1.right_bumper){
             //reverse direction

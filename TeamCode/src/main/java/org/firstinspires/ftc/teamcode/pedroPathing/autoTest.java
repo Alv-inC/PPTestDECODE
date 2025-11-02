@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 
 //Visualizer: https://visualizer.pedropathing.com/
 @Autonomous(name = "autoTest", group = "Tests")
@@ -27,6 +29,7 @@ public class autoTest extends OpMode {
 
     //subsystems
     private flyWheel flyWheel;
+    private intake intake;
 
 
     //DEFINE THE PATHS --> REPLACE POSE WITH FINAL POS LATER
@@ -65,10 +68,17 @@ public class autoTest extends OpMode {
         switch (pathState) {
             case 0:
                 follower.holdPoint(follower.getPose());
-                //change later
-                //flyWheel.setTargetVelocity(300);
-                follower.followPath(firstArtPos);
-                setPathState(1);
+                intake.go();
+                flyWheel.constantShoot();
+
+                if(pathTimer.getElapsedTimeSeconds() > 4) {
+                    flyWheel.constantStop();
+                    intake.stop();
+                    follower.followPath(firstArtPos);
+                    setPathState(1);
+                }
+
+
                 break;
             case 1:
             /* You could check for
@@ -77,8 +87,8 @@ public class autoTest extends OpMode {
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
                 if (!follower.isBusy()) {
-
                     follower.followPath(grabArtLine, true);
+                    intake.go();
                     setPathState(2);
                 }
                 break;
@@ -104,6 +114,7 @@ public class autoTest extends OpMode {
     @Override
     public void init() {
         flyWheel = new flyWheel(hardwareMap, telemetry);
+        intake = new intake(hardwareMap);
         pathTimer = new Timer();
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
@@ -116,7 +127,7 @@ public class autoTest extends OpMode {
     public void loop() {
 
         follower.update();
-        flyWheel.update();
+//        flyWheel.update();
         autonomousPathUpdate();
 
         //Feedback to Driver Hub for debugging
