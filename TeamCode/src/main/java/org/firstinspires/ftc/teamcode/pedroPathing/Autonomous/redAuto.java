@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.pedroPathing.Autonomous;
 
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.pedropathing.follower.Follower;
@@ -11,6 +11,7 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 
@@ -20,14 +21,14 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
             - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
-@Autonomous(name = "blueAuto", group = "Tests")
-public class autoTest extends OpMode {
+@Autonomous(name = "redAuto", group = "Tests")
+public class redAuto extends OpMode {
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
     //MAYBE LATER PUT ALL THE POSES INSIDE A INITIALIZATION FUNCTION
-    private final Pose startPose = new Pose(62,20, Math.toRadians(120));
+    private final Pose startPose = new Pose(62,20, Math.toRadians(120)).mirror();
     private PathChain firstArtPos;
     private PathChain grabArtLine;
     private PathChain firstStartPos;
@@ -49,9 +50,9 @@ public class autoTest extends OpMode {
         firstArtPos = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(62.524, 17.585),
-                                new Pose(64.478, 36.733),
-                                new Pose(35.216, 35.951)
+                                new Pose(62.524, 17.585).mirror(),
+                                new Pose(64.478, 36.733).mirror(),
+                                new Pose(35.216, 35.951).mirror()
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
@@ -59,16 +60,16 @@ public class autoTest extends OpMode {
 
         grabArtLine = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(33.216, 37),
-                        new Pose(11.286, 37)))
+                        new Pose(33.216, 37).mirror(),
+                        new Pose(11.286, 37).mirror()))
                 .setTangentHeadingInterpolation()
                 .build();
 
         /* This is line3. Another BezierLine, but reversed. */
         firstStartPos = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(13.286, 35.951),
-                        new Pose(62.524, 17.585)))
+                        new Pose(13.286, 35.951).mirror(),
+                        new Pose(62.524, 17.585).mirror()))
                 .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-50))
                 .setReversed()
                 .build();
@@ -78,22 +79,22 @@ public class autoTest extends OpMode {
         secondArtPos = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(62.524, 17.585),
-                                new Pose(63.696, 63.891),
-                                new Pose(35.997, 59.788)
+                                new Pose(62.524, 17.585).mirror(),
+                                new Pose(63.696, 63.891).mirror(),
+                                new Pose(35.997, 59.788).mirror()
                         )
                 )
                 .setTangentHeadingInterpolation()
                 .build();
         grabArtLine2 = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(33.997, 60.788),
-                        new Pose(11.459, 60.788)))
+                        new Pose(33.997, 60.788).mirror(),
+                        new Pose(11.459, 60.788).mirror()))
                 .setTangentHeadingInterpolation()
                 .build();
 
         secondStartPos = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(14.459, 59.788), new Pose(62.524, 17.585)))
+                .addPath(new BezierLine(new Pose(14.459, 59.788).mirror(), new Pose(62.524, 17.585).mirror()))
                 .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-50))
                 .setReversed()
                 .build();
@@ -105,12 +106,12 @@ public class autoTest extends OpMode {
             case 0:
                 flyWheel.constantShoot();
                 if(pathTimer.getElapsedTimeSeconds() > 2) {
-                intake.go();
-                if(pathTimer.getElapsedTimeSeconds() > 5) {
-                    flyWheel.constantStop();
-                    follower.followPath(firstArtPos);
-                    setPathState(1);
-                }
+                    intake.go();
+                    if(pathTimer.getElapsedTimeSeconds() > 5) {
+                        flyWheel.constantStop();
+                        follower.followPath(firstArtPos);
+                        setPathState(1);
+                    }
                 }
 
                 break;
@@ -130,11 +131,11 @@ public class autoTest extends OpMode {
                 if (!follower.isBusy()) {
                     flyWheel.constantShoot();
                     if(pathTimer.getElapsedTimeSeconds() > 2) {
-                    intake.go();
-                    if(pathTimer.getElapsedTimeSeconds() > 5) {
-                        flyWheel.constantStop();
-                        setPathState(4);
-                    }
+                        intake.go();
+                        if(pathTimer.getElapsedTimeSeconds() > 5) {
+                            flyWheel.constantStop();
+                            setPathState(4);
+                        }
                     }
                 }
                 break;
@@ -162,7 +163,7 @@ public class autoTest extends OpMode {
                 if(!follower.isBusy()){
                     flyWheel.constantShoot();
                     if(pathTimer.getElapsedTimeSeconds() > 2) {
-                    intake.go();
+                        intake.go();
                         if(pathTimer.getElapsedTimeSeconds() > 5) {
                             flyWheel.constantStop();
                             //follower.followPath(firstArtPos);
@@ -200,7 +201,7 @@ public class autoTest extends OpMode {
     public void loop() {
 
         follower.update();
-      flyWheel.update();
+        flyWheel.update();
         autonomousPathUpdate();
 
         //Feedback to Driver Hub for debugging

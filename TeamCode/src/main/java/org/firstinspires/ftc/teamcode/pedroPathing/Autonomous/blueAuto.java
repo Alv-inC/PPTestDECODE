@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.pedroPathing.Autonomous;
 
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.pedropathing.follower.Follower;
@@ -11,6 +11,7 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 
@@ -21,7 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
 @Autonomous(name = "blueAuto", group = "Tests")
-public class autoTest extends OpMode {
+public class blueAuto extends OpMode {
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
@@ -105,12 +106,12 @@ public class autoTest extends OpMode {
             case 0:
                 flyWheel.constantShoot();
                 if(pathTimer.getElapsedTimeSeconds() > 2) {
-                intake.go();
-                if(pathTimer.getElapsedTimeSeconds() > 5) {
-                    flyWheel.constantStop();
-                    follower.followPath(firstArtPos);
-                    setPathState(1);
-                }
+                    intake.go();
+                    if(pathTimer.getElapsedTimeSeconds() > 5) {
+                        flyWheel.constantStop();
+                        follower.followPath(firstArtPos);
+                        setPathState(1);
+                    }
                 }
 
                 break;
@@ -130,11 +131,11 @@ public class autoTest extends OpMode {
                 if (!follower.isBusy()) {
                     flyWheel.constantShoot();
                     if(pathTimer.getElapsedTimeSeconds() > 2) {
-                    intake.go();
-                    if(pathTimer.getElapsedTimeSeconds() > 5) {
-                        flyWheel.constantStop();
-                        setPathState(4);
-                    }
+                        intake.go();
+                        if(pathTimer.getElapsedTimeSeconds() > 5) {
+                            flyWheel.constantStop();
+                            setPathState(4);
+                        }
                     }
                 }
                 break;
@@ -162,7 +163,7 @@ public class autoTest extends OpMode {
                 if(!follower.isBusy()){
                     flyWheel.constantShoot();
                     if(pathTimer.getElapsedTimeSeconds() > 2) {
-                    intake.go();
+                        intake.go();
                         if(pathTimer.getElapsedTimeSeconds() > 5) {
                             flyWheel.constantStop();
                             //follower.followPath(firstArtPos);
@@ -200,7 +201,7 @@ public class autoTest extends OpMode {
     public void loop() {
 
         follower.update();
-      flyWheel.update();
+        flyWheel.update();
         autonomousPathUpdate();
 
         //Feedback to Driver Hub for debugging
