@@ -25,7 +25,7 @@ public class flyWheel {
 
     private CRServo block;
 
-    public static double p = 0, i = 0, d = 0;
+    public static double p = -0.1, i = 0, d = 0;
     public static double ff = 0;
     public static double targetVelocity = 0;
     public static double power = 0;
@@ -59,7 +59,8 @@ public class flyWheel {
         fly2.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         //maybe
-        fly2.setDirection(DcMotorSimple.Direction.REVERSE);
+        fly1.setDirection(DcMotorSimple.Direction.REVERSE);
+
     }
 
     public void update() {
@@ -91,15 +92,13 @@ public class flyWheel {
 
 
         public void constantShoot(){
-            fly1.setPower(1);
-            fly2.setPower(1);
-            new WaitCommand(1000);
+           targetVelocity = 1650;
+            new WaitCommand(2000);
             block.setPower(-1);
         }
 
     public void constantStop(){
-        fly1.setPower(0);
-        fly2.setPower(0);
+        targetVelocity = 0;
         block.setPower(1);
     }
 

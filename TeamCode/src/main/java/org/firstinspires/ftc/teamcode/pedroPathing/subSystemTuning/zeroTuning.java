@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Configurable
@@ -23,6 +24,7 @@ public class zeroTuning extends OpMode {
     public void init() {
     hood = hardwareMap.get(Servo.class, "hood");
     block = hardwareMap.get(CRServo.class, "block");
+    hood.setDirection(Servo.Direction.REVERSE);
 
 
 
