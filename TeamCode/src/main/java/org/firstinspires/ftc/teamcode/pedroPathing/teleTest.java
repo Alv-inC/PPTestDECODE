@@ -11,6 +11,7 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -35,7 +36,7 @@ public class teleTest extends OpMode {
     private DcMotorEx intake;
     private DcMotorEx shooterL;
     private DcMotorEx shooterR;
-    private Servo block;
+    private CRServo block;
 
     private Servo hood;
 
@@ -48,10 +49,10 @@ public class teleTest extends OpMode {
 
 
     //final constants
-    private final double block_open = 0;
-    private final double block_close = 0.25;
-    private final double hood_high = 0;
-    private final double hood_mid = 0;
+    private final double block_open = -1;
+    private final double block_close = 1;
+    private final double hood_high = 0.4;
+    private final double hood_mid = 0.2;
     private final double hood_low = 0;
 
     @Override
@@ -61,7 +62,7 @@ public class teleTest extends OpMode {
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         shooterL = hardwareMap.get(DcMotorEx.class, "shooterLeft");
         shooterR = hardwareMap.get(DcMotorEx.class, "shooterRight");
-        block = hardwareMap.get(Servo.class, "block");
+        block = hardwareMap.get(CRServo.class, "block");
         hood = hardwareMap.get(Servo.class, "hood");
         shooterL.setDirection(DcMotorSimple.Direction.REVERSE);
         turret = new Turret(hardwareMap, telemetry);
@@ -94,7 +95,7 @@ public class teleTest extends OpMode {
         telemetryM.update();
 
 
-        if (gamepad1.a && !previousButtonState2a) {
+        if (gamepad2.a && !previousButtonState2a) {
             if(!flag) {
              intake.setPower(0.8);
             }
@@ -103,42 +104,41 @@ public class teleTest extends OpMode {
                intake.setPower(0);
             }
         }
-        previousButtonState2a = gamepad1.a;
+        previousButtonState2a = gamepad2.a;
 
-        if(gamepad1.dpad_right){
+        if(gamepad2.dpad_right){
             intake.setPower(1);
         }
 
-        if(gamepad1.b){
+        if(gamepad2.b){
             intake.setPower(-1);
         }
-        if(gamepad1.y){
+        if(gamepad2.y){
             shooterR.setPower(1);
             shooterL.setPower(1);
             new WaitCommand(1000);
-            block.setPosition(block_open);
+            block.setPower(block_open);
         }
-        if(gamepad1.x) {
+        if(gamepad2.x) {
             shooterR.setPower(0);
             shooterL.setPower(0);
-            new WaitCommand(1000);
-            block.setPosition(block_close);
+            block.setPower(block_close);
         }
 
-        if(gamepad1.dpad_up){
+        if(gamepad2.dpad_up){
             hood.setPosition(hood_high);
         }
-        if(gamepad1.dpad_left){
+        if(gamepad2.dpad_left){
             hood.setPosition(hood_mid);
         }
-        if(gamepad1.dpad_down){
+        if(gamepad2.dpad_down){
             hood.setPosition(hood_low);
         }
 
-        if(gamepad1.left_bumper){
-            turret.override();
+        if(gamepad2.left_bumper){
+            turret.setTargetPosition(0);
         }
-        if(gamepad1.right_bumper){
+        if(gamepad2.right_bumper){
             //reverse direction
             turret.reset();
         }
@@ -160,6 +160,21 @@ public class teleTest extends OpMode {
                     -gamepad1.left_stick_y * slowModeMultiplier,
                     -gamepad1.left_stick_x * slowModeMultiplier,
                     -gamepad1.right_stick_x * slowModeMultiplier,
+                    true // Robot Centric
+            );
+            //delete this later
+            if (!slowMode) follower.setTeleOpDrive(
+                    -gamepad2.left_stick_y,
+                    -gamepad2.left_stick_x,
+                    -gamepad2.right_stick_x,
+                    true // Robot Centric
+            );
+
+                //This is how it looks with slowMode on
+            else follower.setTeleOpDrive(
+                    -gamepad2.left_stick_y * slowModeMultiplier,
+                    -gamepad2.left_stick_x * slowModeMultiplier,
+                    -gamepad2.right_stick_x * slowModeMultiplier,
                     true // Robot Centric
             );
         }

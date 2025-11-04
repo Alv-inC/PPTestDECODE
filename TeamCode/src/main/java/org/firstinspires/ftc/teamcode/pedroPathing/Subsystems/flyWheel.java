@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.Subsystems;
 
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -20,7 +22,10 @@ public class flyWheel {
     private static PIDController spinPID;
     public CachingDcMotorEx fly1;
     private CachingDcMotorEx fly2;
-    public static double p = 0, i = 0, d = 0;
+
+    private CRServo block;
+
+    public static double p = -0.1, i = 0, d = 0;
     public static double ff = 0;
     public static double targetVelocity = 0;
     public static double power = 0;
@@ -42,14 +47,20 @@ public class flyWheel {
         fly1 = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, "shooterRight"), 0.005);
         fly2 = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, "shooterLeft"), 0.005);
 
+        //blocker
+        block = hardwareMap.get(CRServo.class, "block");
+
 
         fly1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fly2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
         fly1.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         fly2.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         //maybe
-        fly2.setDirection(DcMotorSimple.Direction.REVERSE);
+        fly1.setDirection(DcMotorSimple.Direction.REVERSE);
+
     }
 
     public void update() {
@@ -78,6 +89,18 @@ public class flyWheel {
         public void setTargetVelocity(double v){
             targetVelocity = v;
         }
+
+
+        public void constantShoot(){
+           targetVelocity = 1650;
+            new WaitCommand(2000);
+            block.setPower(-1);
+        }
+
+    public void constantStop(){
+        targetVelocity = 0;
+        block.setPower(1);
+    }
 
         public boolean atSpeed() {
             return Math.abs(fly1.getVelocity() - targetVelocity) < 50; // adjust tolerance

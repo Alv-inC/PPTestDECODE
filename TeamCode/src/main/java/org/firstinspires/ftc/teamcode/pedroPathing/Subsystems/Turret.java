@@ -17,7 +17,7 @@ public class Turret {
     CachingDcMotorEx turretMotor;
 
     //change back
-    public static double p = 0.1, i = 0, d = 0.01;
+    public static double p = 0.001, i = 0, d = 0;
     public static double targetPosition = 0;
     //what is for what
     private Telemetry telemetry;
@@ -46,12 +46,6 @@ public class Turret {
         turretMotor.setPower(power);
 
     }
-
-    public void override(){
-        turretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        turretMotor.setTargetPosition(0);
-    }
-
     public void setTargetPosition(double targetPosition) {
         this.targetPosition = targetPosition;
     }
