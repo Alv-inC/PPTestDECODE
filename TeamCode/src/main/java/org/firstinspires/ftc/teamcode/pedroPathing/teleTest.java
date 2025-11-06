@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 
 import java.util.function.Supplier;
 
@@ -34,13 +35,11 @@ public class teleTest extends OpMode {
     private ElapsedTime timer = new ElapsedTime();
 
     private DcMotorEx intake;
-    private DcMotorEx shooterL;
-    private DcMotorEx shooterR;
-    private CRServo block;
 
     private Servo hood;
 
     private Turret turret;
+    private flyWheel flywheel;
 
     boolean flag = false;
     boolean previousButtonState2a = false;
@@ -60,11 +59,8 @@ public class teleTest extends OpMode {
 
         //delete later prob
         intake = hardwareMap.get(DcMotorEx.class, "intake");
-        shooterL = hardwareMap.get(DcMotorEx.class, "shooterLeft");
-        shooterR = hardwareMap.get(DcMotorEx.class, "shooterRight");
-        block = hardwareMap.get(CRServo.class, "block");
+        flywheel = new flyWheel(hardwareMap, telemetry);
         hood = hardwareMap.get(Servo.class, "hood");
-        shooterL.setDirection(DcMotorSimple.Direction.REVERSE);
         turret = new Turret(hardwareMap, telemetry);
 
 
@@ -113,17 +109,17 @@ public class teleTest extends OpMode {
         if(gamepad2.b){
             intake.setPower(-1);
         }
-        if(gamepad2.y){
-            shooterR.setPower(1);
-            shooterL.setPower(1);
-            new WaitCommand(1000);
-            block.setPower(block_open);
+        if(gamepad2.left_bumper){
+            flywheel.constantShootSlow();
+        }
+        if(gamepad2.right_bumper){
+            flywheel.constantShoot();
         }
         if(gamepad2.x) {
-            shooterR.setPower(0);
-            shooterL.setPower(0);
-            block.setPower(block_close);
+            flywheel.constantStop();
+
         }
+
 
         if(gamepad2.dpad_up){
             hood.setPosition(hood_high);
@@ -192,21 +188,21 @@ public class teleTest extends OpMode {
             automatedDrive = false;
         }
 
-        //Slow Mode
-//        if (gamepad1.rightBumperWasPressed()) {
-//            slowMode = !slowMode;
-//        }
+//        Slow Mode
+        if (gamepad1.rightBumperWasPressed()) {
+            slowMode = !slowMode;
+        }
 
         //Optional way to change slow mode strength
-//        if (gamepad1.xWasPressed()) {
-////            slowModeMultiplier += 0.25;
-//            follower.holdPoint(follower.getPose());
-//        }
+        if (gamepad1.xWasPressed()) {
+            slowModeMultiplier += 0.25;
+            follower.holdPoint(follower.getPose());
+        }
 
-//        //Optional way to change slow mode strength
-//        if (gamepad2.yWasPressed()) {
-//            slowModeMultiplier -= 0.25;
-//        }
+        //Optional way to change slow mode strength
+        if (gamepad1.yWasPressed()) {
+            slowModeMultiplier -= 0.25;
+        }
 
         telemetryM.debug("position", follower.getPose());
         telemetryM.debug("velocity", follower.getVelocity());

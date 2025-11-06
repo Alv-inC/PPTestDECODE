@@ -39,10 +39,12 @@ public class redAuto extends OpMode {
     private PathChain grabArtLine2;
     private PathChain secondStartPos;
     private PathChain secondStartPosTurn;
+    private PathChain outTemp;
 
     //subsystems
     private flyWheel flyWheel;
     private intake intake;
+    private boolean once = true;
 
 
     //DEFINE THE PATHS --> REPLACE POSE WITH FINAL POS LATER
@@ -70,7 +72,7 @@ public class redAuto extends OpMode {
                 .addPath(new BezierLine(
                         new Pose(13.286, 35.951).mirror(),
                         new Pose(62.524, 17.585).mirror()))
-                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-50))
+                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-55))
                 .setReversed()
                 .build();
 
@@ -95,8 +97,14 @@ public class redAuto extends OpMode {
 
         secondStartPos = follower.pathBuilder()
                 .addPath(new BezierLine(new Pose(14.459, 59.788).mirror(), new Pose(62.524, 17.585).mirror()))
-                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-50))
+                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-55))
                 .setReversed()
+                .build();
+        outTemp = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        new Pose(33.216, 37).mirror(),
+                        new Pose(11.286, 37).mirror()))
+                .setTangentHeadingInterpolation()
                 .build();
 
     }
@@ -104,12 +112,17 @@ public class redAuto extends OpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                if(once){
+                    once = false;
+                    pathTimer.resetTimer();
+                }
                 flyWheel.constantShoot();
-                if(pathTimer.getElapsedTimeSeconds() > 2) {
+                if(pathTimer.getElapsedTimeSeconds() > 4) {
                     intake.go();
-                    if(pathTimer.getElapsedTimeSeconds() > 5) {
+                    if(pathTimer.getElapsedTimeSeconds() > 8) {
                         flyWheel.constantStop();
                         follower.followPath(firstArtPos);
+                        intake.goSlow();
                         setPathState(1);
                     }
                 }
@@ -130,9 +143,9 @@ public class redAuto extends OpMode {
             case 3:
                 if (!follower.isBusy()) {
                     flyWheel.constantShoot();
-                    if(pathTimer.getElapsedTimeSeconds() > 2) {
+                    if(pathTimer.getElapsedTimeSeconds() > 4) {
                         intake.go();
-                        if(pathTimer.getElapsedTimeSeconds() > 5) {
+                        if(pathTimer.getElapsedTimeSeconds() > 8) {
                             flyWheel.constantStop();
                             setPathState(4);
                         }
@@ -143,7 +156,7 @@ public class redAuto extends OpMode {
             case 4:
                 if(!follower.isBusy()){
                     follower.followPath(secondArtPos, true);
-                    intake.go();
+                    intake.goSlow();
                     setPathState(5);
                 }
                 break;
@@ -162,14 +175,19 @@ public class redAuto extends OpMode {
             case 7:
                 if(!follower.isBusy()){
                     flyWheel.constantShoot();
-                    if(pathTimer.getElapsedTimeSeconds() > 2) {
+                    if(pathTimer.getElapsedTimeSeconds() > 4) {
                         intake.go();
-                        if(pathTimer.getElapsedTimeSeconds() > 5) {
+                        if(pathTimer.getElapsedTimeSeconds() > 8) {
                             flyWheel.constantStop();
                             //follower.followPath(firstArtPos);
-                            setPathState(6);
+                            setPathState(8);
                         }
                     }
+                }
+                break;
+            case 8:
+                if(!follower.isBusy()){
+                    follower.followPath(outTemp, true);
                 }
                 break;
         }

@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Configurable
 @TeleOp(name ="ZERO")
 public class zeroTuning extends OpMode {
-    private CRServo block;
+    private Servo block;
 
     private Servo hood;
 
@@ -23,7 +23,7 @@ public class zeroTuning extends OpMode {
     @Override
     public void init() {
     hood = hardwareMap.get(Servo.class, "hood");
-    block = hardwareMap.get(CRServo.class, "block");
+    block = hardwareMap.get(Servo.class, "block");
     hood.setDirection(Servo.Direction.REVERSE);
 
 
@@ -34,7 +34,7 @@ public class zeroTuning extends OpMode {
     @Override
     public void loop() {
         hood.setPosition(hood_val);
-        block.setPower(block_val);
+        block.setPosition(block_val);
     }
 
 }

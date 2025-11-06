@@ -39,10 +39,13 @@ public class blueAuto extends OpMode {
     private PathChain grabArtLine2;
     private PathChain secondStartPos;
     private PathChain secondStartPosTurn;
+    private PathChain outTemp;
 
     //subsystems
     private flyWheel flyWheel;
     private intake intake;
+
+    private boolean hasStarted = false;
 
 
     //DEFINE THE PATHS --> REPLACE POSE WITH FINAL POS LATER
@@ -69,8 +72,8 @@ public class blueAuto extends OpMode {
         firstStartPos = follower.pathBuilder()
                 .addPath(new BezierLine(
                         new Pose(13.286, 35.951),
-                        new Pose(62.524, 17.585)))
-                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-50))
+                        new Pose(62, 20)))
+                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-54.5))
                 .setReversed()
                 .build();
 
@@ -94,9 +97,15 @@ public class blueAuto extends OpMode {
                 .build();
 
         secondStartPos = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(14.459, 59.788), new Pose(62.524, 17.585)))
-                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-50))
+                .addPath(new BezierLine(new Pose(14.459, 59.788), new Pose(62, 20)))
+                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-54.5))
                 .setReversed()
+                .build();
+        outTemp = follower.pathBuilder()
+                .addPath(new BezierLine(
+                new Pose(33.216, 37),
+                new Pose(11.286, 37)))
+                .setTangentHeadingInterpolation()
                 .build();
 
     }
@@ -105,11 +114,12 @@ public class blueAuto extends OpMode {
         switch (pathState) {
             case 0:
                 flyWheel.constantShoot();
-                if(pathTimer.getElapsedTimeSeconds() > 2) {
+                if(pathTimer.getElapsedTimeSeconds() > 2.5) {
                     intake.go();
-                    if(pathTimer.getElapsedTimeSeconds() > 5) {
+                    if(pathTimer.getElapsedTimeSeconds() > 6) {
                         flyWheel.constantStop();
                         follower.followPath(firstArtPos);
+                        intake.goSlow();
                         setPathState(1);
                     }
                 }
@@ -129,10 +139,10 @@ public class blueAuto extends OpMode {
                 break;
             case 3:
                 if (!follower.isBusy()) {
-                    flyWheel.constantShoot();
-                    if(pathTimer.getElapsedTimeSeconds() > 2) {
+                    flyWheel.constantShootFaster();
+                    if(pathTimer.getElapsedTimeSeconds() > 3) {
                         intake.go();
-                        if(pathTimer.getElapsedTimeSeconds() > 5) {
+                        if(pathTimer.getElapsedTimeSeconds() > 6.5) {
                             flyWheel.constantStop();
                             setPathState(4);
                         }
@@ -143,7 +153,7 @@ public class blueAuto extends OpMode {
             case 4:
                 if(!follower.isBusy()){
                     follower.followPath(secondArtPos, true);
-                    intake.go();
+                    intake.goSlow();
                     setPathState(5);
                 }
                 break;
@@ -161,15 +171,20 @@ public class blueAuto extends OpMode {
                 break;
             case 7:
                 if(!follower.isBusy()){
-                    flyWheel.constantShoot();
-                    if(pathTimer.getElapsedTimeSeconds() > 2) {
+                    flyWheel.constantShootFaster();
+                    if(pathTimer.getElapsedTimeSeconds() > 3) {
                         intake.go();
-                        if(pathTimer.getElapsedTimeSeconds() > 5) {
+                        if(pathTimer.getElapsedTimeSeconds() > 6.5) {
                             flyWheel.constantStop();
                             //follower.followPath(firstArtPos);
-                            setPathState(6);
+                            setPathState(8);
                         }
                     }
+                }
+                break;
+            case 8:
+                if(!follower.isBusy()){
+                    follower.followPath(outTemp, true);
                 }
                 break;
         }
@@ -199,7 +214,12 @@ public class blueAuto extends OpMode {
 
     @Override
     public void loop() {
-
+        if (!hasStarted) {
+            pathTimer.resetTimer();   // reset your timer exactly when OpMode starts
+            opmodeTimer.resetTimer();
+            hasStarted = true;
+            pathState = 0; // ensure the FSM begins from the right state
+        }
         follower.update();
         flyWheel.update();
         autonomousPathUpdate();
