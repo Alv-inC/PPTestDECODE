@@ -53,9 +53,9 @@ public class blueAuto extends OpMode {
         firstArtPos = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(62.524, 17.585),
-                                new Pose(64.478, 36.733),
-                                new Pose(35.216, 35.951)
+                                new Pose(60.524, 19.585),
+                                new Pose(62.478, 40),
+                                new Pose(35.216, 38.9)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
@@ -63,17 +63,17 @@ public class blueAuto extends OpMode {
 
         grabArtLine = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(33.216, 37),
-                        new Pose(11.286, 37)))
+                        new Pose(33.216, 39),
+                        new Pose(10, 39)))
                 .setTangentHeadingInterpolation()
                 .build();
 
         /* This is line3. Another BezierLine, but reversed. */
         firstStartPos = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(13.286, 35.951),
-                        new Pose(62, 20)))
-                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-54.5))
+                        new Pose(13.286, 37.951),
+                        new Pose(62, 22)))
+                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-55.3))
                 .setReversed()
                 .build();
 
@@ -82,29 +82,29 @@ public class blueAuto extends OpMode {
         secondArtPos = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(62.524, 17.585),
-                                new Pose(63.696, 63.891),
-                                new Pose(35.997, 59.788)
+                                new Pose(62.524, 19.585),
+                                new Pose(63.696, 65.891),
+                                new Pose(35.997, 61.788)
                         )
                 )
                 .setTangentHeadingInterpolation()
                 .build();
         grabArtLine2 = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(33.997, 60.788),
-                        new Pose(11.459, 60.788)))
+                        new Pose(33.997, 62.788),
+                        new Pose(11.459, 62.788)))
                 .setTangentHeadingInterpolation()
                 .build();
 
         secondStartPos = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(14.459, 59.788), new Pose(62, 20)))
-                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-54.5))
+                .addPath(new BezierLine(new Pose(14.459, 61.788), new Pose(62, 22)))
+                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-55.3))
                 .setReversed()
                 .build();
         outTemp = follower.pathBuilder()
                 .addPath(new BezierLine(
-                new Pose(33.216, 37),
-                new Pose(11.286, 37)))
+                new Pose(33.216, 39),
+                new Pose(11.286, 39)))
                 .setTangentHeadingInterpolation()
                 .build();
 
@@ -139,10 +139,10 @@ public class blueAuto extends OpMode {
                 break;
             case 3:
                 if (!follower.isBusy()) {
-                    flyWheel.constantShootFaster();
-                    if(pathTimer.getElapsedTimeSeconds() > 3) {
+                    flyWheel.constantShootFasterDelay();
+                    if(pathTimer.getElapsedTimeSeconds() > 4.5) {
                         intake.go();
-                        if(pathTimer.getElapsedTimeSeconds() > 6.5) {
+                        if(pathTimer.getElapsedTimeSeconds() > 7) {
                             flyWheel.constantStop();
                             setPathState(4);
                         }
@@ -171,10 +171,10 @@ public class blueAuto extends OpMode {
                 break;
             case 7:
                 if(!follower.isBusy()){
-                    flyWheel.constantShootFaster();
-                    if(pathTimer.getElapsedTimeSeconds() > 3) {
+                    flyWheel.constantShootFasterDelay();
+                    if(pathTimer.getElapsedTimeSeconds() > 4.5) {
                         intake.go();
-                        if(pathTimer.getElapsedTimeSeconds() > 6.5) {
+                        if(pathTimer.getElapsedTimeSeconds() > 7) {
                             flyWheel.constantStop();
                             //follower.followPath(firstArtPos);
                             setPathState(8);

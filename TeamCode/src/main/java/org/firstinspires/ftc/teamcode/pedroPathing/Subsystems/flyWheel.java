@@ -94,22 +94,32 @@ public class flyWheel {
 
 
         public void constantShoot(){
-           targetVelocity = 1730;
+            p = -0.15;
+           targetVelocity = 1760;
             new WaitCommand(2500);
             block.setPosition(0);
         }
     public void constantShootFaster(){
-        targetVelocity = 1750;
+        p = -0.15;
+        targetVelocity = 1830;
         new WaitCommand(2500);
         block.setPosition(0);
     }
+    public void constantShootFasterDelay(){
+        p = -0.15;
+        targetVelocity = 1780;
+        new WaitCommand(4500);
+        block.setPosition(0);
+    }
     public void constantShootSlow(){
-        targetVelocity = 1330;
+        p = -0.15;
+        targetVelocity = 1350;
         new WaitCommand(2500);
         block.setPosition(0);
     }
 
     public void constantStop(){
+        p = 0;
         targetVelocity = 0;
         block.setPosition(0.1);
     }

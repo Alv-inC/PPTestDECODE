@@ -1,4 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
+import static org.firstinspires.ftc.teamcode.pedroPathing.Constants.driveConstants;
+
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -89,6 +91,8 @@ public class teleTest extends OpMode {
         //Call this once per loop
         follower.update();
         telemetryM.update();
+        flywheel.update();
+        turret.update();
 
 
         if (gamepad2.a && !previousButtonState2a) {
@@ -121,23 +125,11 @@ public class teleTest extends OpMode {
         }
 
 
-        if(gamepad2.dpad_up){
-            hood.setPosition(hood_high);
-        }
-        if(gamepad2.dpad_left){
-            hood.setPosition(hood_mid);
-        }
+
         if(gamepad2.dpad_down){
-            hood.setPosition(hood_low);
+            intake.setPower(0);
         }
 
-        if(gamepad2.left_bumper){
-            turret.setTargetPosition(0);
-        }
-        if(gamepad2.right_bumper){
-            //reverse direction
-            turret.reset();
-        }
 
         if (!automatedDrive) {
             //Make the last parameter false for field-centric
@@ -158,21 +150,7 @@ public class teleTest extends OpMode {
                     -gamepad1.right_stick_x * slowModeMultiplier,
                     true // Robot Centric
             );
-            //delete this later
-            if (!slowMode) follower.setTeleOpDrive(
-                    -gamepad2.left_stick_y,
-                    -gamepad2.left_stick_x,
-                    -gamepad2.right_stick_x,
-                    true // Robot Centric
-            );
 
-                //This is how it looks with slowMode on
-            else follower.setTeleOpDrive(
-                    -gamepad2.left_stick_y * slowModeMultiplier,
-                    -gamepad2.left_stick_x * slowModeMultiplier,
-                    -gamepad2.right_stick_x * slowModeMultiplier,
-                    true // Robot Centric
-            );
         }
 
 //        //Automated PathFollowing
@@ -190,13 +168,15 @@ public class teleTest extends OpMode {
 
 //        Slow Mode
         if (gamepad1.rightBumperWasPressed()) {
-            slowMode = !slowMode;
+            driveConstants.maxPower(0.2);
+        }
+        if(gamepad1.leftBumperWasPressed()){
+            driveConstants.maxPower(0.8);
         }
 
         //Optional way to change slow mode strength
         if (gamepad1.xWasPressed()) {
             slowModeMultiplier += 0.25;
-            follower.holdPoint(follower.getPose());
         }
 
         //Optional way to change slow mode strength

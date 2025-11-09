@@ -44,7 +44,8 @@ public class redAuto extends OpMode {
     //subsystems
     private flyWheel flyWheel;
     private intake intake;
-    private boolean once = true;
+
+    private boolean hasStarted = false;
 
 
     //DEFINE THE PATHS --> REPLACE POSE WITH FINAL POS LATER
@@ -52,27 +53,27 @@ public class redAuto extends OpMode {
         firstArtPos = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(62.524, 17.585).mirror(),
-                                new Pose(64.478, 36.733).mirror(),
-                                new Pose(35.216, 35.951).mirror()
+                                new Pose(62.524, 19.585).mirror(),
+                                new Pose(62.478, 40).mirror(),
+                                new Pose(35.216, 38.9).mirror()
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
+                .setTangentHeadingInterpolation()
                 .build();
 
         grabArtLine = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(33.216, 37).mirror(),
-                        new Pose(11.286, 37).mirror()))
+                        new Pose(33.216, 39).mirror(),
+                        new Pose(10, 39).mirror()))
                 .setTangentHeadingInterpolation()
                 .build();
 
         /* This is line3. Another BezierLine, but reversed. */
         firstStartPos = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(13.286, 35.951).mirror(),
-                        new Pose(62.524, 17.585).mirror()))
-                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-55))
+                        new Pose(13.286, 37.951).mirror(),
+                        new Pose(62, 22).mirror()))
+                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-110))
                 .setReversed()
                 .build();
 
@@ -81,29 +82,29 @@ public class redAuto extends OpMode {
         secondArtPos = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(62.524, 17.585).mirror(),
-                                new Pose(63.696, 63.891).mirror(),
-                                new Pose(35.997, 59.788).mirror()
+                                new Pose(62.524, 19.585).mirror(),
+                                new Pose(63.696, 65.891).mirror(),
+                                new Pose(35.997, 61.788).mirror()
                         )
                 )
                 .setTangentHeadingInterpolation()
                 .build();
         grabArtLine2 = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(33.997, 60.788).mirror(),
-                        new Pose(11.459, 60.788).mirror()))
+                        new Pose(33.997, 62.788).mirror(),
+                        new Pose(11.459, 62.788).mirror()))
                 .setTangentHeadingInterpolation()
                 .build();
 
         secondStartPos = follower.pathBuilder()
-                .addPath(new BezierLine(new Pose(14.459, 59.788).mirror(), new Pose(62.524, 17.585).mirror()))
-                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-55))
+                .addPath(new BezierLine(new Pose(14.459, 61.788).mirror(), new Pose(62, 22).mirror()))
+                .setLinearHeadingInterpolation(follower.getHeading(), Math.toRadians(-110))
                 .setReversed()
                 .build();
         outTemp = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(33.216, 37).mirror(),
-                        new Pose(11.286, 37).mirror()))
+                        new Pose(33.216, 39).mirror(),
+                        new Pose(11.286, 39).mirror()))
                 .setTangentHeadingInterpolation()
                 .build();
 
@@ -112,14 +113,10 @@ public class redAuto extends OpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                if(once){
-                    once = false;
-                    pathTimer.resetTimer();
-                }
                 flyWheel.constantShoot();
-                if(pathTimer.getElapsedTimeSeconds() > 4) {
+                if(pathTimer.getElapsedTimeSeconds() > 2.5) {
                     intake.go();
-                    if(pathTimer.getElapsedTimeSeconds() > 8) {
+                    if(pathTimer.getElapsedTimeSeconds() > 6) {
                         flyWheel.constantStop();
                         follower.followPath(firstArtPos);
                         intake.goSlow();
@@ -142,10 +139,10 @@ public class redAuto extends OpMode {
                 break;
             case 3:
                 if (!follower.isBusy()) {
-                    flyWheel.constantShoot();
-                    if(pathTimer.getElapsedTimeSeconds() > 4) {
+                    flyWheel.constantShootFasterDelay();
+                    if(pathTimer.getElapsedTimeSeconds() > 4.5) {
                         intake.go();
-                        if(pathTimer.getElapsedTimeSeconds() > 8) {
+                        if(pathTimer.getElapsedTimeSeconds() > 7) {
                             flyWheel.constantStop();
                             setPathState(4);
                         }
@@ -174,10 +171,10 @@ public class redAuto extends OpMode {
                 break;
             case 7:
                 if(!follower.isBusy()){
-                    flyWheel.constantShoot();
-                    if(pathTimer.getElapsedTimeSeconds() > 4) {
+                    flyWheel.constantShootFasterDelay();
+                    if(pathTimer.getElapsedTimeSeconds() > 4.5) {
                         intake.go();
-                        if(pathTimer.getElapsedTimeSeconds() > 8) {
+                        if(pathTimer.getElapsedTimeSeconds() > 7) {
                             flyWheel.constantStop();
                             //follower.followPath(firstArtPos);
                             setPathState(8);
@@ -217,7 +214,12 @@ public class redAuto extends OpMode {
 
     @Override
     public void loop() {
-
+        if (!hasStarted) {
+            pathTimer.resetTimer();   // reset your timer exactly when OpMode starts
+            opmodeTimer.resetTimer();
+            hasStarted = true;
+            pathState = 0; // ensure the FSM begins from the right state
+        }
         follower.update();
         flyWheel.update();
         autonomousPathUpdate();
