@@ -96,15 +96,10 @@ public class flyWheel {
         public void constantShoot(){
             p = -0.15;
            targetVelocity = 1760;
+           //RN its delayed to go at the same time as the intake; should be changed in the future; change to CRServo
             new WaitCommand(2500);
             block.setPosition(0);
         }
-    public void constantShootFaster(){
-        p = -0.15;
-        targetVelocity = 1830;
-        new WaitCommand(2500);
-        block.setPosition(0);
-    }
     public void constantShootFasterDelay(){
         p = -0.15;
         targetVelocity = 1780;
