@@ -20,7 +20,7 @@ public class blueAutov2 extends OpMode {
     private int pathState;
 
     //MAYBE LATER PUT ALL THE POSES INSIDE A INITIALIZATION FUNCTION
-    private final Pose startPose = new Pose(33.6, 135.4, Math.toRadians(90));
+    private final Pose startPose = new Pose(33.6, 135.4, Math.toRadians(-180));
     private PathChain firstShots;
     private PathChain firstLine;
     private PathChain hitSwitch;
@@ -46,7 +46,8 @@ public class blueAutov2 extends OpMode {
                                 new Pose(54.318, 84.602)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
+                //.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
+                .setConstantHeadingInterpolation(Math.toRadians(-180))
                 .build();
 
         // FIRST LINE
@@ -55,7 +56,7 @@ public class blueAutov2 extends OpMode {
                         new Pose(54.318, 84.602),
                         new Pose(21.883, 84.407)
                 ))
-                .setTangentHeadingInterpolation()
+                .setConstantHeadingInterpolation(Math.toRadians(-180))
                 .build();
 
         // HIT SWITCH

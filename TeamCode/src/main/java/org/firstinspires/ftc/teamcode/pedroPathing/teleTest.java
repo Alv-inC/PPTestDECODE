@@ -72,8 +72,8 @@ public class teleTest extends OpMode {
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
 
         pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-               .addPath(new Path(new BezierLine(follower::getPose, new Pose(0, 0))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(0), 0.8))
+               .addPath(new Path(new BezierLine(follower::getPose, new Pose(54.318, 84.602))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(-180), 0.8))
                 .build();
     }
 
@@ -153,11 +153,11 @@ public class teleTest extends OpMode {
 
         }
 
-//        //Automated PathFollowing
-//        if (gamepad1.aWasPressed()) {
-//            follower.followPath(pathChain.get());
-//            automatedDrive = true;
-//        }
+        //Automated PathFollowing
+        if (gamepad1.aWasPressed()) {
+            follower.followPath(pathChain.get());
+            automatedDrive = true;
+        }
 
 
         //Stop automated following if the follower is done
@@ -168,7 +168,7 @@ public class teleTest extends OpMode {
 
 //        Slow Mode
         if (gamepad1.rightBumperWasPressed()) {
-            driveConstants.maxPower(0.2);
+            driveConstants.maxPower(0.4);
         }
         if(gamepad1.leftBumperWasPressed()){
             driveConstants.maxPower(0.8);
