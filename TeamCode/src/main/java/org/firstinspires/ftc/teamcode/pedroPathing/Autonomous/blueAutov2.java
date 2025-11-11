@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
+import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
 @Autonomous(name = "[NEW]blueAuto", group = "Tests")
 public class blueAutov2 extends OpMode {
@@ -36,6 +37,7 @@ public class blueAutov2 extends OpMode {
     private intake intake;
 
     private boolean hasStarted = false;
+    private teleTest testTele;
 
     public void buildPaths() {
 
@@ -188,6 +190,7 @@ public class blueAutov2 extends OpMode {
                 break;
 
             case 8:
+                testTele.startingPose = follower.getPose();
                 // END – no more paths
                 break;
         }
