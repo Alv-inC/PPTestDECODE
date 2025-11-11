@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 
@@ -30,7 +32,8 @@ public class blueAutov2 extends OpMode {
     private PathChain thirdLine;
     private PathChain fourthShots;
 
-
+    private LimelightCamera limelight;
+    private Turret turret;
     //subsystems
     private flyWheel flyWheel;
     private intake intake;
@@ -208,10 +211,18 @@ public class blueAutov2 extends OpMode {
         follower = Constants.createFollower(hardwareMap);
         buildPaths();
         follower.setStartingPose(startPose);
+        limelight = new LimelightCamera(hardwareMap, telemetry);
+        turret = new Turret(hardwareMap, telemetry);
     }
 
     @Override
     public void loop() {
+        limelight.update();
+        int targetTagId = 20;
+        limelight.trackTag(turret, targetTagId, true);
+        turret.update();
+        limelight.logTelemetry();
+
         if (!hasStarted) {
             pathTimer.resetTimer();   // reset your timer exactly when OpMode starts
             opmodeTimer.resetTimer();

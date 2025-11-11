@@ -83,7 +83,6 @@ public class LimelightCamera {
         double correctionTicks = txDeg * TICKS_PER_DEG * CORRECTION_GAIN;
         double newTarget = turret.getCurrentPosition() + correctionTicks;
         turret.setTargetPosition(newTarget);
-        turret.update();
     }
 
     public boolean hasValidTarget() {
