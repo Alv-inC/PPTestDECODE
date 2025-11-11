@@ -112,6 +112,12 @@ public class flyWheel {
         new WaitCommand(2500);
         block.setPosition(0);
     }
+    public void constantShootAtVelocity(int v){
+        p = -0.15;
+        targetVelocity = v;
+        new WaitCommand(2500);
+        block.setPosition(0);
+    }
 
     public void constantStop(){
         p = 0;

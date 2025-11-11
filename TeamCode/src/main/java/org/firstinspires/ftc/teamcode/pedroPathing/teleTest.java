@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 
@@ -43,6 +44,8 @@ public class teleTest extends OpMode {
     private Turret turret;
     private flyWheel flywheel;
 
+    LimelightCamera limelight;
+
     boolean flag = false;
     boolean previousButtonState2a = false;
 
@@ -64,7 +67,7 @@ public class teleTest extends OpMode {
         flywheel = new flyWheel(hardwareMap, telemetry);
         hood = hardwareMap.get(Servo.class, "hood");
         turret = new Turret(hardwareMap, telemetry);
-
+        limelight = new LimelightCamera(hardwareMap, telemetry);
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startingPose == null ? new Pose() : startingPose);
@@ -87,13 +90,21 @@ public class teleTest extends OpMode {
 
     @Override
     public void loop() {
-
+        limelight.update();
         //Call this once per loop
         follower.update();
         telemetryM.update();
         flywheel.update();
         turret.update();
 
+        int targetTagId = -1;
+        if (gamepad2.left_trigger > 0.5) targetTagId = 20;
+        else if (gamepad2.right_trigger > 0.5) targetTagId = 21;
+
+        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
+
+        limelight.trackTag(turret, targetTagId, trackingEnabled);
+        limelight.logTelemetry();
 
         if (gamepad2.a && !previousButtonState2a) {
             if(!flag) {
