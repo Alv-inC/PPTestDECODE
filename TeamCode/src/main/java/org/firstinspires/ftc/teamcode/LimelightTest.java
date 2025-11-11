@@ -21,11 +21,12 @@ public class LimelightTest extends LinearOpMode {
     // --------- DASHBOARD CONFIG ---------
     public static int PIPELINE_INDEX = 0;
     public static boolean ENABLE_TURRET_TRACKING = false;   // toggle manually in FTC Dashboard
-    public static double CORRECTION_GAIN = 0.7;              // how strongly the turret reacts
+    public static double CORRECTION_GAIN = 1.5;              // how strongly the turret reacts
     public static double DEADBAND_DEG = 0.5;                 // ignore tiny deviations
     public static double GEAR_RATIO = 1.0;                   // turret gearing ratio
     public static double TICKS_PER_REV = 384.5;              // motor counts per revolution
     public static double TICKS_PER_DEG = (TICKS_PER_REV * GEAR_RATIO) / 360.0;
+    public static int TARGET_TAG_ID = 23;                    // Only follow this tag
     // -----------------------------------
 
     @Override
@@ -54,37 +55,44 @@ public class LimelightTest extends LinearOpMode {
 
                 List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
                 if (!fiducials.isEmpty()) {
-                    LLResultTypes.FiducialResult fid = fiducials.get(0);
+                    // Loop through all detected tags
+                    for (LLResultTypes.FiducialResult fid : fiducials) {
+                        int tagId = fid.getFiducialId();
+                        telemetry.addData("id", tagId);
+                        // ---- Only track if it's the specified tag ----
+                        if (tagId == TARGET_TAG_ID) {
+                            Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
+                            double tz = tagPoseCam.getPosition().z;
+                            double tx = tagPoseCam.getPosition().x;
 
-                    // ---- Tag pose relative to camera ----
-                    Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
-                    double tz = tagPoseCam.getPosition().z;
-                    double tx = tagPoseCam.getPosition().x;
+                            // Compute horizontal offset in degrees
+                            double tx_deg = Math.toDegrees(Math.atan2(tx, tz));
+                            if (Math.abs(tx_deg) < DEADBAND_DEG) tx_deg = 0.0;
 
-                    // ---- Compute horizontal offset in degrees ----
-                    double tx_deg = Math.toDegrees(Math.atan2(tx, tz));
-                    if (Math.abs(tx_deg) < DEADBAND_DEG) tx_deg = 0.0;
+                            telemetry.addData("Tag ID", tagId);
+                            telemetry.addData("tx_deg", tx_deg);
+                            telemetry.addData("tz (m)", tz);
+                            telemetry.addData("ENABLE_TURRET_TRACKING", ENABLE_TURRET_TRACKING);
 
-                    telemetry.addData("Tag ID", fid.getFiducialId());
-                    telemetry.addData("tx_deg", tx_deg);
-                    telemetry.addData("tz (m)", tz);
-                    telemetry.addData("ENABLE_TURRET_TRACKING", ENABLE_TURRET_TRACKING);
+                            // Apply correction ONLY if manually enabled
+                            if (ENABLE_TURRET_TRACKING) {
+                                double correctionTicks = tx_deg * TICKS_PER_DEG * CORRECTION_GAIN;
+                                double newTarget = turret.getCurrentPosition() + correctionTicks;
+                                turret.setTargetPosition(newTarget);
+                            }
 
-                    // ---- Apply correction ONLY if manually enabled ----
-                    if (ENABLE_TURRET_TRACKING) {
-                        double correctionTicks = tx_deg * TICKS_PER_DEG * CORRECTION_GAIN;
-                        double newTarget = turret.getCurrentPosition() - correctionTicks;
-                        turret.setTargetPosition(newTarget);
-                        ENABLE_TURRET_TRACKING = false;
+                            turret.update();
+
+                            telemetry.addData("Turret Pos", turret.getCurrentPosition());
+                            telemetry.addData("Turret Target", Turret.targetPosition);
+                            break; // Stop after handling the desired tag
+                        }
                     }
-
-                    turret.update();
-
-                    telemetry.addData("Turret Pos", turret.getCurrentPosition());
-                    telemetry.addData("Turret Target", Turret.targetPosition);
+                } else {
+                    telemetry.addLine("No fiducial tags detected");
                 }
             } else {
-                telemetry.addLine("No tag detected");
+                telemetry.addLine("No Limelight result available");
             }
 
             telemetry.update();

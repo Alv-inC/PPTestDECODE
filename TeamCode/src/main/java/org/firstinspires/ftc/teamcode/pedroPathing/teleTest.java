@@ -9,6 +9,9 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -17,8 +20,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 @Configurable
@@ -33,14 +38,14 @@ public class teleTest extends OpMode {
     private double slowModeMultiplier = 0.5;
     private ElapsedTime timer = new ElapsedTime();
 
+
     private DcMotorEx intake;
     private DcMotorEx shooterL;
     private DcMotorEx shooterR;
     private CRServo block;
+    private Turret turret;
 
     private Servo hood;
-
-    private Turret turret;
 
     boolean flag = false;
     boolean previousButtonState2a = false;
@@ -54,10 +59,17 @@ public class teleTest extends OpMode {
     private final double hood_high = 0.4;
     private final double hood_mid = 0.2;
     private final double hood_low = 0;
+    Limelight3A limelight;
 
     @Override
     public void init() {
+        turret = new Turret(hardwareMap, telemetry);
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(100);
+        limelight.start();
+        limelight.pipelineSwitch(1);
 
+        turret = new Turret(hardwareMap, telemetry);
         //delete later prob
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         shooterL = hardwareMap.get(DcMotorEx.class, "shooterLeft");
@@ -65,7 +77,6 @@ public class teleTest extends OpMode {
         block = hardwareMap.get(CRServo.class, "block");
         hood = hardwareMap.get(Servo.class, "hood");
         shooterL.setDirection(DcMotorSimple.Direction.REVERSE);
-        turret = new Turret(hardwareMap, telemetry);
 
 
         follower = Constants.createFollower(hardwareMap);
@@ -85,10 +96,60 @@ public class teleTest extends OpMode {
         //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
         //If you don't pass anything in, it uses the default (false)
         follower.startTeleopDrive();
+        limelight.pipelineSwitch(1);
     }
 
     @Override
     public void loop() {
+        limelight.pipelineSwitch(1);
+        LLResult result = limelight.getLatestResult();
+        telemetry.addData("pipeline", result.getPipelineIndex());
+        if (result != null && result.isValid()) {
+            telemetry.addData("valid", true);
+            telemetry.addData("pipeline", result.getPipelineIndex());
+            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+            if (!fiducials.isEmpty()) {
+                // Loop through all detected tags
+                for (LLResultTypes.FiducialResult fid : fiducials) {
+                    int tagId = fid.getFiducialId();
+                    telemetry.addData("id", tagId);
+                    // ---- Only track if it's the specified tag ----
+                    int TARGET_TAG_ID = 0;
+                    if(gamepad2.left_trigger>0) TARGET_TAG_ID = 20;
+                    else if(gamepad2.right_trigger>0) TARGET_TAG_ID = 24;
+                    if (tagId == TARGET_TAG_ID) {
+                        Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
+                        double tz = tagPoseCam.getPosition().z;
+                        double tx = tagPoseCam.getPosition().x;
+
+                        // Compute horizontal offset in degrees
+                        double tx_deg = Math.toDegrees(Math.atan2(tx, tz));
+                        if (Math.abs(tx_deg) < 0.5) tx_deg = 0.0;
+
+                        telemetry.addData("Tag ID", tagId);
+                        telemetry.addData("tx_deg", tx_deg);
+                        telemetry.addData("tz (m)", tz);
+
+                        // Apply correction ONLY if manually enabled
+//                        if (ENABLE_TURRET_TRACKING) {
+                            double correctionTicks = tx_deg * (384.5/360) * 1.5;
+                            double newTarget = turret.getCurrentPosition() + correctionTicks;
+                            turret.setTargetPosition(newTarget);
+//                        }
+
+                        turret.update();
+
+                        telemetry.addData("Turret Pos", turret.getCurrentPosition());
+                        telemetry.addData("Turret Target", Turret.targetPosition);
+                        break; // Stop after handling the desired tag
+                    }
+                }
+            } else {
+                telemetry.addLine("No fiducial tags detected");
+            }
+        } else {
+            telemetry.addLine("No Limelight result available");
+        }
 
         //Call this once per loop
         follower.update();
@@ -164,17 +225,17 @@ public class teleTest extends OpMode {
             );
             //delete this later
             if (!slowMode) follower.setTeleOpDrive(
-                    -gamepad2.left_stick_y,
-                    -gamepad2.left_stick_x,
-                    -gamepad2.right_stick_x,
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x,
+                    -gamepad1.right_stick_x,
                     true // Robot Centric
             );
 
                 //This is how it looks with slowMode on
             else follower.setTeleOpDrive(
-                    -gamepad2.left_stick_y * slowModeMultiplier,
-                    -gamepad2.left_stick_x * slowModeMultiplier,
-                    -gamepad2.right_stick_x * slowModeMultiplier,
+                    -gamepad1.left_stick_y * slowModeMultiplier,
+                    -gamepad1.left_stick_x * slowModeMultiplier,
+                    -gamepad1.right_stick_x * slowModeMultiplier,
                     true // Robot Centric
             );
         }

@@ -17,7 +17,8 @@ public class Turret {
     CachingDcMotorEx turretMotor;
 
     //change back
-    public static double p = 0.001, i = 0, d = 0;
+    // p = 0.001
+    public static double p = 0.01, i = 0, d = 0;
     public static double targetPosition = 0;
     //what is for what
     private Telemetry telemetry;
