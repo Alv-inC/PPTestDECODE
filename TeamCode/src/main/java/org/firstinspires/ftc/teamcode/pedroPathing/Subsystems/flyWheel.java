@@ -92,7 +92,7 @@ public class flyWheel {
             targetVelocity = v;
         }
 
-
+ //
         public void constantShoot(){
             p = -0.15;
            targetVelocity = 1760;
@@ -109,6 +109,12 @@ public class flyWheel {
     public void constantShootSlow(){
         p = -0.15;
         targetVelocity = 1350;
+        new WaitCommand(2500);
+        block.setPosition(0);
+    }
+    public void constantShootAtVelocity(int v){
+        p = -0.15;
+        targetVelocity = v;
         new WaitCommand(2500);
         block.setPosition(0);
     }
