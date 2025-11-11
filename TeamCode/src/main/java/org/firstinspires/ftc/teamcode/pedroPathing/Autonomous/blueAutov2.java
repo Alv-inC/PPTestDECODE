@@ -139,14 +139,16 @@ public class blueAutov2 extends OpMode {
         switch (pathState) {
 
             case 0:
+                flyWheel.constantStop();
                 follower.followPath(firstShots, true);
                 setPathState(1);
                 break;
 
             case 1:
                 if (!follower.isBusy()) {
-                    follower.followPath(firstLine, true);
-                    setPathState(2);
+                        follower.followPath(firstLine, true);
+                        setPathState(2);
+
                 }
                 break;
 
