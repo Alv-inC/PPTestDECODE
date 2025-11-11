@@ -20,8 +20,9 @@ public class intake {
     public void go(){
         intake.setPower(1);
     }
-    public void stop(){
-        intake.setPower(0);
+    public void goSlow(){
+        intake.setPower(0.8);
     }
+
 
 }

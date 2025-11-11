@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import dev.frozenmilk.dairy.cachinghardware.CachingDcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -23,9 +25,9 @@ public class flyWheel {
     public CachingDcMotorEx fly1;
     private CachingDcMotorEx fly2;
 
-    private CRServo block;
+    private Servo block;
 
-    public static double p = -0.1, i = 0, d = 0;
+    public static double p = -0.15, i = 0, d = 0;
     public static double ff = 0;
     public static double targetVelocity = 0;
     public static double power = 0;
@@ -48,7 +50,7 @@ public class flyWheel {
         fly2 = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, "shooterLeft"), 0.005);
 
         //blocker
-        block = hardwareMap.get(CRServo.class, "block");
+        block = hardwareMap.get(Servo.class, "block");
 
 
         fly1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -92,14 +94,29 @@ public class flyWheel {
 
 
         public void constantShoot(){
-           targetVelocity = 1650;
-            new WaitCommand(2000);
-            block.setPower(-1);
+            p = -0.15;
+           targetVelocity = 1760;
+           //RN its delayed to go at the same time as the intake; should be changed in the future; change to CRServo
+            new WaitCommand(2500);
+            block.setPosition(0);
         }
+    public void constantShootFasterDelay(){
+        p = -0.15;
+        targetVelocity = 1780;
+        new WaitCommand(4500);
+        block.setPosition(0);
+    }
+    public void constantShootSlow(){
+        p = -0.15;
+        targetVelocity = 1350;
+        new WaitCommand(2500);
+        block.setPosition(0);
+    }
 
     public void constantStop(){
+        p = 0;
         targetVelocity = 0;
-        block.setPower(1);
+        block.setPosition(0.1);
     }
 
         public boolean atSpeed() {

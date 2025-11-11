@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
             - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
             - Robot Position: "if(follower.getPose().getX() > 36) {}"
             */
-@Autonomous(name = "blueAuto", group = "Tests")
+@Autonomous(name = "AutoTEST", group = "Tests")
 public class autoTest extends OpMode {
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
