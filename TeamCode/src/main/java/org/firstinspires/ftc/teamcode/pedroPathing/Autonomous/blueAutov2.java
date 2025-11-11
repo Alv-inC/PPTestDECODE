@@ -65,7 +65,7 @@ public class blueAutov2 extends OpMode {
                         new BezierCurve(
                                 new Pose(21.883, 84.407),
                                 new Pose(23.056, 78.936),
-                                new Pose(16.803, 75.419)
+                                new Pose(15.803, 75.419)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-180))
