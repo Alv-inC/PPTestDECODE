@@ -165,7 +165,7 @@ public class teleTest extends OpMode {
         }
 
         //Automated PathFollowing
-        if (gamepad1.aWasPressed()) {
+        if (gamepad1.dpad_down) {
             follower.followPath(pathChain.get());
             automatedDrive = true;
         }
