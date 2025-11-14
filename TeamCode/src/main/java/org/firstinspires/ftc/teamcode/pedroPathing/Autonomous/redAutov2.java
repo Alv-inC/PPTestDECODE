@@ -16,14 +16,14 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
-@Autonomous(name = "[NEW]blueAuto", group = "Tests")
-public class blueAutov2 extends OpMode {
+@Autonomous(name = "[NEW]redAuto", group = "Tests")
+public class redAutov2 extends OpMode {
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
     //MAYBE LATER PUT ALL THE POSES INSIDE A INITIALIZATION FUNCTION
-    private final Pose startPose = new Pose(33.6, 135.4, Math.toRadians(-180));
+    private final Pose startPose = new Pose(33.6, 135.4, Math.toRadians(-180)).mirror();
     private PathChain firstShots;
     private PathChain firstLine;
     private PathChain hitSwitch;
@@ -45,90 +45,90 @@ public class blueAutov2 extends OpMode {
         firstShots = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(44.939, 135.598),
-                                new Pose(54.318, 84.602)
+                                new Pose(44.939, 135.598).mirror(),
+                                new Pose(54.318, 84.602).mirror()
                         )
                 )
                 //.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
-                .setConstantHeadingInterpolation(Math.toRadians(-180))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         // FIRST LINE
         firstLine = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(54.318, 84.602),
-                        new Pose(18.5, 84.407)
+                        new Pose(54.318, 84.602).mirror(),
+                        new Pose(18.5, 84.407).mirror()
                 ))
-                .setConstantHeadingInterpolation(Math.toRadians(-180))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         // HIT SWITCH
         hitSwitch = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(21.883, 84.407),
-                                new Pose(26.056, 78.936),
-                                new Pose(13.803, 73.419)
+                                new Pose(21.883, 84.407).mirror(),
+                                new Pose(26.056, 78.936).mirror(),
+                                new Pose(13.803, 73.419).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(-180))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         // SECOND SHOTS
         secondShots = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(16.803, 75.419),
-                                new Pose(60.179, 87.924)
+                                new Pose(16.803, 75.419).mirror(),
+                                new Pose(60.179, 87.924).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(-180))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         // SECOND LINE
         secondLine = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(59.179, 87.4),
-                                new Pose(62.696, 55.3),
-                                new Pose(15.711, 59.2)
+                                new Pose(59.179, 87.4).mirror(),
+                                new Pose(62.696, 55.3).mirror(),
+                                new Pose(15.711, 59.2).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(-180))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         // THIRD SHOTS
         thirdShots = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(20.711, 60.2),
-                                new Pose(59.984, 88.4)
+                                new Pose(20.711, 60.2).mirror(),
+                                new Pose(59.984, 88.4).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(-180))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         // THIRD LINE
         thirdLine = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(58.984, 87.924),
-                                new Pose(65.041, 29.113),
-                                new Pose(15.320, 35.170)
+                                new Pose(58.984, 87.924).mirror(),
+                                new Pose(65.041, 29.113).mirror(),
+                                new Pose(15.320, 35.170).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(-180))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         // FOURTH SHOTS
         fourthShots = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(20.320, 35.170),
-                                new Pose(60.179, 87.924)
+                                new Pose(20.320, 35.170).mirror(),
+                                new Pose(60.179, 87.924).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(-180))
+                .setConstantHeadingInterpolation(Math.toRadians( 0))
                 .build();
     }
 
@@ -139,8 +139,8 @@ public class blueAutov2 extends OpMode {
             case 0:
                 intake.goSlow();
                 flyWheel.constantShootSlow();
-                        follower.followPath(firstShots, true);
-                        setPathState(1);
+                follower.followPath(firstShots, true);
+                setPathState(1);
                 break;
 
             case 1:

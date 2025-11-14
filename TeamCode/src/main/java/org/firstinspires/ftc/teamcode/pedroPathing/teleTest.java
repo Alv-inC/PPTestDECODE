@@ -64,6 +64,7 @@ public class teleTest extends OpMode {
 
         //delete later prob
         intake = hardwareMap.get(DcMotorEx.class, "intake");
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel = new flyWheel(hardwareMap, telemetry);
         hood = hardwareMap.get(Servo.class, "hood");
         turret = new Turret(hardwareMap, telemetry);
@@ -108,7 +109,7 @@ public class teleTest extends OpMode {
 
         if (gamepad2.a && !previousButtonState2a) {
             if(!flag) {
-             intake.setPower(0.8);
+             intake.setPower(0.5);
             }
             else{
                 flag = false;
@@ -126,9 +127,13 @@ public class teleTest extends OpMode {
         }
         if(gamepad2.left_bumper){
             flywheel.constantShootSlow();
+            new WaitCommand(5000);
+            flywheel.uppies();
         }
         if(gamepad2.right_bumper){
             flywheel.constantShoot();
+            new WaitCommand(5000);
+            flywheel.uppies();
         }
         if(gamepad2.x) {
             flywheel.constantStop();

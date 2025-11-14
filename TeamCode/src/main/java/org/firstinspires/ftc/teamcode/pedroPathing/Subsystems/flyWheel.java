@@ -25,9 +25,10 @@ public class flyWheel {
     public CachingDcMotorEx fly1;
     private CachingDcMotorEx fly2;
 
-    private Servo block;
+    private CRServo block1;
+    private CRServo block2;
 
-    public static double p = -0.15, i = 0, d = 0;
+    public static double p = 0.15, i = 0, d = 0;
     public static double ff = 0;
     public static double targetVelocity = 0;
     public static double power = 0;
@@ -50,7 +51,9 @@ public class flyWheel {
         fly2 = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, "shooterLeft"), 0.005);
 
         //blocker
-        block = hardwareMap.get(Servo.class, "block");
+        block1 = hardwareMap.get(CRServo.class, "block1");
+        block2 = hardwareMap.get(CRServo.class, "block2");
+        block2.setDirection(CRServo.Direction.REVERSE);
 
 
         fly1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -94,35 +97,36 @@ public class flyWheel {
 
  //
         public void constantShoot(){
-            p = -0.15;
-           targetVelocity = 1760;
-           //RN its delayed to go at the same time as the intake; should be changed in the future; change to CRServo
-            new WaitCommand(2500);
-            block.setPosition(0);
+            p = 0.15;
+           targetVelocity = -1650;
         }
-    public void constantShootFasterDelay(){
-        p = -0.15;
-        targetVelocity = 1780;
-        new WaitCommand(4500);
-        block.setPosition(0);
+        public void uppies(){
+            block1.setPower(1);
+            block2.setPower(1);
+        }
+    public void downies(){
+        block1.setPower(-1);
+        block2.setPower(-1);
     }
+
+
     public void constantShootSlow(){
-        p = -0.15;
-        targetVelocity = 1350;
-        new WaitCommand(2500);
-        block.setPosition(0);
+        p = 0.15;
+        targetVelocity = -1320;
     }
     public void constantShootAtVelocity(int v){
-        p = -0.15;
+        p = 0.15;
         targetVelocity = v;
         new WaitCommand(2500);
-        block.setPosition(0);
+        block1.setPower(1);
+        block2.setPower(1);
     }
 
     public void constantStop(){
         p = 0;
         targetVelocity = 0;
-        block.setPosition(0.1);
+        block1.setPower(-1);
+        block2.setPower(-1);
     }
 
         public boolean atSpeed() {
