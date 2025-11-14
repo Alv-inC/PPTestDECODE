@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing.Subsystems;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import dev.frozenmilk.dairy.cachinghardware.CachingDcMotorEx;
@@ -14,14 +15,17 @@ public class intake {
     public intake(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
         intake = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, "intake"), 0.005);
-
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void go(){
         intake.setPower(1);
     }
+    public void goSlowFirst(){
+        intake.setPower(0.62);
+    }
     public void goSlow(){
-        intake.setPower(0.8);
+        intake.setPower(0.45);
     }
 
 

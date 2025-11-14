@@ -32,7 +32,7 @@ public class Constants {
     //
     public static MecanumConstants driveConstants = new MecanumConstants()
             //adjust later
-            .maxPower(0.7)
+            .maxPower(1)
             //NEEDS ADJUSTMENT
             .rightFrontMotorName("rf")
             .rightRearMotorName("rb")
@@ -52,7 +52,7 @@ public class Constants {
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
-            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
+            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 0.8, 0.8);
 

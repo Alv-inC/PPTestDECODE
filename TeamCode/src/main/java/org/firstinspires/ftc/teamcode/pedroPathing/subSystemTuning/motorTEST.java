@@ -11,18 +11,34 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "areWeCooked")
 public class motorTEST extends OpMode {
 
-            private Servo test;
-            public static double testVal;
+            private DcMotorEx rf;
+    private DcMotorEx rb;
+    private DcMotorEx lf;
+    private DcMotorEx lb;
     @Override
     public void init() {
-        test = hardwareMap.get(Servo.class, "testMotor");
+        rf = hardwareMap.get(DcMotorEx.class, "rf");
+        rb = hardwareMap.get(DcMotorEx.class, "rb");
+        lf = hardwareMap.get(DcMotorEx.class, "lf");
+        lb = hardwareMap.get(DcMotorEx.class, "lb");
 
     }
 
     @Override
     public void loop() {
-        test.setPosition(testVal);
 
+        if(gamepad1.a){
+            rf.setPower(1);
+        }
+        if(gamepad1.b){
+            rb.setPower(1);
+        }
+        if(gamepad1.x){
+            lf.setPower(1);
+        }
+        if(gamepad1.y){
+            lb.setPower(1);
+        }
 
     }
 }
