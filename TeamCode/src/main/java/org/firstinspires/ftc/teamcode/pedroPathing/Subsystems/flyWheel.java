@@ -128,6 +128,9 @@ public class flyWheel {
         block1.setPower(-1);
         block2.setPower(-1);
     }
+    public boolean isCurrentVelocityEnough(){
+        return fly1.getVelocity() < -1600;
+    }
 
         public boolean atSpeed() {
             return Math.abs(fly1.getVelocity() - targetVelocity) < 50; // adjust tolerance
