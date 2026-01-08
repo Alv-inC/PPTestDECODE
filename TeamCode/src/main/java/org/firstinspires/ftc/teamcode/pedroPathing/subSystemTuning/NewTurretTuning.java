@@ -1,55 +1,52 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.subSystemTuning;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+
+import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.NewTurret;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 
-@Config
-@TeleOp(name = "Turret PID Tuner (Dashboard Only)")
-public class NewTurretTuning extends LinearOpMode {
-
-    // Dashboard tunable
-    public static double targetAngle = 0; // degrees
-    public static double targetTicks = 0; // degrees
-    public static boolean target = false;
-    public static double p = 0.00002;
-    public static double i = 0.0;
-    public static double d = 0.0;
+@Configurable
+@TeleOp(name = "Turret Tuning [NEW]", group = "Tuning")
+public class NewTurretTuning extends OpMode {
+    private final ElapsedTime timer = new ElapsedTime();
+    private NewTurret turret;
+    private final TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        NewTurret turret = new NewTurret(hardwareMap, t);
-        turret.resetEncoder();
-        // Start OpMode
-        waitForStart();
+    public void init() {
+        turret = new NewTurret(hardwareMap, telemetry);
+        telemetry.addLine("Turret Tuning Ready!");
+        telemetry.addLine(String.valueOf(turret.getCurrentPosition()));
+        telemetry.update();
 
-        while (opModeIsActive()) {
-            // Update PID constants from dashboard
-            turret.p = p;
-            turret.i = i;
-            turret.d = d;
 
-            // Set dashboard target
-            if(target) turret.setTargetAngle(targetAngle);
-            else turret.setTargetPosition(targetTicks);
 
-            // Update turret output
-            turret.update();
-
-            // Telemetry for tuning
-            t.addData("Target Angle", targetAngle);
-            t.addData("Current Angle", turret.getCurrentAngle());
-            t.addData("Encoder Ticks", turret.getCurrentPosition());
-//            t.addData("Turret Power", turret.leftServo.getPower());
-            t.update();
-        }
-
-        turret.stop();
+        timer.reset();
+        updateSignals();
     }
+
+    @Override
+    public void loop() {
+        turret.update();
+
+        updateSignals();
+    }
+
+
+    private void updateSignals() {
+        double t = timer.seconds();
+
+        panelsTelemetry.addData("position", turret.getCurrentPosition());
+        panelsTelemetry.addData("goal position", NewTurret.targetPosition);
+        panelsTelemetry.update();
+    }
+
 }

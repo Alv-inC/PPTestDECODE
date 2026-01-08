@@ -22,7 +22,7 @@ public class NewTurret {
     public static double d = 0.0;
 
     // Motion
-    private double targetTicks = 0;
+   public static double targetPosition = 0;
 
     // Gear math
     public static double SMALL_GEAR_TICKS_PER_REV = 8192;
@@ -45,33 +45,32 @@ public class NewTurret {
         encoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         pid = new PIDController(p, i, d);
+        pid.setPID(p, i, d);
     }
 
     public void update() {
         pid.setPID(p, i, d);
 
         double currentTicks = encoder.getCurrentPosition();
-        double power = pid.calculate(currentTicks, targetTicks);
-
-        power = clamp(power, -1.0, 1.0);
+        double power = pid.calculate(currentTicks, targetPosition);
 
         leftServo.setPower(power);
         rightServo.setPower(power);
 
         telemetry.addData("Turret Pos", currentTicks);
-        telemetry.addData("Turret Target", targetTicks);
+        telemetry.addData("Turret Target", targetPosition);
         telemetry.addData("Turret Power", power);
     }
 
-    public void setTargetPosition(double ticks) {
-        targetTicks = ticks;
+    public void setTargetPosition(double targetPosition) {
+        this.targetPosition = targetPosition;
     }
 
     public double getCurrentPosition() {
         return encoder.getCurrentPosition();
     }
     public void setTargetAngle(double degrees) {
-        targetTicks = degrees * TICKS_PER_DEGREE;
+        targetPosition = degrees * TICKS_PER_DEGREE;
     }
 
     public double getCurrentAngle() {
@@ -79,7 +78,7 @@ public class NewTurret {
     }
 
     public boolean isClose(double toleranceTicks) {
-        return Math.abs(getCurrentPosition() - targetTicks) < toleranceTicks;
+        return Math.abs(getCurrentPosition() - targetPosition) < toleranceTicks;
     }
 
     public void stop() {
@@ -90,10 +89,8 @@ public class NewTurret {
     public void resetEncoder() {
         encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         encoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        targetTicks = 0;
+        targetPosition = 0;
     }
 
-    private double clamp(double value, double min, double max) {
-        return Math.max(min, Math.min(max, value));
-    }
+
 }
