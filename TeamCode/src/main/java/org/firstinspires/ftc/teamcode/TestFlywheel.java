@@ -4,6 +4,8 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -13,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class TestFlywheel extends LinearOpMode {
 
     public static double TEST_VELOCITY = 0;  // set from Dashboard
+    public static double INTAKE_POWER = 0;  // set from Dashboard
     public static boolean RUN_FLYWHEEL = false; // toggle from Dashboard
 
     @Override
@@ -21,6 +24,8 @@ public class TestFlywheel extends LinearOpMode {
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
         flyWheel shooter = new flyWheel(hardwareMap, telemetry);
+//        DcMotorEx intake = hardwareMap.get(DcMotorEx.class, "intake");
+//        intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addLine("Ready. Use Dashboard to set velocity and toggle RUN_FLYWHEEL.");
         telemetry.update();
@@ -33,6 +38,8 @@ public class TestFlywheel extends LinearOpMode {
             } else {
                 shooter.constantStop();
             }
+//            intake.setPower(INTAKE_POWER);
+
 
             shooter.update();
 

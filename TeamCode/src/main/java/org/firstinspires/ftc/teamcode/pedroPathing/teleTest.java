@@ -96,16 +96,26 @@ public class teleTest extends OpMode {
         follower.update();
         telemetryM.update();
         flywheel.update();
-        turret.update();
-
-        int targetTagId = -1;
-        if (gamepad2.left_trigger > 0.5) targetTagId = 20;
-        else if (gamepad2.right_trigger > 0.5) targetTagId = 21;
 
         boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
 
-        limelight.trackTag(turret, targetTagId, trackingEnabled);
-        limelight.logTelemetry();
+        int targetTagId = -1;
+        if (gamepad2.left_trigger > 0.5) {
+            targetTagId = 20;
+            limelight.trackTag(turret, targetTagId, trackingEnabled);
+
+        }
+        else if (gamepad2.right_trigger > 0.5) {
+            targetTagId = 24;
+            limelight.trackTag(turret, targetTagId, trackingEnabled);
+
+        }
+
+        if (gamepad2.dpad_up) turret.setTargetPosition(-96);
+        else if(gamepad2.dpad_down) turret.setTargetPosition(96);
+        limelight.logTelemetry(telemetryM);
+
+        turret.update();
 
         if (gamepad2.a && !previousButtonState2a) {
             if(!flag) {
@@ -127,24 +137,23 @@ public class teleTest extends OpMode {
         }
         if(gamepad2.left_bumper){
             flywheel.constantShootSlow();
-            new WaitCommand(5000);
+            pause(0.5);       // 0.5 second pause
             flywheel.uppies();
         }
         if(gamepad2.right_bumper){
             flywheel.constantShoot();
-            new WaitCommand(5000);
+            pause(0.5);       // 0.5 second pause
             flywheel.uppies();
         }
         if(gamepad2.x) {
             flywheel.constantStop();
-
         }
 
 
-
-        if(gamepad2.dpad_down){
-            intake.setPower(0);
-        }
+//
+//        if(gamepad2.dpad_down){
+//            intake.setPower(0);
+//        }
 
 
         if (!automatedDrive) {
@@ -163,17 +172,17 @@ public class teleTest extends OpMode {
             else follower.setTeleOpDrive(
                     -gamepad1.left_stick_y * slowModeMultiplier,
                     -gamepad1.left_stick_x * slowModeMultiplier,
-                    -gamepad1.right_stick_x * slowModeMultiplier,
+                    -gamepad1.right_stick_x * slowModeMultiplier * 0.6,
                     true // Robot Centric
             );
 
         }
 
         //Automated PathFollowing
-        if (gamepad1.dpad_down) {
-            follower.followPath(pathChain.get());
-            automatedDrive = true;
-        }
+//        if (gamepad1.dpad_down) {
+//            follower.followPath(pathChain.get());
+//            automatedDrive = true;
+//        }
 
 
         //Stop automated following if the follower is done
@@ -184,10 +193,10 @@ public class teleTest extends OpMode {
 
 //        Slow Mode
         if (gamepad1.rightBumperWasPressed()) {
-            driveConstants.maxPower(0.4);
+            follower.setMaxPower(0.4);
         }
         if(gamepad1.leftBumperWasPressed()){
-            driveConstants.maxPower(0.8);
+            follower.setMaxPower(0.7);
         }
 
         //Optional way to change slow mode strength
@@ -204,4 +213,13 @@ public class teleTest extends OpMode {
         telemetryM.debug("velocity", follower.getVelocity());
         telemetryM.debug("automatedDrive", automatedDrive);
     }
+    private void pause(double seconds) {
+        double start = timer.seconds();
+        while (timer.seconds() - start < seconds) {
+            // allow opmode to update
+            follower.update();
+            flywheel.update();
+        }
+    }
+
 }
