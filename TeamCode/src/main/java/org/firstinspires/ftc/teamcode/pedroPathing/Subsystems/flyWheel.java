@@ -98,7 +98,7 @@ public class flyWheel {
  //
         public void constantShoot(){
             p = 0.15;
-           targetVelocity = -1650;
+           targetVelocity = -1800;
         }
         public void uppies(){
             block1.setPower(1);

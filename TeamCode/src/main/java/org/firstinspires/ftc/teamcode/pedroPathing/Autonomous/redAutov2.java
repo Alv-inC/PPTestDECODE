@@ -17,7 +17,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
 @Autonomous(name = "[NEW]redAuto", group = "Tests")
-public class redAutov2 extends OpMode {
+public class
+redAutov2 extends OpMode {
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
@@ -255,10 +256,10 @@ public class redAutov2 extends OpMode {
     @Override
     public void loop() {
         limelight.update();
-        int targetTagId = 20;
+        int targetTagId = 24;
         limelight.trackTag(turret, targetTagId, true);
         turret.update();
-        limelight.logTelemetry();
+        //limelight.logTelemetry();
 
         if (!hasStarted) {
             pathTimer.resetTimer();   // reset your timer exactly when OpMode starts

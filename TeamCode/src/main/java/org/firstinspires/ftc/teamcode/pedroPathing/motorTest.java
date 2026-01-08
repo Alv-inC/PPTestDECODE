@@ -6,16 +6,18 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "SingleMotorControl")
+@TeleOp(name = "DualMotorControl")
 @Config
 public class motorTest extends OpMode {
 
-    private DcMotor motor;
+    private DcMotor fly1, fly2, intake;
     public static double motorPower = 0.5; // Adjustable from FTC Dashboard
 
     @Override
     public void init() {
-        motor = hardwareMap.get(DcMotor.class, "intake");
+        fly1 = hardwareMap.get(DcMotor.class, "fly1");
+        fly2 = hardwareMap.get(DcMotor.class, "fly2");
+        intake = hardwareMap.get(DcMotor.class, "intake");
         telemetry = FtcDashboard.getInstance().getTelemetry();
         telemetry.addData("Status", "Initialized");
     }
@@ -23,14 +25,21 @@ public class motorTest extends OpMode {
     @Override
     public void loop() {
         if (gamepad1.a) {
-            motor.setPower(Math.abs(motorPower));
+            fly1.setPower(Math.abs(motorPower));
+            fly2.setPower(Math.abs(motorPower));
+            intake.setPower(Math.abs(motorPower));
+
+
         } else if (gamepad1.y) {
-            motor.setPower(-Math.abs(motorPower));
+            fly2.setPower(-Math.abs(motorPower));
+            fly2.setPower(Math.abs(motorPower));
+            intake.setPower(-Math.abs(motorPower));
         } else if (gamepad1.b) {
-            motor.setPower(0);
+            fly1.setPower(0);
+            fly2.setPower(0);
+            intake.setPower(0);
         }
 
-        telemetry.addData("Motor Power", motor.getPower());
         telemetry.update();
     }
 }

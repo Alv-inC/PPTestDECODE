@@ -19,13 +19,13 @@ public class intake {
     }
 
     public void go(){
-        intake.setPower(1);
+        intake.setPower(0.95);
     }
     public void goSlowFirst(){
         intake.setPower(0.62);
     }
     public void goSlow(){
-        intake.setPower(0.45);
+        intake.setPower(0.4);
     }
 
 

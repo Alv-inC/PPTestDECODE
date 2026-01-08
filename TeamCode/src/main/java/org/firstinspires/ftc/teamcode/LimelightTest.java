@@ -7,19 +7,24 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 
 import java.util.List;
+import java.util.Map;
 
 @Config
 @TeleOp(name = "Limelight: Turret Tracker (Manual Trigger)", group = "TeleOp")
 public class LimelightTest extends LinearOpMode {
 
     // --------- DASHBOARD CONFIG ---------
-    public static int PIPELINE_INDEX = 0;
+    public static int PIPELINE_INDEX = 1;
     public static boolean ENABLE_TURRET_TRACKING = false;   // toggle manually in FTC Dashboard
     public static double CORRECTION_GAIN = 1.5;              // how strongly the turret reacts
     public static double DEADBAND_DEG = 0.5;                 // ignore tiny deviations
@@ -27,13 +32,19 @@ public class LimelightTest extends LinearOpMode {
     public static double TICKS_PER_REV = 384.5;              // motor counts per revolution
     public static double TICKS_PER_DEG = (TICKS_PER_REV * GEAR_RATIO) / 360.0;
     public static int TARGET_TAG_ID = 23;                    // Only follow this tag
+    public static double TEST_VELOCITY = 0;  // set from Dashboard
+    public static double INTAKE_POWER = 0;  // set from Dashboard
+    public static boolean RUN_FLYWHEEL = false; // toggle from Dashboard
     // -----------------------------------
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() {   
         // ---- Init hardware ----
         Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
         Turret turret = new Turret(hardwareMap, telemetry);
+        flyWheel shooter = new flyWheel(hardwareMap, telemetry);
+        DcMotorEx intake = hardwareMap.get(DcMotorEx.class, "intake");
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         limelight.setPollRateHz(100);
         limelight.start();
@@ -46,6 +57,16 @@ public class LimelightTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            if (RUN_FLYWHEEL) {
+                shooter.constantShootAtVelocity((int)TEST_VELOCITY);
+            } else {
+                shooter.constantStop();
+            }
+            intake.setPower(INTAKE_POWER);
+
+
+            shooter.update();
+
             limelight.pipelineSwitch(PIPELINE_INDEX);
             LLResult result = limelight.getLatestResult();
 
@@ -63,6 +84,12 @@ public class LimelightTest extends LinearOpMode {
                         if (tagId == TARGET_TAG_ID) {
                             Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
                             double tz = tagPoseCam.getPosition().z;
+
+
+                            double v = LimelightCamera.computeLaunchVelocity(tz);
+                            telemetry.addData("target velocity", v);
+                            double target_motor_v = LimelightCamera.velocityToTicksPerSecond(v);
+                            telemetry.addData("target motor velocity", target_motor_v);
                             double tx = tagPoseCam.getPosition().x;
 
                             // Compute horizontal offset in degrees

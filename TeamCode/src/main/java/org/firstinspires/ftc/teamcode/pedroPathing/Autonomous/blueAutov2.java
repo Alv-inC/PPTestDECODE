@@ -158,6 +158,8 @@ public class blueAutov2 extends OpMode {
                 break;
 
             case 2:
+                telemetry.addLine("2");
+
                 if (!follower.isBusy()) {
                     intake.goSlow();
                     follower.followPath(hitSwitch, true);
@@ -166,6 +168,8 @@ public class blueAutov2 extends OpMode {
                 break;
 
             case 3:
+                telemetry.addLine("3");
+
                 if (!follower.isBusy()) {
                     intake.goSlow();
                     follower.followPath(secondShots, true);
@@ -174,6 +178,8 @@ public class blueAutov2 extends OpMode {
                 break;
 
             case 4:
+                telemetry.addLine("4");
+
                 if (!follower.isBusy()) {
                     if(pathTimer.getElapsedTimeSeconds() > 2) {
                         intake.go();
@@ -190,6 +196,8 @@ public class blueAutov2 extends OpMode {
                 break;
 
             case 5:
+                telemetry.addLine("5");
+
                 if (!follower.isBusy()) {
                     follower.followPath(thirdShots, true);
                     setPathState(6);
@@ -197,6 +205,8 @@ public class blueAutov2 extends OpMode {
                 break;
 
             case 6:
+                telemetry.addLine("6");
+
                 if (!follower.isBusy()) {
                     if(pathTimer.getElapsedTimeSeconds() > 2) {
                         intake.go();
@@ -212,6 +222,8 @@ public class blueAutov2 extends OpMode {
                 break;
 
             case 7:
+                telemetry.addLine("7");
+
                 if (!follower.isBusy()) {
                     follower.followPath(fourthShots, true);
                     setPathState(8);
@@ -219,14 +231,19 @@ public class blueAutov2 extends OpMode {
                 break;
 
             case 8:
+                telemetry.addLine("0129");
+
                 if(pathTimer.getElapsedTimeSeconds() > 3) {
+                    telemetry.addLine("8");
                     intake.go();
                     flyWheel.uppies();
+                    turret.setTargetPosition(-96);
                     if(pathTimer.getElapsedTimeSeconds() > 6) {
                         follower.followPath(thirdLine, true);
                         setPathState(7);
                     }
                 }
+
                 teleTest.startingPose = follower.getPose();
                 // END – no more paths
                 break;
@@ -258,7 +275,7 @@ public class blueAutov2 extends OpMode {
         int targetTagId = 20;
         limelight.trackTag(turret, targetTagId, true);
         turret.update();
-        limelight.logTelemetry();
+        //limelight.logTelemetry();
 
         if (!hasStarted) {
             pathTimer.resetTimer();   // reset your timer exactly when OpMode starts
