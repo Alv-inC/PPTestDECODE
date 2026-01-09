@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.Subsystems;
 
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+@Configurable
 public class NewTurret {
 
     private final CRServo leftServo;
@@ -17,12 +19,15 @@ public class NewTurret {
     private final Telemetry telemetry;
 
     // PID
-    public static double p = 0.01;
+    public static double p = 0.001;
     public static double i = 0.0;
-    public static double d = 0.0;
+    public static double d = 0.0001;
+    public static double currentTicks;
 
     // Motion
    public static double targetPosition = 0;
+
+   public static double power;
 
     // Gear math
     public static double SMALL_GEAR_TICKS_PER_REV = 8192;
@@ -38,11 +43,9 @@ public class NewTurret {
         leftServo = hardwareMap.get(CRServo.class, "turret1");
         rightServo = hardwareMap.get(CRServo.class, "turret2");
 
-        leftServo.setDirection(CRServo.Direction.REVERSE);
 
-        encoder = hardwareMap.get(DcMotorEx.class, "turretEncoder");
+        encoder = hardwareMap.get(DcMotorEx.class, "intake");
         encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        encoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         pid = new PIDController(p, i, d);
         pid.setPID(p, i, d);
@@ -51,9 +54,8 @@ public class NewTurret {
     public void update() {
         pid.setPID(p, i, d);
 
-        double currentTicks = encoder.getCurrentPosition();
-        double power = pid.calculate(currentTicks, targetPosition);
-
+        currentTicks = encoder.getCurrentPosition();
+        power = pid.calculate(currentTicks, targetPosition);
         leftServo.setPower(power);
         rightServo.setPower(power);
 
@@ -69,14 +71,16 @@ public class NewTurret {
     public double getCurrentPosition() {
         return encoder.getCurrentPosition();
     }
-    public void setTargetAngle(double degrees) {
-        targetPosition = degrees * TICKS_PER_DEGREE;
-    }
+//    public void setTargetAngle(double degrees) {
+//        targetPosition = degrees * TICKS_PER_DEGREE;
+//    }
 
     public double getCurrentAngle() {
         return getCurrentPosition() / TICKS_PER_DEGREE;
     }
-
+public double getPow(){
+        return power;
+}
     public boolean isClose(double toleranceTicks) {
         return Math.abs(getCurrentPosition() - targetPosition) < toleranceTicks;
     }

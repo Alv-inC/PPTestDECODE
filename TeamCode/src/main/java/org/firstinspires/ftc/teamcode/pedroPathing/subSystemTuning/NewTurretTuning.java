@@ -46,6 +46,7 @@ public class NewTurretTuning extends OpMode {
 
         panelsTelemetry.addData("position", turret.getCurrentPosition());
         panelsTelemetry.addData("goal position", NewTurret.targetPosition);
+        panelsTelemetry.addData("Power RN", turret.getPow());
         panelsTelemetry.update();
     }
 

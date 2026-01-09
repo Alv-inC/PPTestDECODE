@@ -189,7 +189,6 @@ public class blueAutov3 extends OpMode {
         int targetTagId = 20;
         limelight.trackTag(turret, targetTagId, true);
         turret.update();
-        limelight.logTelemetry();
 
         if (!hasStarted) {
             pathTimer.resetTimer();   // reset your timer exactly when OpMode starts
