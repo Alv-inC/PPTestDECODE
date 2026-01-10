@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
@@ -37,13 +38,11 @@ public class teleTest extends OpMode {
     private boolean slowMode = false;
     private double slowModeMultiplier = 0.5;
     private ElapsedTime timer = new ElapsedTime();
-
-
-    private Servo hood;
-
+    private Servo camera;
     private TurretPLUSIntake turret;
     private flyWheel flywheel;
-
+    private DcMotorEx intake;
+    private Hood hood;
     LimelightCamera limelight;
 
     boolean flag = false;
@@ -65,10 +64,12 @@ public class teleTest extends OpMode {
         //delete later prob
 
         flywheel = new flyWheel(hardwareMap, telemetry);
-        hood = hardwareMap.get(Servo.class, "hood");
-        turret = new TurretPLUSIntake(hardwareMap, telemetry);
+        flywheel.constantStop();
+        hood = new Hood(hardwareMap);
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
+        turret = new TurretPLUSIntake (hardwareMap, telemetry, intake);
         limelight = new LimelightCamera(hardwareMap, telemetry);
-
+        camera = hardwareMap.get(Servo.class, "camera");
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startingPose == null ? new Pose() : startingPose);
         follower.update();
@@ -99,16 +100,16 @@ public class teleTest extends OpMode {
         boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
 
         int targetTagId = -1;
-//        if (gamepad2.left_trigger > 0.5) {
-//            targetTagId = 20;
-//            limelight.trackTag(turret, targetTagId, trackingEnabled);
-//
-//        }
-//        else if (gamepad2.right_trigger > 0.5) {
-//            targetTagId = 24;
-//            limelight.trackTag(turret, targetTagId, trackingEnabled);
-//
-//        }
+        if (gamepad2.left_trigger > 0.5) {
+            targetTagId = 20;
+            limelight.trackTag_New(turret, targetTagId, trackingEnabled);
+
+        }
+        else if (gamepad2.right_trigger > 0.5) {
+            targetTagId = 24;
+            limelight.trackTag_New(turret, targetTagId, trackingEnabled);
+
+        }
 
         if (gamepad2.dpad_up) turret.setTargetPosition(-96);
         else if(gamepad2.dpad_down) turret.setTargetPosition(96);
@@ -118,35 +119,42 @@ public class teleTest extends OpMode {
 
         if (gamepad2.a && !previousButtonState2a) {
             if(!flag) {
-             turret.intakeMed();
+             intake.setPower(0.5);
             }
             else{
                 flag = false;
-              turret.intakeStop();
+              intake.setPower(0);
             }
         }
         previousButtonState2a = gamepad2.a;
 
         if(gamepad2.dpad_right){
-            turret.intakeFull();
+            intake.setPower(1);
         }
 
         if(gamepad2.b){
-            turret.intakeBack();
+            intake.setPower(-1);
+        }
+        if(gamepad2.y){
+            intake.setPower(-0.7);
         }
         if(gamepad2.left_bumper){
-            flywheel.constantShootSlow();
-            pause(0.5);       // 0.5 second pause
             flywheel.uppies();
+            flywheel.constantShootSlow();
+            //pause(0.5);       // 0.5 second pause
+
         }
         if(gamepad2.right_bumper){
-            flywheel.constantShoot();
-            pause(0.5);       // 0.5 second pause
             flywheel.uppies();
+            flywheel.constantShoot();
+            //pause(0.5);       // 0.5 second pause
         }
         if(gamepad2.x) {
             flywheel.constantStop();
         }
+        if(gamepad1.dpad_up)hood.setHigh();
+        if(gamepad1.dpad_left)hood.setMid();
+        if(gamepad1.dpad_down)hood.setLow();
 
 
 //
