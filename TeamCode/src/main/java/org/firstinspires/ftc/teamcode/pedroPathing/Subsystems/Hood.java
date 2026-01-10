@@ -16,6 +16,7 @@ public class Hood {
     public Hood(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
         hood = hardwareMap.get(Servo.class, "hood");
+        hood.setDirection(Servo.Direction.REVERSE);
     }
 
 

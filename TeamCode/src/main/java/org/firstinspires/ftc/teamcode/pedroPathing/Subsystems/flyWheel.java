@@ -97,13 +97,16 @@ public class flyWheel {
  //
         public void constantShoot(){
             p = 0.15;
-           targetVelocity = -1800;
+           targetVelocity = -1325;
         }
         public void uppies(){
-            block.setPosition(0.05);
+            block.setPosition(0);
         }
     public void downies(){
-        block.setPosition(0.05);
+        block.setPosition(0.6);
+    }
+    public void zero(){
+        block.setPosition(0);
     }
 
 
@@ -123,7 +126,7 @@ public class flyWheel {
         //targetVelocity = 0;
     }
     public boolean isCurrentVelocityEnough(){
-        return fly1.getVelocity() < -1600;
+        return fly1.getVelocity() <= -1325;
     }
 
         public boolean atSpeed() {

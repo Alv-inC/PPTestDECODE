@@ -8,149 +8,138 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
-@Autonomous(name = "[NEW]redAuto", group = "Tests")
-public class
-redAutov2 extends OpMode {
+@Autonomous(name = "[NEW]redAutoV3", group = "Tests")
+public class redAutov2 extends OpMode {
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
     //MAYBE LATER PUT ALL THE POSES INSIDE A INITIALIZATION FUNCTION
-    private final Pose startPose = new Pose(33.6, 135.4, Math.toRadians(-180)).mirror();
+    private final Pose startPose = new Pose(33.6, 135.4, Math.toRadians(180)).mirror();
     private PathChain firstShots;
     private PathChain firstLine;
     private PathChain hitSwitch;
-    private PathChain secondShots;
+    private PathChain Shots;
+    private PathChain AAA;
     private PathChain secondLine;
-    private PathChain thirdShots;
     private PathChain thirdLine;
-    private PathChain fourthShots;
 
     private LimelightCamera limelight;
-    private Turret turret;
+    private TurretPLUSIntake turret;
     //subsystems
     private flyWheel flyWheel;
-    private intake intake;
+    private Hood hood;
+
+    private DcMotorEx intake;
+    private float tiltAngle = 45;
+    private double count = 0;
 
     private boolean hasStarted = false;
-    public void buildPaths() {
+    private Servo camera;
 
+    public void buildPaths() {
+// FIRST SHOTS
         firstShots = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(44.939, 135.598).mirror(),
+                                new Pose(33.600, 135.400).mirror(),
                                 new Pose(54.318, 84.602).mirror()
                         )
                 )
-                //.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
-        // FIRST LINE
+// FIRST LINE
         firstLine = follower.pathBuilder()
-                .addPath(new BezierLine(
-                        new Pose(54.318, 84.602).mirror(),
-                        new Pose(18.5, 84.407).mirror()
-                ))
+                .addPath(
+                        new BezierLine(
+                                new Pose(54.318, 84.602).mirror(),
+                                new Pose(17, 84.407).mirror()
+                        )
+                )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
-        // HIT SWITCH
+// SHOTS
+        Shots = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Pose(18.500, 84.407).mirror(),
+                                new Pose(62.227, 81.984).mirror()
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
+                .build();
+
+        AAA = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Pose(18.500, 84.407).mirror(),
+                                new Pose(62.227, 81.984).mirror()
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
+                .build();
+
+// HIT SWITCH
         hitSwitch = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(21.883, 84.407).mirror(),
-                                new Pose(26.056, 78.936).mirror(),
-                                new Pose(13.803, 73.419).mirror()
+                                new Pose(62.227, 81.984).mirror(),
+                                new Pose(31.223, 67.673).mirror(),
+                                new Pose(14, 61.6).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
                 .build();
 
-        // SECOND SHOTS
-        secondShots = follower.pathBuilder()
-                .addPath(
-                        new BezierLine(
-                                new Pose(16.803, 75.419).mirror(),
-                                new Pose(60.179, 87.924).mirror()
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .build();
 
-        // SECOND LINE
+// SECOND LINE
         secondLine = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(59.179, 87.4).mirror(),
-                                new Pose(62.696, 55.3).mirror(),
-                                new Pose(15.711, 59.2).mirror()
+                                new Pose(62.227, 81.984).mirror(),
+                                new Pose(60.959, 57.797).mirror(),
+                                new Pose(19, 59.528).mirror()
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
-        // THIRD SHOTS
-        thirdShots = follower.pathBuilder()
-                .addPath(
-                        new BezierLine(
-                                new Pose(20.711, 60.2).mirror(),
-                                new Pose(59.984, 88.4).mirror()
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .build();
-
-        // THIRD LINE
-        thirdLine = follower.pathBuilder()
-                .addPath(
-                        new BezierCurve(
-                                new Pose(58.984, 87.924).mirror(),
-                                new Pose(65.041, 29.113).mirror(),
-                                new Pose(15.320, 35.170).mirror()
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .build();
-
-        // FOURTH SHOTS
-        fourthShots = follower.pathBuilder()
-                .addPath(
-                        new BezierLine(
-                                new Pose(20.320, 35.170).mirror(),
-                                new Pose(60.179, 87.924).mirror()
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians( 0))
-                .build();
     }
 
 
     public void autonomousPathUpdate() {
         switch (pathState) {
-
+            //START PATH***
             case 0:
-                intake.goSlow();
-                flyWheel.constantShootSlow();
+                turret.setTargetPosition(-1500);
+                flyWheel.constantShoot();
                 follower.followPath(firstShots, true);
                 setPathState(1);
                 break;
 
+            //FIRST SHOTS***
             case 1:
                 if (!follower.isBusy()) {
-                    if(pathTimer.getElapsedTimeSeconds() > 3) {
-                        intake.go();
+                    if(flyWheel.isCurrentVelocityEnough()) {
+                        intake.setPower(-1);
                         flyWheel.uppies();
-                        if(pathTimer.getElapsedTimeSeconds() > 6) {
+                        if(pathTimer.getElapsedTimeSeconds() > 4) {
                             flyWheel.downies();
+                            intake.setPower(-1);
                             follower.followPath(firstLine, true);
                             setPathState(3);
                         }
@@ -158,31 +147,45 @@ redAutov2 extends OpMode {
                 }
                 break;
 
-            case 2:
-                if (!follower.isBusy()) {
-                    intake.goSlow();
-                    follower.followPath(hitSwitch, true);
-                    setPathState(3);
-                }
-                break;
-
             case 3:
                 if (!follower.isBusy()) {
-                    intake.goSlow();
-                    follower.followPath(secondShots, true);
+                    turret.setTargetPosition(2600);
+                    follower.followPath(Shots, true);
                     setPathState(4);
                 }
                 break;
 
             case 4:
                 if (!follower.isBusy()) {
-                    if(pathTimer.getElapsedTimeSeconds() > 2) {
-                        intake.go();
+                    if(pathTimer.getElapsedTimeSeconds() > 3) {
                         flyWheel.uppies();
-                        if(pathTimer.getElapsedTimeSeconds() > 4.5) {
-                            intake.goSlow();
-                            flyWheel.downies();
-                            follower.followPath(secondLine, true);
+                    }
+                    if(pathTimer.getElapsedTimeSeconds() > 5.5) {
+                        flyWheel.downies();
+                        follower.followPath(secondLine, true);
+                        setPathState(5);
+                    }
+
+                }
+                break;
+            case 5:
+                if (!follower.isBusy()) {
+
+                    follower.followPath(Shots, true);
+                    setPathState(7);
+                }
+                break;
+            //SHOOT SHOTS***
+            case 6:
+                if (!follower.isBusy()) {
+                    flyWheel.uppies();
+                    if(pathTimer.getElapsedTimeSeconds() > 2.5) {
+                        flyWheel.downies();
+                        follower.followPath(hitSwitch, true);
+                        count += 1;
+                        if(count >= 3){
+                            setPathState(8);
+                        }else{
                             setPathState(5);
                         }
                     }
@@ -190,43 +193,29 @@ redAutov2 extends OpMode {
                 }
                 break;
 
-            case 5:
-                if (!follower.isBusy()) {
-                    follower.followPath(thirdShots, true);
-                    setPathState(6);
-                }
-                break;
-
-            case 6:
-                if (!follower.isBusy()) {
-                    if(pathTimer.getElapsedTimeSeconds() > 2) {
-                        intake.go();
-                        flyWheel.uppies();
-                        if(pathTimer.getElapsedTimeSeconds() > 4.5) {
-                            intake.goSlow();
-                            flyWheel.downies();
-                            follower.followPath(thirdLine, true);
-                            setPathState(7);
-                        }
-                    }
-                }
-                break;
-
+            //HIT SWITCH
             case 7:
                 if (!follower.isBusy()) {
-                    follower.followPath(fourthShots, true);
-                    setPathState(8);
+                    if(pathTimer.getElapsedTimeSeconds() > 2){
+                        flyWheel.uppies();
+                        if(pathTimer.getElapsedTimeSeconds() > 3.5) {
+                            flyWheel.downies();
+                            setPathState(6);
+                        }
+                    }
+
+
+
                 }
                 break;
-
             case 8:
-                if(pathTimer.getElapsedTimeSeconds() > 3) {
-                    intake.go();
-                    flyWheel.uppies();
-                    if(pathTimer.getElapsedTimeSeconds() > 6) {
-                        follower.followPath(thirdLine, true);
-                        setPathState(7);
+                if (!follower.isBusy()) {
+                    //shoot balls
+                    if(pathTimer.getElapsedTimeSeconds() > 4.5) {
+                        follower.followPath(hitSwitch, true);
+                        setPathState(6);
                     }
+
                 }
                 teleTest.startingPose = follower.getPose();
                 // END – no more paths
@@ -242,7 +231,7 @@ redAutov2 extends OpMode {
     @Override
     public void init() {
         flyWheel = new flyWheel(hardwareMap, telemetry);
-        intake = new intake(hardwareMap);
+        hood = new Hood(hardwareMap);
         pathTimer = new Timer();
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
@@ -250,16 +239,21 @@ redAutov2 extends OpMode {
         buildPaths();
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
-        turret = new Turret(hardwareMap, telemetry);
+        camera = hardwareMap.get(Servo.class, "camera");
+        limelight = new LimelightCamera(hardwareMap, telemetry);
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
+        turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
+        hood.setHigh();
+        flyWheel.downies();
     }
 
     @Override
     public void loop() {
         limelight.update();
-        int targetTagId = 24;
-        limelight.trackTag(turret, targetTagId, true);
+        int targetTagId = 20;
+//        limelight.trackTag_New(turret, targetTagId, true);
+
         turret.update();
-        //limelight.logTelemetry();
 
         if (!hasStarted) {
             pathTimer.resetTimer();   // reset your timer exactly when OpMode starts

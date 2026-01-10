@@ -89,7 +89,7 @@ public class LimelightCamera {
     /**
      * Performs turret correction only if the target tag matches and trigger logic allows.
      */
-    public void trackTag(Turret turret, int targetTagId, boolean enabled) {
+    public void trackTag(TurretPLUSIntake turret, int targetTagId, boolean enabled) {
         if (!validTarget || lastTagId != targetTagId || targetTagId == -1 || !enabled) return;
 
         double correctionTicks = txDeg * TICKS_PER_DEG * CORRECTION_GAIN;

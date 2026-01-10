@@ -9,6 +9,7 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
@@ -21,8 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
 @Autonomous(name = "[NEW]blueAutoV3", group = "Tests")
 public class blueAutov3 extends OpMode {
-    private DcMotorEx intake = hardwareMap.get(DcMotorEx.class, "intake");
-    private Follower follower;
+     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
@@ -32,6 +32,7 @@ public class blueAutov3 extends OpMode {
     private PathChain firstLine;
     private PathChain hitSwitch;
     private PathChain Shots;
+    private PathChain AAA;
     private PathChain secondLine;
     private PathChain thirdLine;
 
@@ -40,10 +41,14 @@ public class blueAutov3 extends OpMode {
     //subsystems
     private flyWheel flyWheel;
     private Hood hood;
-    private float tiltAngle = 150;
+
+    private DcMotorEx intake;
+    private float tiltAngle = 135;
     private double count = 0;
 
     private boolean hasStarted = false;
+    private Servo camera;
+
     public void buildPaths() {
 // FIRST SHOTS
         firstShots = follower.pathBuilder()
@@ -61,7 +66,7 @@ public class blueAutov3 extends OpMode {
                 .addPath(
                         new BezierLine(
                                 new Pose(54.318, 84.602),
-                                new Pose(18.500, 84.407)
+                                new Pose(17, 84.407)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -78,13 +83,23 @@ public class blueAutov3 extends OpMode {
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
                 .build();
 
+        AAA = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Pose(18.500, 84.407),
+                                new Pose(62.227, 81.984)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
+                .build();
+
 // HIT SWITCH
         hitSwitch = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
                                 new Pose(62.227, 81.984),
                                 new Pose(31.223, 67.673),
-                                new Pose(14.713, 67.183)
+                                new Pose(14, 61.6)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
@@ -97,7 +112,7 @@ public class blueAutov3 extends OpMode {
                         new BezierCurve(
                                 new Pose(62.227, 81.984),
                                 new Pose(60.959, 57.797),
-                                new Pose(14.674, 59.528)
+                                new Pose(19, 59.528)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -110,7 +125,8 @@ public class blueAutov3 extends OpMode {
         switch (pathState) {
     //START PATH***
             case 0:
-
+                turret.setTargetPosition(-1500);
+                flyWheel.constantShoot();
                 follower.followPath(firstShots, true);
                 setPathState(1);
                 break;
@@ -118,38 +134,59 @@ public class blueAutov3 extends OpMode {
                 //FIRST SHOTS***
             case 1:
                 if (!follower.isBusy()) {
-                    if(flyWheel.isCurrentVelocityEnough()) {
-                       //shoot the balls, turn it on
-                        if(pathTimer.getElapsedTimeSeconds() > 6) {
-                            //block the balls
+                   if(flyWheel.isCurrentVelocityEnough()) {
+                       intake.setPower(-1);
+                       flyWheel.uppies();
+                        if(pathTimer.getElapsedTimeSeconds() > 4) {
+                            flyWheel.downies();
+                            intake.setPower(-1);
                             follower.followPath(firstLine, true);
                             setPathState(3);
                         }
                     }
                 }
                 break;
-                //GO TO SHOTS LOCATION***
+
             case 3:
                 if (!follower.isBusy()) {
-
+                    turret.setTargetPosition(2600);
                     follower.followPath(Shots, true);
                     setPathState(4);
                 }
                 break;
 
-                //SHOOT SHOTS***
             case 4:
                 if (!follower.isBusy()) {
-                    //unlock and shoot
+                    if(pathTimer.getElapsedTimeSeconds() > 3) {
+                        flyWheel.uppies();
+                    }
+                    if(pathTimer.getElapsedTimeSeconds() > 5.5) {
+                        flyWheel.downies();
+                        follower.followPath(secondLine, true);
+                        setPathState(5);
+                    }
 
-                        if(pathTimer.getElapsedTimeSeconds() > 4.5) {
-                            //stop shooting
+                }
+                break;
+            case 5:
+                if (!follower.isBusy()) {
+
+                    follower.followPath(Shots, true);
+                    setPathState(7);
+                }
+                break;
+                //SHOOT SHOTS***
+            case 6:
+                if (!follower.isBusy()) {
+                    flyWheel.uppies();
+                        if(pathTimer.getElapsedTimeSeconds() > 2.5) {
+                            flyWheel.downies();
                             follower.followPath(hitSwitch, true);
                             count += 1;
                             if(count >= 3){
-                                setPathState(5);
+                                setPathState(8);
                             }else{
-                                setPathState(4);
+                                setPathState(5);
                             }
                         }
 
@@ -157,10 +194,28 @@ public class blueAutov3 extends OpMode {
                 break;
 
                 //HIT SWITCH
-            case 5:
+            case 7:
                 if (!follower.isBusy()) {
-                    follower.followPath(secondLine, true);
-                    setPathState(4);
+                    if(pathTimer.getElapsedTimeSeconds() > 2){
+                        flyWheel.uppies();
+                        if(pathTimer.getElapsedTimeSeconds() > 3.5) {
+                            flyWheel.downies();
+                            setPathState(6);
+                        }
+                    }
+
+
+
+                }
+                break;
+            case 8:
+                if (!follower.isBusy()) {
+                    //shoot balls
+                    if(pathTimer.getElapsedTimeSeconds() > 4.5) {
+                        follower.followPath(hitSwitch, true);
+                        setPathState(6);
+                    }
+
                 }
                 teleTest.startingPose = follower.getPose();
                 // END – no more paths
@@ -184,15 +239,21 @@ public class blueAutov3 extends OpMode {
         buildPaths();
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
+        camera = hardwareMap.get(Servo.class, "camera");
+        limelight = new LimelightCamera(hardwareMap, telemetry);
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
+        hood.setHigh();
+        flyWheel.downies();
     }
 
     @Override
     public void loop() {
-//        limelight.update();
-//        int targetTagId = 20;
-//        limelight.trackTag(turret, targetTagId, true);
-//        turret.update();
+        limelight.update();
+        int targetTagId = 20;
+//        limelight.trackTag_New(turret, targetTagId, true);
+
+        turret.update();
 
         if (!hasStarted) {
             pathTimer.resetTimer();   // reset your timer exactly when OpMode starts
