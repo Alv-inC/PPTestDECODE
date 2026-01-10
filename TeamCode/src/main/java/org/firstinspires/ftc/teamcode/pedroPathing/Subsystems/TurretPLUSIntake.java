@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Configurable
-public class NewTurret {
+public class TurretPLUSIntake {
 
     private final CRServo leftServo;
     private final CRServo rightServo;
@@ -25,9 +25,9 @@ public class NewTurret {
     public static double currentTicks;
 
     // Motion
-   public static double targetPosition = 0;
+    public static double targetPosition = 0;
 
-   public static double power;
+    public static double power;
 
     // Gear math
     public static double SMALL_GEAR_TICKS_PER_REV = 8192;
@@ -37,7 +37,7 @@ public class NewTurret {
     public static double TICKS_PER_DEGREE =
             TICKS_PER_TURRET_REV / 360.0;
 
-    public NewTurret(HardwareMap hardwareMap, Telemetry telemetry) {
+    public TurretPLUSIntake(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
 
         leftServo = hardwareMap.get(CRServo.class, "turret1");
@@ -78,9 +78,9 @@ public class NewTurret {
     public double getCurrentAngle() {
         return getCurrentPosition() / TICKS_PER_DEGREE;
     }
-public double getPow(){
+    public double getPow(){
         return power;
-}
+    }
     public boolean isClose(double toleranceTicks) {
         return Math.abs(getCurrentPosition() - targetPosition) < toleranceTicks;
     }
@@ -94,6 +94,19 @@ public double getPow(){
         encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         encoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         targetPosition = 0;
+    }
+
+    public void intakeStop(){
+        encoder.setPower(0);
+    }
+    public void intakeMed(){
+        encoder.setPower(0.5);
+    }
+    public void intakeFull(){
+        encoder.setPower(1);
+    }
+    public void intakeBack(){
+        encoder.setPower(-1);
     }
 
 

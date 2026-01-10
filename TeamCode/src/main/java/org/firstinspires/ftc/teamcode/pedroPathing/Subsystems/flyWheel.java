@@ -25,8 +25,8 @@ public class flyWheel {
     public CachingDcMotorEx fly1;
     private CachingDcMotorEx fly2;
 
-    private CRServo block1;
-    private CRServo block2;
+    private Servo block;
+
 
     public static double p = 0.15, i = 0, d = 0;
     public static double ff = 0;
@@ -51,10 +51,8 @@ public class flyWheel {
         fly2 = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, "shooterLeft"), 0.005);
 
         //blocker
-        block1 = hardwareMap.get(CRServo.class, "block1");
-        block2 = hardwareMap.get(CRServo.class, "block2");
-        block2.setDirection(CRServo.Direction.REVERSE);
-
+        block = hardwareMap.get(Servo.class, "block");
+        block.setDirection(Servo.Direction.REVERSE);
 
         fly1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fly2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -101,12 +99,10 @@ public class flyWheel {
            targetVelocity = -1800;
         }
         public void uppies(){
-            block1.setPower(1);
-            block2.setPower(1);
+            block.setPosition(0);
         }
     public void downies(){
-        block1.setPower(-1);
-        block2.setPower(-1);
+        block.setPosition(0);
     }
 
 
@@ -118,15 +114,11 @@ public class flyWheel {
         p = 0.15;
         targetVelocity = v;
         new WaitCommand(2500);
-        block1.setPower(1);
-        block2.setPower(1);
     }
 
     public void constantStop(){
         p = 0;
         targetVelocity = 0;
-        block1.setPower(-1);
-        block2.setPower(-1);
     }
     public boolean isCurrentVelocityEnough(){
         return fly1.getVelocity() < -1600;

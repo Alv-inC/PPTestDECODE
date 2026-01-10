@@ -10,13 +10,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
-@Autonomous(name = "[NEW]blueAuto", group = "Tests")
+@Autonomous(name = "[NEW]blueAutoV3", group = "Tests")
 public class blueAutov3 extends OpMode {
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -32,10 +34,10 @@ public class blueAutov3 extends OpMode {
     private PathChain thirdLine;
 
     private LimelightCamera limelight;
-    private Turret turret;
+    private TurretPLUSIntake turret;
     //subsystems
     private flyWheel flyWheel;
-    private intake intake;
+    private Hood hood;
     private float tiltAngle = 150;
     private double count = 0;
 
@@ -172,7 +174,7 @@ public class blueAutov3 extends OpMode {
     @Override
     public void init() {
         flyWheel = new flyWheel(hardwareMap, telemetry);
-        intake = new intake(hardwareMap);
+        hood = new Hood(hardwareMap);
         pathTimer = new Timer();
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
@@ -180,15 +182,15 @@ public class blueAutov3 extends OpMode {
         buildPaths();
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
-        turret = new Turret(hardwareMap, telemetry);
+        turret = new TurretPLUSIntake(hardwareMap, telemetry);
     }
 
     @Override
     public void loop() {
-        limelight.update();
-        int targetTagId = 20;
-        limelight.trackTag(turret, targetTagId, true);
-        turret.update();
+//        limelight.update();
+//        int targetTagId = 20;
+//        limelight.trackTag(turret, targetTagId, true);
+//        turret.update();
 
         if (!hasStarted) {
             pathTimer.resetTimer();   // reset your timer exactly when OpMode starts

@@ -21,6 +21,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 
 import java.util.function.Supplier;
@@ -37,11 +38,10 @@ public class teleTest extends OpMode {
     private double slowModeMultiplier = 0.5;
     private ElapsedTime timer = new ElapsedTime();
 
-    private DcMotorEx intake;
 
     private Servo hood;
 
-    private Turret turret;
+    private TurretPLUSIntake turret;
     private flyWheel flywheel;
 
     LimelightCamera limelight;
@@ -63,11 +63,10 @@ public class teleTest extends OpMode {
     public void init() {
 
         //delete later prob
-        intake = hardwareMap.get(DcMotorEx.class, "intake");
-        intake.setDirection(DcMotorSimple.Direction.REVERSE);
+
         flywheel = new flyWheel(hardwareMap, telemetry);
         hood = hardwareMap.get(Servo.class, "hood");
-        turret = new Turret(hardwareMap, telemetry);
+        turret = new TurretPLUSIntake(hardwareMap, telemetry);
         limelight = new LimelightCamera(hardwareMap, telemetry);
 
         follower = Constants.createFollower(hardwareMap);
@@ -100,16 +99,16 @@ public class teleTest extends OpMode {
         boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
 
         int targetTagId = -1;
-        if (gamepad2.left_trigger > 0.5) {
-            targetTagId = 20;
-            limelight.trackTag(turret, targetTagId, trackingEnabled);
-
-        }
-        else if (gamepad2.right_trigger > 0.5) {
-            targetTagId = 24;
-            limelight.trackTag(turret, targetTagId, trackingEnabled);
-
-        }
+//        if (gamepad2.left_trigger > 0.5) {
+//            targetTagId = 20;
+//            limelight.trackTag(turret, targetTagId, trackingEnabled);
+//
+//        }
+//        else if (gamepad2.right_trigger > 0.5) {
+//            targetTagId = 24;
+//            limelight.trackTag(turret, targetTagId, trackingEnabled);
+//
+//        }
 
         if (gamepad2.dpad_up) turret.setTargetPosition(-96);
         else if(gamepad2.dpad_down) turret.setTargetPosition(96);
@@ -119,21 +118,21 @@ public class teleTest extends OpMode {
 
         if (gamepad2.a && !previousButtonState2a) {
             if(!flag) {
-             intake.setPower(0.5);
+             turret.intakeMed();
             }
             else{
                 flag = false;
-               intake.setPower(0);
+              turret.intakeStop();
             }
         }
         previousButtonState2a = gamepad2.a;
 
         if(gamepad2.dpad_right){
-            intake.setPower(1);
+            turret.intakeFull();
         }
 
         if(gamepad2.b){
-            intake.setPower(-1);
+            turret.intakeBack();
         }
         if(gamepad2.left_bumper){
             flywheel.constantShootSlow();

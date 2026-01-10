@@ -22,27 +22,32 @@ public class zeroTuning extends OpMode {
 
 
 
-    public static double block_val;
-    public static double intake_val;
-
+    public static double val1;
+    public static double val2;
+    private DcMotorEx intake;
 
 
     @Override
     public void init() {
-    a = hardwareMap.get(Servo.class, "");
-    b = hardwareMap.get(Servo.class, "block2");
-    c = hardwareMap.get(Servo.class, "intake");
+    a = hardwareMap.get(Servo.class, "hood");
+    b = hardwareMap.get(Servo.class, "block");
+    b.setDirection(Servo.Direction.REVERSE);
+    c = hardwareMap.get(Servo.class, "camera");
+    intake = hardwareMap.get(DcMotorEx.class, "intake");
 
-
-        ServoControllerEx controller = (ServoControllerEx) a.getController();
-        int port = a.getPortNumber();
-        controller.setServoPwmRange(port, new PwmControl.PwmRange(500, 2500));
+//        ServoControllerEx controller = (ServoControllerEx) a.getController();
+//        int port = a.getPortNumber();
+//        controller.setServoPwmRange(port, new PwmControl.PwmRange(500, 2500));
 
 
     }
 
     @Override
     public void loop() {
+        a.setPosition(val1);
+        b.setPosition(val2);
+        c.setPosition(0);
+        intake.setPower(-1);
 
 
     }
