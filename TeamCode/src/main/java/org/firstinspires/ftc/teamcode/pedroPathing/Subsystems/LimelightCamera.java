@@ -30,9 +30,16 @@ public class LimelightCamera {
     public static int PIPELINE_INDEX = 1;
     public static double DEADBAND_DEG = 0.5;
     public static double CORRECTION_GAIN = 1.5;
-    public static double TICKS_PER_REV = 384.5;
-    public static double GEAR_RATIO = 1.0;
-    public static double TICKS_PER_DEG = (TICKS_PER_REV * GEAR_RATIO) / 360.0;
+//    public static double TICKS_PER_REV = 384.5;
+//    public static double GEAR_RATIO = 1.0;
+//    public static double TICKS_PER_DEG = (TICKS_PER_REV * GEAR_RATIO) / 360.0;
+
+    public static double SMALL_GEAR_TICKS_PER_REV = 8192;
+    public static double GEAR_RATIO = (double) 125 /33; // big / small
+    public static double TICKS_PER_TURRET_REV =
+            SMALL_GEAR_TICKS_PER_REV * GEAR_RATIO;
+    public static double TICKS_PER_DEG =
+            TICKS_PER_TURRET_REV / 360.0;
 
     // --- State ---
     private boolean validTarget = false;
@@ -89,6 +96,16 @@ public class LimelightCamera {
         double newTarget = turret.getCurrentPosition() + correctionTicks;
         turret.setTargetPosition(newTarget);
     }
+    public void trackTag_New(TurretPLUSIntake turret, int targetTagId, boolean enabled) {
+        telemetry.addData("target id", targetTagId);
+        if (!validTarget || lastTagId != targetTagId || targetTagId == -1 || !enabled) return;
+
+        double correctionTicks = txDeg * TICKS_PER_DEG * CORRECTION_GAIN;
+        double newTarget = turret.getCurrentPosition() + correctionTicks;
+        telemetry.addData("newTarget", -newTarget);
+        turret.setTargetPosition(-newTarget);
+    }
+
 
     public boolean hasValidTarget() {
         return validTarget;

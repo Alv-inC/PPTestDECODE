@@ -19,9 +19,9 @@ public class TurretPLUSIntake {
     private final Telemetry telemetry;
 
     // PID
-    public static double p = 0.001;
+    public static double p = 0.0002625;
     public static double i = 0.0;
-    public static double d = 0.0001;
+    public static double d = 0.00001;
     public static double currentTicks;
 
     // Motion
@@ -37,15 +37,12 @@ public class TurretPLUSIntake {
     public static double TICKS_PER_DEGREE =
             TICKS_PER_TURRET_REV / 360.0;
 
-    public TurretPLUSIntake(HardwareMap hardwareMap, Telemetry telemetry) {
+    public TurretPLUSIntake(HardwareMap hardwareMap, Telemetry telemetry, DcMotorEx encoder1) {
         this.telemetry = telemetry;
 
         leftServo = hardwareMap.get(CRServo.class, "turret1");
         rightServo = hardwareMap.get(CRServo.class, "turret2");
-
-
-        encoder = hardwareMap.get(DcMotorEx.class, "intake");
-        encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        this.encoder = encoder1;
 
         pid = new PIDController(p, i, d);
         pid.setPID(p, i, d);
@@ -96,18 +93,18 @@ public class TurretPLUSIntake {
         targetPosition = 0;
     }
 
-    public void intakeStop(){
-        encoder.setPower(0);
-    }
-    public void intakeMed(){
-        encoder.setPower(0.5);
-    }
-    public void intakeFull(){
-        encoder.setPower(1);
-    }
-    public void intakeBack(){
-        encoder.setPower(-1);
-    }
+//    public void intakeStop(){
+//        encoder.setPower(0);
+//    }
+//    public void intakeMed(){
+//        encoder.setPower(0.5);
+//    }
+//    public void intakeFull(){
+//        encoder.setPower(1);
+//    }
+//    public void intakeBack(){
+//        encoder.setPower(-1);
+//    }
 
 
 }

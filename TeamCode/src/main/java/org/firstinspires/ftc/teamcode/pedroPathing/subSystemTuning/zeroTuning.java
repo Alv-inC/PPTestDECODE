@@ -41,7 +41,8 @@ public class zeroTuning extends OpMode {
 
 
     }
-
+//0.7 close
+    //0 open
     @Override
     public void loop() {
         a.setPosition(val1);
