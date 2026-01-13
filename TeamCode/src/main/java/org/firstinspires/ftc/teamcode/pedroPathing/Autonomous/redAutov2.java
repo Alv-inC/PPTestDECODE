@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
 @Autonomous(name = "[NEW]redAutoV3", group = "Tests")
 public class redAutov2 extends OpMode {
+    private ElapsedTime TotalTime;
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
@@ -99,7 +101,7 @@ public class redAutov2 extends OpMode {
                         new BezierCurve(
                                 new Pose(62.227, 81.984).mirror(),
                                 new Pose(31.223, 67.673).mirror(),
-                                new Pose(14, 61.6).mirror()
+                                new Pose(14, 61).mirror()
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
@@ -112,7 +114,7 @@ public class redAutov2 extends OpMode {
                         new BezierCurve(
                                 new Pose(62.227, 81.984).mirror(),
                                 new Pose(60.959, 57.797).mirror(),
-                                new Pose(19, 59.528).mirror()
+                                new Pose(22, 59.528).mirror()
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -125,8 +127,7 @@ public class redAutov2 extends OpMode {
         switch (pathState) {
             //START PATH***
             case 0:
-                turret.setTargetPosition(-1500);
-                flyWheel.constantShoot();
+                flyWheel.constantShootAuto();
                 follower.followPath(firstShots, true);
                 setPathState(1);
                 break;
@@ -149,7 +150,6 @@ public class redAutov2 extends OpMode {
 
             case 3:
                 if (!follower.isBusy()) {
-                    turret.setTargetPosition(2600);
                     follower.followPath(Shots, true);
                     setPathState(4);
                 }
@@ -250,9 +250,9 @@ public class redAutov2 extends OpMode {
     @Override
     public void loop() {
         limelight.update();
-        int targetTagId = 20;
-//        limelight.trackTag_New(turret, targetTagId, true);
+        int targetTagId = 24;
 
+            limelight.trackTag_New(turret, targetTagId, true);
         turret.update();
 
         if (!hasStarted) {

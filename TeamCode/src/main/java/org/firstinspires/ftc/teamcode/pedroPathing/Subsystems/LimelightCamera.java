@@ -71,6 +71,7 @@ public class LimelightCamera {
         if (result != null && result.isValid()) {
             List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
             if (!fiducials.isEmpty()) {
+                telemetry.addLine("found tag");
                 validTarget = true;
                 LLResultTypes.FiducialResult fid = fiducials.get(0); // first tag by default
                 lastTagId = fid.getFiducialId();
@@ -81,7 +82,7 @@ public class LimelightCamera {
                 tzMeters = tz;
 
                 txDeg = Math.toDegrees(Math.atan2(tx, tz));
-                telemetry.addData("txDeg", txDeg );
+                telemetry.addData("txDeg", txDeg);
                 if (Math.abs(txDeg) < DEADBAND_DEG) txDeg = 0.0;
             }
         }
