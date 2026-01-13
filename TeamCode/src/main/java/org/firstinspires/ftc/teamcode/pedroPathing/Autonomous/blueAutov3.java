@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
 @Autonomous(name = "[NEW]blueAutoV3", group = "Tests")
 public class blueAutov3 extends OpMode {
+    private ElapsedTime TotalTime = new ElapsedTime();
      private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
@@ -32,6 +34,7 @@ public class blueAutov3 extends OpMode {
     private PathChain firstLine;
     private PathChain hitSwitch;
     private PathChain Shots;
+    private PathChain Shots2;
     private PathChain AAA;
     private PathChain secondLine;
     private PathChain thirdLine;
@@ -77,7 +80,17 @@ public class blueAutov3 extends OpMode {
                 .addPath(
                         new BezierLine(
                                 new Pose(18.500, 84.407),
-                                new Pose(62.227, 81.984)
+                                new Pose(60, 81.984)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
+                .build();
+        Shots2 = follower.pathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Pose(22, 59.528),
+                                new Pose(34.991, 58.542),
+                                new Pose(60, 81.984)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
@@ -87,7 +100,7 @@ public class blueAutov3 extends OpMode {
                 .addPath(
                         new BezierLine(
                                 new Pose(18.500, 84.407),
-                                new Pose(62.227, 81.984)
+                                new Pose(60, 81.984)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
@@ -97,9 +110,9 @@ public class blueAutov3 extends OpMode {
         hitSwitch = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(62.227, 81.984),
+                                new Pose(60, 81.984),
                                 new Pose(31.223, 67.673),
-                                new Pose(14, 61.6)
+                                new Pose(14, 61)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
@@ -110,9 +123,9 @@ public class blueAutov3 extends OpMode {
         secondLine = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(62.227, 81.984),
-                                new Pose(60.959, 57.797),
-                                new Pose(19, 59.528)
+                                new Pose(60, 81.984),
+                                new Pose(56.959, 57.797),
+                                new Pose(22, 59.528)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -125,8 +138,8 @@ public class blueAutov3 extends OpMode {
         switch (pathState) {
     //START PATH***
             case 0:
-                turret.setTargetPosition(-1500);
-                flyWheel.constantShoot();
+                turret.setTargetPosition(-3150);
+                flyWheel.constantShootAuto();
                 follower.followPath(firstShots, true);
                 setPathState(1);
                 break;
@@ -149,7 +162,7 @@ public class blueAutov3 extends OpMode {
 
             case 3:
                 if (!follower.isBusy()) {
-                    turret.setTargetPosition(2600);
+                    turret.setTargetPosition(-1500);
                     follower.followPath(Shots, true);
                     setPathState(4);
                 }
@@ -171,7 +184,7 @@ public class blueAutov3 extends OpMode {
             case 5:
                 if (!follower.isBusy()) {
 
-                    follower.followPath(Shots, true);
+                    follower.followPath(Shots2, true);
                     setPathState(7);
                 }
                 break;
@@ -249,11 +262,12 @@ public class blueAutov3 extends OpMode {
 
     @Override
     public void loop() {
-        limelight.update();
-        int targetTagId = 20;
-//        limelight.trackTag_New(turret, targetTagId, true);
-
+//        limelight.update();
+//        int targetTagId = 20;
+      //  limelight.trackTag_New(turret, targetTagId, true);
         turret.update();
+
+
 
         if (!hasStarted) {
             pathTimer.resetTimer();   // reset your timer exactly when OpMode starts

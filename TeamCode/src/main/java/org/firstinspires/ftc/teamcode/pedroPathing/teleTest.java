@@ -111,8 +111,8 @@ public class teleTest extends OpMode {
 
         }
 
-        if (gamepad2.dpad_up) turret.setTargetPosition(-96);
-        else if(gamepad2.dpad_down) turret.setTargetPosition(96);
+        if (gamepad2.dpad_up) turret.setTargetPosition(0);
+        else if(gamepad2.dpad_down) turret.setTargetPosition(0);
         limelight.logTelemetry(telemetryM);
 
         turret.update();

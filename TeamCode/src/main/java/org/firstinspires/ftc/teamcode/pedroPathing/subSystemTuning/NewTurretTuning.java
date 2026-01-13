@@ -21,7 +21,7 @@ public class NewTurretTuning extends OpMode {
     private LimelightCamera limelightCamera;
     public static int targetTagId = 20;
     public static boolean trackingEnabled = false;
-    private DcMotorEx intake = hardwareMap.get(DcMotorEx.class, "intake");
+    private DcMotorEx intake;
 
     @Override
     public void init() {
@@ -33,7 +33,7 @@ public class NewTurretTuning extends OpMode {
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry()
         );
-
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         limelightCamera = new LimelightCamera(hardwareMap, telemetry);
         telemetry.addLine("Turret Tuning Ready");
@@ -53,7 +53,7 @@ public class NewTurretTuning extends OpMode {
         TurretPLUSIntake.d = d;
 
         limelightCamera.trackTag_New(turret, targetTagId, trackingEnabled);
-
+        turret.setTargetPosition(targetPosition);
         turret.update();
 
         telemetry.addData("Position", turret.getCurrentPosition());

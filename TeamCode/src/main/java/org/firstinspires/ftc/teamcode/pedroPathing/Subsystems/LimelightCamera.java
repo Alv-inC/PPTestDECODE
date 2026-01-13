@@ -29,7 +29,7 @@ public class LimelightCamera {
     // --- Tunable Dashboard Parameters ---
     public static int PIPELINE_INDEX = 1;
     public static double DEADBAND_DEG = 0.5;
-    public static double CORRECTION_GAIN = 1.5;
+    public static double CORRECTION_GAIN = 1;
 //    public static double TICKS_PER_REV = 384.5;
 //    public static double GEAR_RATIO = 1.0;
 //    public static double TICKS_PER_DEG = (TICKS_PER_REV * GEAR_RATIO) / 360.0;
@@ -71,6 +71,7 @@ public class LimelightCamera {
         if (result != null && result.isValid()) {
             List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
             if (!fiducials.isEmpty()) {
+                telemetry.addLine("found tag");
                 validTarget = true;
                 LLResultTypes.FiducialResult fid = fiducials.get(0); // first tag by default
                 lastTagId = fid.getFiducialId();
@@ -81,6 +82,7 @@ public class LimelightCamera {
                 tzMeters = tz;
 
                 txDeg = Math.toDegrees(Math.atan2(tx, tz));
+                telemetry.addData("txDeg", txDeg);
                 if (Math.abs(txDeg) < DEADBAND_DEG) txDeg = 0.0;
             }
         }
@@ -102,8 +104,8 @@ public class LimelightCamera {
 
         double correctionTicks = txDeg * TICKS_PER_DEG * CORRECTION_GAIN;
         double newTarget = turret.getCurrentPosition() + correctionTicks;
-        telemetry.addData("newTarget", -newTarget);
-        turret.setTargetPosition(-newTarget);
+        telemetry.addData("newTarget", newTarget);
+        turret.setTargetPosition(newTarget);
     }
 
 
