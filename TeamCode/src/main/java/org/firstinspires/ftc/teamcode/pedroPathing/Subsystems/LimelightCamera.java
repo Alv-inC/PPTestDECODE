@@ -29,7 +29,7 @@ public class LimelightCamera {
     // --- Tunable Dashboard Parameters ---
     public static int PIPELINE_INDEX = 1;
     public static double DEADBAND_DEG = 0.5;
-    public static double CORRECTION_GAIN = 1;
+    public static double CORRECTION_GAIN = -400;
 //    public static double TICKS_PER_REV = 384.5;
 //    public static double GEAR_RATIO = 1.0;
 //    public static double TICKS_PER_DEG = (TICKS_PER_REV * GEAR_RATIO) / 360.0;
@@ -94,7 +94,7 @@ public class LimelightCamera {
     public void trackTag(TurretPLUSIntake turret, int targetTagId, boolean enabled) {
         if (!validTarget || lastTagId != targetTagId || targetTagId == -1 || !enabled) return;
 
-        double correctionTicks = txDeg * TICKS_PER_DEG * CORRECTION_GAIN;
+        double correctionTicks = txDeg * TICKS_PER_DEG;
         double newTarget = turret.getCurrentPosition() + correctionTicks;
         turret.setTargetPosition(newTarget);
     }
@@ -102,10 +102,10 @@ public class LimelightCamera {
         telemetry.addData("target id", targetTagId);
         if (!validTarget || lastTagId != targetTagId || targetTagId == -1 || !enabled) return;
 
-        double correctionTicks = txDeg * TICKS_PER_DEG * CORRECTION_GAIN;
+        double correctionTicks = txDeg * TICKS_PER_DEG;
         double newTarget = turret.getCurrentPosition() + correctionTicks;
-        telemetry.addData("newTarget", newTarget);
-        turret.setTargetPosition(newTarget);
+        telemetry.addData("newTarget", newTarget + CORRECTION_GAIN);
+        turret.setTargetPosition(newTarget + CORRECTION_GAIN);
     }
 
 

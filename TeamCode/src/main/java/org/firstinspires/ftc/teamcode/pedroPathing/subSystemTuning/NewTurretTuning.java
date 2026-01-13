@@ -25,9 +25,9 @@ public class NewTurretTuning extends OpMode {
 
     @Override
     public void init() {
-        p = 0.0002625;
+        p = 0.00013;
         i = 0.0;
-        d = 0.00001;
+        d = 0.00000;
         targetPosition = 0;
         telemetry = new MultipleTelemetry(
                 telemetry,
