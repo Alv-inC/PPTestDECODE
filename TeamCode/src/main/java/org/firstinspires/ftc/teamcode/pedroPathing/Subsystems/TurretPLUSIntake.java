@@ -19,9 +19,9 @@ public class TurretPLUSIntake {
     private final Telemetry telemetry;
 
     // PID
-    public static double p = 0.0002625;
+    public static double p = 0.00013;
     public static double i = 0.0;
-    public static double d = 0.00001;
+    public static double d = 0.000;
     public static double currentTicks;
 
     // Motion
@@ -43,7 +43,7 @@ public class TurretPLUSIntake {
         leftServo = hardwareMap.get(CRServo.class, "turret1");
         rightServo = hardwareMap.get(CRServo.class, "turret2");
         this.encoder = encoder1;
-
+        resetEncoder();
         pid = new PIDController(p, i, d);
         pid.setPID(p, i, d);
     }
