@@ -112,7 +112,7 @@ public class blueAutov3 extends OpMode {
                         new BezierCurve(
                                 new Pose(60, 81.984),
                                 new Pose(31.223, 67.673),
-                                new Pose(14, 61)
+                                new Pose(15.3, 61.2)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
@@ -138,7 +138,6 @@ public class blueAutov3 extends OpMode {
         switch (pathState) {
     //START PATH***
             case 0:
-                turret.setTargetPosition(-3150);
                 flyWheel.constantShootAuto();
                 follower.followPath(firstShots, true);
                 setPathState(1);
@@ -162,7 +161,6 @@ public class blueAutov3 extends OpMode {
 
             case 3:
                 if (!follower.isBusy()) {
-                    turret.setTargetPosition(-1500);
                     follower.followPath(Shots, true);
                     setPathState(4);
                 }
@@ -173,7 +171,7 @@ public class blueAutov3 extends OpMode {
                     if(pathTimer.getElapsedTimeSeconds() > 3) {
                         flyWheel.uppies();
                     }
-                    if(pathTimer.getElapsedTimeSeconds() > 5.5) {
+                    if(pathTimer.getElapsedTimeSeconds() > 5) {
                         flyWheel.downies();
                         follower.followPath(secondLine, true);
                         setPathState(5);
@@ -195,12 +193,15 @@ public class blueAutov3 extends OpMode {
                         if(pathTimer.getElapsedTimeSeconds() > 2.5) {
                             flyWheel.downies();
                             follower.followPath(hitSwitch, true);
-                            count += 1;
-                            if(count >= 3){
-                                setPathState(8);
-                            }else{
-                                setPathState(5);
+                            if(pathTimer.getElapsedTimeSeconds() > 5){
+                                count += 1;
+                                if(count >= 3){
+                                    setPathState(8);
+                                }else{
+                                    setPathState(5);
+                                }
                             }
+
                         }
 
                 }
@@ -262,9 +263,9 @@ public class blueAutov3 extends OpMode {
 
     @Override
     public void loop() {
-//        limelight.update();
-//        int targetTagId = 20;
-      //  limelight.trackTag_New(turret, targetTagId, true);
+        limelight.update();
+        int targetTagId = 20;
+        limelight.trackTag_New(turret, targetTagId, true);
         turret.update();
 
 
