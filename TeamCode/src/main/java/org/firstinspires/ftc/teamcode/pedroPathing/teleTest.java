@@ -70,6 +70,7 @@ public class teleTest extends OpMode {
         turret = new TurretPLUSIntake (hardwareMap, telemetry, intake);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
+        camera.setPosition(0);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(startingPose == null ? new Pose() : startingPose);
         follower.update();

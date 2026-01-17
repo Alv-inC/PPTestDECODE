@@ -7,26 +7,24 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-
+//0.76 down
+//0.48 up
 @TeleOp(name = "testServo")
 @Config
 public class testServo extends OpMode {
 
     public static double pos, pos2 = 0; // Adjustable from FTC Dashboard
-    CRServo block;
-    CRServo servo2;
+    Servo block;
 
     @Override
     public void init() {
 
-        block = hardwareMap.get(CRServo.class, "turret1");
-        servo2 = hardwareMap.get(CRServo.class, "turret2");
+        block = hardwareMap.get(Servo.class, "camera");
     }
 
     @Override
     public void loop() {
 
-        block.setPower(pos);
-        servo2.setPower(pos2);
+        block.setPosition(pos);
     }
 }
