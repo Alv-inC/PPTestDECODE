@@ -66,6 +66,7 @@ public class teleTest extends OpMode {
         flywheel = new flyWheel(hardwareMap, telemetry);
         flywheel.constantStop();
         hood = new Hood(hardwareMap);
+        hood.setHigh();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake (hardwareMap, telemetry, intake);
         limelight = new LimelightCamera(hardwareMap, telemetry);
@@ -173,7 +174,7 @@ public class teleTest extends OpMode {
                     -gamepad1.left_stick_y,
                     -gamepad1.left_stick_x,
                     -gamepad1.right_stick_x,
-                    true // Robot Centric
+                    false // Robot Centric
             );
 
                 //This is how it looks with slowMode on
@@ -181,7 +182,7 @@ public class teleTest extends OpMode {
                     -gamepad1.left_stick_y * slowModeMultiplier,
                     -gamepad1.left_stick_x * slowModeMultiplier,
                     -gamepad1.right_stick_x * slowModeMultiplier * 0.6,
-                    true // Robot Centric
+                    false // Robot Centric
             );
 
         }

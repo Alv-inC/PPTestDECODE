@@ -21,15 +21,15 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
-@Autonomous(name = "[NEW]blueAutoV3", group = "Tests")
-public class blueAutov3 extends OpMode {
+@Autonomous(name = "[NEW]redAutoV3", group = "Tests")
+public class redAutov3 extends OpMode {
     private ElapsedTime TotalTime = new ElapsedTime();
-     private Follower follower;
+    private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
     //MAYBE LATER PUT ALL THE POSES INSIDE A INITIALIZATION FUNCTION
-    private final Pose startPose = new Pose(33.6, 135.4, Math.toRadians(180));
+    private final Pose startPose = new Pose(33.6, 135.4, Math.toRadians(180)).mirror();
     private PathChain firstShots;
     private PathChain firstLine;
     private PathChain hitSwitch;
@@ -47,7 +47,7 @@ public class blueAutov3 extends OpMode {
     private Hood hood;
 
     private DcMotorEx intake;
-    private float tiltAngle = 135;
+    private float tiltAngle = 45;
     private double count = 0;
 
     private boolean hasStarted = false;
@@ -58,30 +58,30 @@ public class blueAutov3 extends OpMode {
         firstShots = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(33.600, 135.400),
-                                new Pose(54.318, 84.602)
+                                new Pose(33.600, 135.400).mirror(),
+                                new Pose(54.318, 84.602).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
 // FIRST LINE
         firstLine = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(54.318, 84.602),
-                                new Pose(17, 84.407)
+                                new Pose(54.318, 84.602).mirror(),
+                                new Pose(17, 84.407).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
 // SHOTS
         Shots = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(18.500, 84.407),
-                                new Pose(60, 81.984)
+                                new Pose(18.500, 84.407).mirror(),
+                                new Pose(60, 81.984).mirror()
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
@@ -89,9 +89,9 @@ public class blueAutov3 extends OpMode {
         Shots2 = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(22, 59.528),
-                                new Pose(34.991, 58.542),
-                                new Pose(60, 81.984)
+                                new Pose(22, 59.528).mirror(),
+                                new Pose(34.991, 58.542).mirror(),
+                                new Pose(60, 81.984).mirror()
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
@@ -100,8 +100,8 @@ public class blueAutov3 extends OpMode {
         AAA = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(18.500, 84.407),
-                                new Pose(60, 81.984)
+                                new Pose(18.500, 84.407).mirror(),
+                                new Pose(60, 81.984).mirror()
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
@@ -111,9 +111,9 @@ public class blueAutov3 extends OpMode {
         hitSwitch = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(60, 81.984),
-                                new Pose(31.223, 67.673),
-                                new Pose(15, 63.3)
+                                new Pose(60, 81.984).mirror(),
+                                new Pose(31.223, 67.673).mirror(),
+                                new Pose(15, 63.3).mirror()
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
@@ -124,20 +124,20 @@ public class blueAutov3 extends OpMode {
         secondLine = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(60, 81.984),
-                                new Pose(56.959, 57.797),
-                                new Pose(20, 59.528)
+                                new Pose(60, 81.984).mirror(),
+                                new Pose(56.959, 57.797).mirror(),
+                                new Pose(20, 59.528).mirror()
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
-        }
+    }
 
 
     public void autonomousPathUpdate() {
         switch (pathState) {
-    //START PATH***
+            //START PATH***
             case 0:
                 flyWheel.constantShootAuto();
                 follower.followPath(firstShots, true);
@@ -145,12 +145,12 @@ public class blueAutov3 extends OpMode {
                 setPathState(1);
                 break;
 
-                //FIRST SHOTS***
+            //FIRST SHOTS***
             case 1:
                 if (!follower.isBusy()) {
-                   if(flyWheel.isCurrentVelocityEnough()) {
-                       intake.setPower(-1);
-                       flyWheel.uppies();
+                    if(flyWheel.isCurrentVelocityEnough()) {
+                        intake.setPower(-1);
+                        flyWheel.uppies();
                         if(pathTimer.getElapsedTimeSeconds() > 4) {
                             flyWheel.downies();
                             intake.setPower(-1);
@@ -189,28 +189,28 @@ public class blueAutov3 extends OpMode {
                     setPathState(7);
                 }
                 break;
-                //SHOOT SHOTS***
+            //SHOOT SHOTS***
             case 6:
                 if (!follower.isBusy()) {
                     flyWheel.uppies();
-                        if(pathTimer.getElapsedTimeSeconds() > 2.5) {
-                            flyWheel.downies();
-                            follower.followPath(hitSwitch, true);
-                            if(pathTimer.getElapsedTimeSeconds() > 7){
-                                count += 1;
-                                if(count >= 3){
-                                    setPathState(8);
-                                }else{
-                                    setPathState(5);
-                                }
+                    if(pathTimer.getElapsedTimeSeconds() > 2.5) {
+                        flyWheel.downies();
+                        follower.followPath(hitSwitch, true);
+                        if(pathTimer.getElapsedTimeSeconds() > 7){
+                            count += 1;
+                            if(count >= 3){
+                                setPathState(8);
+                            }else{
+                                setPathState(5);
                             }
-
                         }
+
+                    }
 
                 }
                 break;
 
-                //HIT SWITCH
+            //HIT SWITCH
             case 7:
                 if (!follower.isBusy()) {
                     if(pathTimer.getElapsedTimeSeconds() > 2){
