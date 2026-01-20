@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 import static org.firstinspires.ftc.teamcode.pedroPathing.Constants.driveConstants;
 
-import android.graphics.PostProcessor;
-
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -33,8 +31,6 @@ import java.util.function.Supplier;
 @TeleOp(name = "testTele")
 public class teleTest extends OpMode {
     private Follower follower;
-    private static final Pose DEFAULT_POSE =
-            new Pose(72.41025641025641, 72.20512820512819, 90);
     public static Pose startingPose; //See ExampleAuto to understand how to use this
     private boolean automatedDrive;
     private Supplier<PathChain> pathChain;
@@ -51,7 +47,8 @@ public class teleTest extends OpMode {
 
     boolean flag = false;
     boolean previousButtonState2a = false;
-    private boolean prevDpadUp = false;
+
+
 
 
     //final constants
@@ -74,17 +71,14 @@ public class teleTest extends OpMode {
         turret = new TurretPLUSIntake (hardwareMap, telemetry, intake);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0);
+        camera.setPosition(0.07);
         follower = Constants.createFollower(hardwareMap);
-        if (startingPose != null) {
-            follower.setStartingPose(startingPose);
-        } else {
-            follower.setStartingPose(DEFAULT_POSE);
-        }
-//        follower.update();
+        follower.setStartingPose(new Pose(0, 0, Math.toRadians(180)));
+        follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
+
         pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-               .addPath(new Path(new BezierLine(follower::getPose, new Pose(34.46153846153846, 117.94871794871796))))
+               .addPath(new Path(new BezierLine(follower::getPose, new Pose(54.318, 84.602))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(-180), 0.8))
                 .build();
     }
@@ -108,20 +102,19 @@ public class teleTest extends OpMode {
         boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
 
         int targetTagId = -1;
-        if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) {
+        if (gamepad2.left_trigger > 0.5) {
             targetTagId = 20;
             limelight.trackTag_New(turret, targetTagId, trackingEnabled);
 
         }
-        else if (gamepad2.right_trigger > 0.5 || gamepad1.right_trigger > 0.5) {
+        else if (gamepad2.right_trigger > 0.5) {
             targetTagId = 24;
             limelight.trackTag_New(turret, targetTagId, trackingEnabled);
 
         }
 
         if (gamepad2.dpad_up) turret.setTargetPosition(0);
-        else if(gamepad2.dpad_down) turret.setTargetAngle(90);
-
+        else if(gamepad2.dpad_down) turret.setTargetPosition(0);
         limelight.logTelemetry(telemetryM);
 
         turret.update();
@@ -181,7 +174,7 @@ public class teleTest extends OpMode {
                     -gamepad1.left_stick_y,
                     -gamepad1.left_stick_x,
                     -gamepad1.right_stick_x,
-                    true// Robot Centric
+                    false // Robot Centric
             );
 
                 //This is how it looks with slowMode on
@@ -189,34 +182,16 @@ public class teleTest extends OpMode {
                     -gamepad1.left_stick_y * slowModeMultiplier,
                     -gamepad1.left_stick_x * slowModeMultiplier,
                     -gamepad1.right_stick_x * slowModeMultiplier * 0.6,
-                    true // Robot Centric
+                    false// Robot Centric
             );
 
-
         }
 
-        double turretAngleRad = Math.toRadians(turret.getCurrentAngle());
-        double currentHeading = follower.getHeading();
-        telemetryM.addData("current heading", currentHeading);
-        double targetHeading = currentHeading + turretAngleRad;
-        boolean dpadUp = gamepad1.dpad_right;
-        if (dpadUp && !prevDpadUp) {
-            Path rotate = new Path(
-                    new BezierLine(follower::getPose, follower::getPose)
-
-            );
-            follower.turnTo(Math.toRadians(180));
-
-            follower.followPath(rotate);
-            automatedDrive = true;
-            turret.setTargetPosition(0);
-        }
-        prevDpadUp = dpadUp;
-
-        if (gamepad1.dpad_down) {
-            follower.followPath(pathChain.get());
-            automatedDrive = true;
-        }
+        //Automated PathFollowing
+//        if (gamepad1.dpad_down) {
+//            follower.followPath(pathChain.get());
+//            automatedDrive = true;
+//        }
 
 
         //Stop automated following if the follower is done
