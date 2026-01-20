@@ -170,7 +170,7 @@ public class blueAutov3 extends OpMode {
 
             case 4:
                 if (!follower.isBusy()) {
-                    turret.setTargetPosition(0);
+                    turret.setTargetPosition(-250);
                     if(pathTimer.getElapsedTimeSeconds() > 3) {
                         flyWheel.uppies();
                     }
@@ -184,7 +184,7 @@ public class blueAutov3 extends OpMode {
                 break;
             case 5:
                 if (!follower.isBusy()) {
-                    turret.setTargetPosition(0);
+                    turret.setTargetPosition(-250);
                     follower.followPath(Shots2, true);
                     setPathState(7);
                 }

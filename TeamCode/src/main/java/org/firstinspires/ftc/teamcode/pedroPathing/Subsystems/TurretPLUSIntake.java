@@ -75,6 +75,9 @@ public class TurretPLUSIntake {
     public double getCurrentAngle() {
         return getCurrentPosition() / TICKS_PER_DEGREE;
     }
+    public void setTargetAngle(double degrees) {
+        targetPosition = degrees * TICKS_PER_DEGREE;
+    }
     public double getPow(){
         return power;
     }
