@@ -73,7 +73,7 @@ public class teleTest extends OpMode {
         camera = hardwareMap.get(Servo.class, "camera");
         camera.setPosition(0.07);
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(startingPose == null ? new Pose() : startingPose);
+        follower.setStartingPose(new Pose(0, 0, Math.toRadians(180)));
         follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
 

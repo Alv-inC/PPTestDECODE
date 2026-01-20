@@ -33,13 +33,20 @@ public class blueAutov3 extends OpMode {
 
     private PathChain firstLine;
     private PathChain Switch;
-    private PathChain ShotsTurn;
-    private PathChain ShotsNoTurn;
+    private PathChain Shot1;
+    private PathChain Shot2;
+    private PathChain Shot3;
+    private PathChain Shot4;
+    private PathChain Shot5;
     private boolean isTracking;
 
 
     private PathChain secondLine;
     private PathChain thirdLine;
+
+    private PathChain shimmyDown;
+    private PathChain shimmyUp;
+
 
     private LimelightCamera limelight;
     private TurretPLUSIntake turret;
@@ -48,7 +55,7 @@ public class blueAutov3 extends OpMode {
     private Hood hood;
 
     private DcMotorEx intake;
-    private float tiltAngle = 150;
+    private float tiltAngle = 135;
     private int switchCycles = 0;
     private static final int MAX_SWITCH_CYCLES = 2;
 
@@ -56,64 +63,102 @@ public class blueAutov3 extends OpMode {
     private Servo camera;
 
     public void buildPaths() {
-        ShotsNoTurn = follower.pathBuilder().addPath(
-                        new BezierLine(
-                                new Pose(33.600, 135.400),
-
-                                new Pose(56.410, 78.455)
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
-
+        // === SHOTS PATHS ===
+        Shot1 = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        new Pose(33.600, 135.400),
+                        new Pose(56.410, 78.455)
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
-        secondLine = follower.pathBuilder().addPath(
-                        new BezierCurve(
-                                new Pose(56.410, 78.455),
-                                new Pose(53.065, 58.160),
-                                new Pose(20.525, 59.879)
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
-
+        Shot2 = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        new Pose(20.525, 59.879),
+                        new Pose(56.410, 78.455)
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
-
-        Switch = follower.pathBuilder().addPath(
-                        new BezierCurve(
-                                new Pose(56.410, 78.455),
-                                new Pose(32.097, 60.135),
-                                new Pose(14.856, 61.538)
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
-
+        Shot3 = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        new Pose(10, 61.538),
+                        new Pose(56.410, 78.455)
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
-        ShotsTurn = follower.pathBuilder().addPath(
-                        new BezierLine(
-                                new Pose(14.856, 61.538),
-
-                                new Pose(56.410, 78.455)
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
-
+        Shot4 = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        new Pose(15.020, 84.730),
+                        new Pose(56.410, 78.455)
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
-        firstLine = follower.pathBuilder().addPath(
-                        new BezierCurve(
-                                new Pose(56.410, 78.455),
-                                new Pose(40.197, 84.972),
-                                new Pose(15.020, 84.730)
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+        Shot5 = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        new Pose(14.5, 35.452),
+                        new Pose(56.410, 78.455)
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
 
-        thirdLine = follower.pathBuilder().addPath(
-                        new BezierCurve(
-                                new Pose(56.410, 78.455),
-                                new Pose(59.281, 31.861),
-                                new Pose(14.317, 35.452)
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+// === LINE PATHS ===
+        secondLine = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        new Pose(56.410, 78.455),
+                        new Pose(53.065, 58.160),
+                        new Pose(20.525, 59.879)
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .build();
+
+        firstLine = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        new Pose(56.410, 78.455),
+                        new Pose(40.197, 84.972),
+                        new Pose(17, 84.730)
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .build();
+
+        thirdLine = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        new Pose(56.410, 78.455),
+                        new Pose(59.281, 31.861),
+                        new Pose(14.317, 35.452)
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .build();
+
+
+// === SWITCH PATH ===
+        Switch = follower.pathBuilder()
+                .addPath(new BezierCurve(
+                        new Pose(56.410, 78.455),
+                        new Pose(32.097, 60.135),
+                        new Pose(16.9, 63.1)
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
+                .build();
+
+        // === SHIMMY PATHS (AFTER SWITCH) ===
+        shimmyDown = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        new Pose(16.9, 63.1),   // exactly Switch end
+                        new Pose(22, 60.2)    // move DOWN ~3 units
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
+                .build();
+
+        shimmyUp = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        new Pose(22, 60.2),
+                        new Pose(12, 62.3)    // back to Switch end
+                ))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
     }
@@ -121,9 +166,11 @@ public class blueAutov3 extends OpMode {
 
     public void autonomousPathUpdate() {
         switch (pathState) {
-    //START PATH***
-            case 0: // Start → Shots (no turn)
-                follower.followPath(ShotsNoTurn, true);
+            //START PATH***
+            case 0: // Start → Shot 1
+                intake.setPower(-1);
+                flyWheel.constantShootAuto();
+                follower.followPath(Shot1, true);
                 setPathState(1);
                 break;
 
@@ -134,73 +181,81 @@ public class blueAutov3 extends OpMode {
                 }
                 break;
 
-            case 2: // → Shots (no turn)
+            case 2: // → Shot 2
                 if (!follower.isBusy()) {
-                    follower.followPath(ShotsNoTurn, true);
+                    follower.followPath(Shot2, true);
                     setPathState(3);
                 }
                 break;
 
-            case 3: // → Switch
+            case 3: // → Switch (initialize loop)
                 if (!follower.isBusy()) {
-                    switchCycles = 0; // reset loop
+                    switchCycles = 0;
                     follower.followPath(Switch, true);
-                    if(pathTimer.getElapsedTimeSeconds() > 2.5){
-                        setPathState(4);
-                    }
+                    setPathState(4);
                 }
                 break;
 
-            case 4: // Switch → ShotsTurn
+            case 4: // Switch → Shimmy Down
                 if (!follower.isBusy()) {
-                    follower.followPath(ShotsTurn, true);
+                    follower.followPath(shimmyDown, true);
                     setPathState(5);
                 }
                 break;
 
-            case 5: // Loop check
+            case 5: // Shimmy Down → Shimmy Up
                 if (!follower.isBusy()) {
-                    switchCycles++;
-
-                    if (switchCycles < MAX_SWITCH_CYCLES) {
-                        // Repeat Switch → ShotsTurn
-                        follower.followPath(Switch, true);
-                        if(pathTimer.getElapsedTimeSeconds() > 2.5){
-                            setPathState(4);
-                        }
-                    } else {
-                        // Done looping, move on
-                        follower.followPath(firstLine, true);
-                        setPathState(6);
-                    }
+                    follower.followPath(shimmyUp, true);
+                    setPathState(6);
                 }
                 break;
 
-            case 6: // → Shots (no turn)
+            case 6: // Shimmy Up → Shot 3
                 if (!follower.isBusy()) {
-                    follower.followPath(ShotsNoTurn, true);
+                    follower.followPath(Shot3, true);
                     setPathState(7);
                 }
                 break;
 
-            case 7: // → Third Line
+            case 7: // AFTER Shot 3 → loop or exit
                 if (!follower.isBusy()) {
-                    follower.followPath(thirdLine, true);
-                    setPathState(8);
+                    switchCycles++;
+
+                    if (switchCycles < MAX_SWITCH_CYCLES) {
+                        follower.followPath(Switch, true);
+                        setPathState(4);   // back to shimmy
+                    } else {
+                        follower.followPath(firstLine, true);
+                        setPathState(8);   // exit loop
+                    }
                 }
                 break;
 
-            case 8: // → Final Shots
+            case 8: // → Shot 4
                 if (!follower.isBusy()) {
-                    follower.followPath(ShotsNoTurn, true);
+                    follower.followPath(Shot4, true);
                     setPathState(9);
+                }
+                break;
+
+            case 9: // → Third Line
+                if (!follower.isBusy()) {
+                    follower.followPath(thirdLine, true);
+                    setPathState(10);
+                }
+                break;
+
+            case 10: // → Shot 5
+                if (!follower.isBusy()) {
+                    follower.followPath(Shot5, true);
+                    setPathState(11);
                 }
                 teleTest.startingPose = follower.getPose();
                 break;
         }
     }
 
-    public void setPathState(int pState) {
+            public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
     }
