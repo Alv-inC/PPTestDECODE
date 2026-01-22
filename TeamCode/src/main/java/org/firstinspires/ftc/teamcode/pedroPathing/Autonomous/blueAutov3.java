@@ -82,7 +82,7 @@ public class blueAutov3 extends OpMode {
 
         Shot3 = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(10, 61.538),
+                        new Pose(10, 61),
                         new Pose(56.410, 78.455)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -139,7 +139,7 @@ public class blueAutov3 extends OpMode {
                 .addPath(new BezierCurve(
                         new Pose(56.410, 78.455),
                         new Pose(32.097, 60.135),
-                        new Pose(16.9, 63.1)
+                        new Pose(17, 63.1)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
                 .build();
@@ -147,18 +147,18 @@ public class blueAutov3 extends OpMode {
         // === SHIMMY PATHS (AFTER SWITCH) ===
         shimmyDown = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(16.9, 63.1),   // exactly Switch end
-                        new Pose(22, 60.2)    // move DOWN ~3 units
+                        new Pose(17, 63.1),   // exactly Switch end
+                        new Pose(15.1, 45)    // move DOWN ~3 units
                 ))
-                .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
+                .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
 
         shimmyUp = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(22, 60.2),
-                        new Pose(12, 62.3)    // back to Switch end
+                        new Pose(15.1, 48),
+                        new Pose(15.1, 57)    // back to Switch end
                 ))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
 
     }
@@ -184,15 +184,18 @@ public class blueAutov3 extends OpMode {
             case 2: // → Shot 2
                 if (!follower.isBusy()) {
                     follower.followPath(Shot2, true);
-                    setPathState(3);
+                        setPathState(3);
+
                 }
                 break;
 
             case 3: // → Switch (initialize loop)
                 if (!follower.isBusy()) {
                     switchCycles = 0;
-                    follower.followPath(Switch, true);
-                    setPathState(4);
+                    if(pathTimer.getElapsedTimeSeconds()> 2.5) {
+                        follower.followPath(Switch, true);
+                        setPathState(4);
+                    }
                 }
                 break;
 
@@ -213,20 +216,22 @@ public class blueAutov3 extends OpMode {
             case 6: // Shimmy Up → Shot 3
                 if (!follower.isBusy()) {
                     follower.followPath(Shot3, true);
-                    setPathState(7);
+                        setPathState(7);
                 }
                 break;
 
             case 7: // AFTER Shot 3 → loop or exit
                 if (!follower.isBusy()) {
-                    switchCycles++;
+                    if(pathTimer.getElapsedTimeSeconds()> 2.5) {
+                        switchCycles++;
 
-                    if (switchCycles < MAX_SWITCH_CYCLES) {
-                        follower.followPath(Switch, true);
-                        setPathState(4);   // back to shimmy
-                    } else {
-                        follower.followPath(firstLine, true);
-                        setPathState(8);   // exit loop
+                        if (switchCycles < MAX_SWITCH_CYCLES) {
+                            follower.followPath(Switch, true);
+                            setPathState(4);   // back to shimmy
+                        } else {
+                            follower.followPath(firstLine, true);
+                            setPathState(8);   // exit loop
+                        }
                     }
                 }
                 break;
@@ -234,21 +239,27 @@ public class blueAutov3 extends OpMode {
             case 8: // → Shot 4
                 if (!follower.isBusy()) {
                     follower.followPath(Shot4, true);
-                    setPathState(9);
+                    if(pathTimer.getElapsedTimeSeconds()> 2.5) {
+                        setPathState(9);
+                    }
                 }
                 break;
 
             case 9: // → Third Line
                 if (!follower.isBusy()) {
-                    follower.followPath(thirdLine, true);
-                    setPathState(10);
+                    if(pathTimer.getElapsedTimeSeconds()> 2.5) {
+                        follower.followPath(thirdLine, true);
+                        setPathState(10);
+                    }
                 }
                 break;
 
             case 10: // → Shot 5
                 if (!follower.isBusy()) {
                     follower.followPath(Shot5, true);
-                    setPathState(11);
+                    if(pathTimer.getElapsedTimeSeconds()> 2.5) {
+                        setPathState(11);
+                    }
                 }
                 teleTest.startingPose = follower.getPose();
                 break;
