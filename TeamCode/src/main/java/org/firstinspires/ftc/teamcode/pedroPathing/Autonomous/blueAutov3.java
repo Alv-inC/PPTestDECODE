@@ -170,12 +170,16 @@ public class blueAutov3 extends OpMode {
             case 0: // Start → Shot 1
                 intake.setPower(-1);
                 flyWheel.constantShootAuto();
+                if(pathTimer.getElapsedTimeSeconds() > 1.5){
+                    flyWheel.uppies();
+                }
                 follower.followPath(Shot1, true);
                 setPathState(1);
                 break;
 
             case 1: // → Second Line
                 if (!follower.isBusy()) {
+                    flyWheel.downies();
                     follower.followPath(secondLine, true);
                     setPathState(2);
                 }
@@ -192,7 +196,9 @@ public class blueAutov3 extends OpMode {
             case 3: // → Switch (initialize loop)
                 if (!follower.isBusy()) {
                     switchCycles = 0;
+                    flyWheel.uppies();
                     if(pathTimer.getElapsedTimeSeconds()> 2.5) {
+                        flyWheel.downies();
                         follower.followPath(Switch, true);
                         setPathState(4);
                     }
