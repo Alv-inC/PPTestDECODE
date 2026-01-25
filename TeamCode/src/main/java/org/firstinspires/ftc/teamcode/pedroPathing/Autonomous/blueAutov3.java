@@ -253,10 +253,8 @@ public class blueAutov3 extends OpMode {
 
             case 9: // → Third Line
                 if (!follower.isBusy()) {
-                    if(pathTimer.getElapsedTimeSeconds()> 2.5) {
                         follower.followPath(thirdLine, true);
                         setPathState(10);
-                    }
                 }
                 break;
 
