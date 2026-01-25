@@ -38,7 +38,7 @@ public class blueAutov3 extends OpMode {
     private PathChain Shot3;
     private PathChain Shot4;
     private PathChain Shot5;
-    private boolean isTracking;
+    private boolean isTracking = true;
 
 
     private PathChain secondLine;
@@ -283,9 +283,7 @@ public class blueAutov3 extends OpMode {
     public void loop() {
         limelight.update();
         int targetTagId = 20;
-        if(isTracking){
-            limelight.trackTag_New(turret, targetTagId, true);
-        }
+        limelight.trackTag_New(turret, targetTagId, isTracking);
         turret.update();
 
 
