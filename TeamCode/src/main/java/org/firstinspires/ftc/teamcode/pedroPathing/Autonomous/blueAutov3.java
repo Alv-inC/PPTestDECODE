@@ -38,7 +38,7 @@ public class blueAutov3 extends OpMode {
     private PathChain Shot3;
     private PathChain Shot4;
     private PathChain Shot5;
-    private boolean isTracking;
+    private boolean isTracking = true;
 
 
     private PathChain secondLine;
@@ -195,6 +195,7 @@ public class blueAutov3 extends OpMode {
 
             case 3: // → Switch (initialize loop)
                 if (!follower.isBusy()) {
+                    flyWheel.uppies();
                     switchCycles = 0;
                     flyWheel.uppies();
                     if(pathTimer.getElapsedTimeSeconds()> 2.5) {
@@ -228,7 +229,9 @@ public class blueAutov3 extends OpMode {
 
             case 7: // AFTER Shot 3 → loop or exit
                 if (!follower.isBusy()) {
+                    flyWheel.uppies();
                     if(pathTimer.getElapsedTimeSeconds()> 2.5) {
+                        flyWheel.constantStop();
                         switchCycles++;
 
                         if (switchCycles < MAX_SWITCH_CYCLES) {
@@ -262,6 +265,7 @@ public class blueAutov3 extends OpMode {
                 if (!follower.isBusy()) {
                     follower.followPath(Shot5, true);
                     if(pathTimer.getElapsedTimeSeconds()> 2.5) {
+                        flyWheel.uppies();
                         setPathState(11);
                     }
                 }
@@ -298,9 +302,7 @@ public class blueAutov3 extends OpMode {
     public void loop() {
         limelight.update();
         int targetTagId = 20;
-        if(isTracking){
-            limelight.trackTag_New(turret, targetTagId, true);
-        }
+        limelight.trackTag_New(turret, targetTagId, isTracking);
         turret.update();
 
 

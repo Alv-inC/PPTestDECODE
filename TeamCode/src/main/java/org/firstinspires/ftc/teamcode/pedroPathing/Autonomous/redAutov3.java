@@ -141,7 +141,7 @@ public class redAutov3 extends OpMode {
             case 0:
                 flyWheel.constantShootAuto();
                 follower.followPath(firstShots, true);
-                turret.setTargetPosition(-4500);
+                turret.setTargetPosition(4500);
                 setPathState(1);
                 break;
 
@@ -170,7 +170,7 @@ public class redAutov3 extends OpMode {
 
             case 4:
                 if (!follower.isBusy()) {
-                    turret.setTargetPosition(0);
+                    turret.setTargetPosition(250);
                     if(pathTimer.getElapsedTimeSeconds() > 3) {
                         flyWheel.uppies();
                     }
@@ -184,7 +184,7 @@ public class redAutov3 extends OpMode {
                 break;
             case 5:
                 if (!follower.isBusy()) {
-                    turret.setTargetPosition(0);
+                    turret.setTargetPosition(250);
                     follower.followPath(Shots2, true);
                     setPathState(7);
                 }
@@ -259,7 +259,7 @@ public class redAutov3 extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.07);
+        camera.setPosition(0);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setHigh();
