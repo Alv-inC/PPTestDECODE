@@ -119,7 +119,7 @@ public class blueAutov3 extends OpMode {
                 .addPath(new BezierCurve(
                         new Pose(56.410, 78.455),
                         new Pose(40.197, 84.972),
-                        new Pose(17, 84.730)
+                        new Pose(19, 84.730)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -148,15 +148,15 @@ public class blueAutov3 extends OpMode {
         shimmyDown = follower.pathBuilder()
                 .addPath(new BezierLine(
                         new Pose(17, 63.1),   // exactly Switch end
-                        new Pose(15.1, 45)    // move DOWN ~3 units
+                        new Pose(15.3, 45)    // move DOWN ~3 units
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
 
         shimmyUp = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(15.1, 48),
-                        new Pose(15.1, 57)    // back to Switch end
+                        new Pose(15.3, 48),
+                        new Pose(15.3, 57)    // back to Switch end
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
@@ -166,115 +166,202 @@ public class blueAutov3 extends OpMode {
 
     public void autonomousPathUpdate() {
         switch (pathState) {
-            //START PATH***
-            case 0: // Start → Shot 1
+
+            // ===============================
+            // AUTO INIT + START → SHOT 1
+            // ===============================
+            case 0:
                 intake.setPower(-1);
-                flyWheel.constantShootAuto();
-                if(pathTimer.getElapsedTimeSeconds() > 1.5){
-                    flyWheel.uppies();
-                }
+                flyWheel.constantShootAutoSlow(); // ONLY ONCE
                 follower.followPath(Shot1, true);
                 setPathState(1);
                 break;
 
-            case 1: // → Second Line
-                if (!follower.isBusy()) {
-                    flyWheel.downies();
-                    follower.followPath(secondLine, true);
+            case 1: // delay BEFORE shooting Shot 1
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
+                    flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
                 }
                 break;
 
-            case 2: // → Shot 2
+            case 2: // shooting window for Shot 1
+                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                    flyWheel.downies(); // STOP SHOOTING
+                    flyWheel.constantShootAuto();
+                    setPathState(3);
+                }
+                break;
+
+            // ===============================
+            // → SECOND LINE
+            // ===============================
+            case 3:
+                if (!follower.isBusy()) {
+                    follower.followPath(secondLine, true);
+                    setPathState(4);
+                }
+                break;
+
+            // ===============================
+            // → SHOT 2 (MOVE FIRST)
+            // ===============================
+            case 4:
                 if (!follower.isBusy()) {
                     follower.followPath(Shot2, true);
-                        setPathState(3);
-
-                }
-                break;
-
-            case 3: // → Switch (initialize loop)
-                if (!follower.isBusy()) {
-                    flyWheel.uppies();
-                    switchCycles = 0;
-                    flyWheel.uppies();
-                    if(pathTimer.getElapsedTimeSeconds()> 2.5) {
-                        flyWheel.downies();
-                        follower.followPath(Switch, true);
-                        setPathState(4);
-                    }
-                }
-                break;
-
-            case 4: // Switch → Shimmy Down
-                if (!follower.isBusy()) {
-                    follower.followPath(shimmyDown, true);
                     setPathState(5);
                 }
                 break;
 
-            case 5: // Shimmy Down → Shimmy Up
+            case 5: // wait for path to Shot 2 to finish
                 if (!follower.isBusy()) {
-                    follower.followPath(shimmyUp, true);
+                    flyWheel.uppies(); // START SHOOTING
                     setPathState(6);
                 }
                 break;
 
-            case 6: // Shimmy Up → Shot 3
+            case 6: // shooting window Shot 2
+                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                    flyWheel.downies(); // STOP SHOOTING
+                    setPathState(7);
+                }
+                break;
+
+            // ===============================
+            // → SWITCH (initialize loop)
+            // ===============================
+            case 7:
+                switchCycles = 0;
+                follower.followPath(Switch, true);
+                setPathState(8);
+                break;
+
+            // ===============================
+            // SWITCH → SHIMMY DOWN
+            // ===============================
+            case 8:
                 if (!follower.isBusy()) {
+                    follower.followPath(shimmyDown, true);
+                    setPathState(9);
+                }
+                break;
+
+            // ===============================
+            // SHIMMY DOWN → SHIMMY UP
+            // ===============================
+            case 9:
+                if (!follower.isBusy()) {
+                    follower.followPath(shimmyUp, true);
+                    setPathState(10);
+                }
+                break;
+
+            // ===============================
+            // SHIMMY UP → SHOT 3
+            // ===============================
+            case 10:
+                if (pathTimer.getElapsedTimeSeconds() > 2) {
                     follower.followPath(Shot3, true);
-                        setPathState(7);
+                    setPathState(11);
                 }
                 break;
 
-            case 7: // AFTER Shot 3 → loop or exit
+            case 11: // wait for Shot 3 path to finish
                 if (!follower.isBusy()) {
-                    flyWheel.uppies();
-                    if(pathTimer.getElapsedTimeSeconds()> 2.5) {
-                        flyWheel.constantStop();
-                        switchCycles++;
-
-                        if (switchCycles < MAX_SWITCH_CYCLES) {
-                            follower.followPath(Switch, true);
-                            setPathState(4);   // back to shimmy
-                        } else {
-                            follower.followPath(firstLine, true);
-                            setPathState(8);   // exit loop
-                        }
-                    }
+                    flyWheel.uppies(); // START SHOOTING
+                    setPathState(12);
                 }
                 break;
 
-            case 8: // → Shot 4
+            case 12: // shooting window Shot 3
+                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                    flyWheel.downies();
+                    setPathState(13);
+                }
+                break;
+
+            // ===============================
+            // LOOP OR EXIT
+            // ===============================
+            case 13:
+                flyWheel.constantStop();
+                switchCycles++;
+
+                if (switchCycles < MAX_SWITCH_CYCLES) {
+                    follower.followPath(Switch, true);
+                    setPathState(8);
+                } else {
+                    follower.followPath(firstLine, true);
+                    setPathState(14);
+                }
+                break;
+
+            // ===============================
+            // → SHOT 4
+            // ===============================
+            case 14:
                 if (!follower.isBusy()) {
                     follower.followPath(Shot4, true);
-                    if(pathTimer.getElapsedTimeSeconds()> 2.5) {
-                        setPathState(9);
-                    }
+                    setPathState(15);
                 }
                 break;
 
-            case 9: // → Third Line
+            case 15:
                 if (!follower.isBusy()) {
-                        follower.followPath(thirdLine, true);
-                        setPathState(10);
+                    flyWheel.uppies();
+                    setPathState(16);
                 }
                 break;
 
-            case 10: // → Shot 5
+            case 16:
+                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                    flyWheel.downies();
+                    setPathState(17);
+                }
+                break;
+
+            // ===============================
+            // → THIRD LINE
+            // ===============================
+            case 17:
+                if (!follower.isBusy()) {
+                    follower.followPath(thirdLine, true);
+                    setPathState(18);
+                }
+                break;
+
+            // ===============================
+            // → SHOT 5
+            // ===============================
+            case 18:
                 if (!follower.isBusy()) {
                     follower.followPath(Shot5, true);
-                    if(pathTimer.getElapsedTimeSeconds()> 2.5) {
-                        flyWheel.uppies();
-                        setPathState(11);
-                    }
+                    setPathState(19);
                 }
+                break;
+
+            case 19:
+                if (!follower.isBusy()) {
+                    flyWheel.uppies();
+                    setPathState(20);
+                }
+                break;
+
+            case 20:
+                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                    flyWheel.downies();
+                    setPathState(21);
+                }
+                break;
+
+            case 21:
                 teleTest.startingPose = follower.getPose();
                 break;
         }
     }
 
-            public void setPathState(int pState) {
+
+
+    public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
     }
