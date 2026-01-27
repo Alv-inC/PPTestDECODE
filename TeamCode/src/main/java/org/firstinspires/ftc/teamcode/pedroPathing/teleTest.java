@@ -84,7 +84,7 @@ public class teleTest extends OpMode {
 //        follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(34.46153846153846, 117.94871794871796))))
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(25.46153846153846, 90.94871794871796))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(-180), 0.8))
                 .build();
     }
@@ -171,7 +171,6 @@ public class teleTest extends OpMode {
 //            intake.setPower(0);
 //        }
 
-
         if (!automatedDrive) {
             //Make the last parameter false for field-centric
             //In case the drivers want to use a "slowMode" you can scale the vectors
@@ -213,7 +212,7 @@ public class teleTest extends OpMode {
         }
         prevDpadUp = dpadUp;
 
-        if (gamepad1.dpad_down) {
+        if (gamepad1.xWasPressed()) {
             follower.followPath(pathChain.get());
             automatedDrive = true;
         }
@@ -227,21 +226,21 @@ public class teleTest extends OpMode {
 
 //        Slow Mode
         if (gamepad1.rightBumperWasPressed()) {
-            follower.setMaxPower(0.4);
-        }
-        if(gamepad1.leftBumperWasPressed()){
             follower.setMaxPower(0.7);
         }
-
-        //Optional way to change slow mode strength
-        if (gamepad1.xWasPressed()) {
-            slowModeMultiplier += 0.25;
+        if(gamepad1.leftBumperWasPressed()){
+            follower.setMaxPower(1);
         }
 
-        //Optional way to change slow mode strength
-        if (gamepad1.yWasPressed()) {
-            slowModeMultiplier -= 0.25;
-        }
+//        //Optional way to change slow mode strength
+//        if (gamepad1.xWasPressed()) {
+//            slowModeMultiplier += 0.25;
+//        }
+//
+//        //Optional way to change slow mode strength
+//        if (gamepad1.yWasPressed()) {
+//            slowModeMultiplier -= 0.25;
+//        }
 
         telemetryM.debug("position", follower.getPose());
         telemetryM.debug("velocity", follower.getVelocity());

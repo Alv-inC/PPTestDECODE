@@ -96,6 +96,7 @@ public class flyWheel {
 
  //
     public void constantShootAuto(){
+        block.setPosition(0.53);
         p = 0.15;
         targetVelocity = -1185;
     }
@@ -123,7 +124,9 @@ public class flyWheel {
         targetVelocity = v;
         new WaitCommand(2500);
     }
-
+    public boolean isBusy(){
+        return fly1.isBusy() || fly2.isBusy();
+    }
     public void constantStop(){
         block.setPosition(0.76);
         //p = 0;

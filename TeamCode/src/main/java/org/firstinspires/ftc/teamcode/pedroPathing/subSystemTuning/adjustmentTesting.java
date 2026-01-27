@@ -54,6 +54,8 @@ public class adjustmentTesting extends OpMode {
     boolean flag = false;
     boolean previousButtonState2a = false;
     private boolean prevDpadUp = false;
+    private static double x, y, h;
+
 
     @Override
     public void init() {
@@ -71,7 +73,7 @@ public class adjustmentTesting extends OpMode {
 //        follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(34.46153846153846, 117.94871794871796))))
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(25.46153846153846, 90.94871794871796))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(-180), 0.8))
                 .build();
     }
@@ -130,9 +132,9 @@ public class adjustmentTesting extends OpMode {
         double targetHeading = normalizeRadians(currentHeading + turretAngleRad);
         telemetryM.addData("target heading", targetHeading);
         if(turn){
+            automatedDrive = true;
             follower.turnTo(targetHeading);
             turret.setTargetAngle(0);
-            automatedDrive = true;
             //turn = false;
         }
         if (go) {
