@@ -29,7 +29,7 @@ public class LimelightCamera {
     // --- Tunable Dashboard Parameters ---
     public static int PIPELINE_INDEX = 1;
     public static double DEADBAND_DEG = 0.5;
-    public static double CORRECTION_GAIN = -400;
+    public static double CORRECTION_GAIN = 100;
 //    public static double TICKS_PER_REV = 384.5;
 //    public static double GEAR_RATIO = 1.0;
 //    public static double TICKS_PER_DEG = (TICKS_PER_REV * GEAR_RATIO) / 360.0;
