@@ -71,10 +71,10 @@ public class teleTest extends OpMode {
         hood = new Hood(hardwareMap);
         hood.setHigh();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
-        turret = new TurretPLUSIntake (hardwareMap, telemetry, intake);
+        turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0);
+        camera.setPosition(0.01);
         follower = Constants.createFollower(hardwareMap);
         if (startingPose != null) {
             follower.setStartingPose(startingPose);

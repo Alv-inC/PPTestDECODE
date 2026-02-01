@@ -9,6 +9,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 //0.76 down
 //0.53 up
+
+//camera
+//0.1 straight, 0.01 up, 0.15 down
 @TeleOp(name = "testServo")
 @Config
 public class testServo extends OpMode {
