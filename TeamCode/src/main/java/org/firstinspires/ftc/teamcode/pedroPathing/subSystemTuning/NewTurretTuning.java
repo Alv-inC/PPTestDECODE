@@ -57,7 +57,6 @@ public class NewTurretTuning extends OpMode {
         turret.update();
 
         telemetry.addData("Position", turret.getCurrentPosition());
-        telemetry.addData("Target Position", TurretPLUSIntake.targetPosition);
         telemetry.addData("Power", turret.getPow());
         telemetry.addData("Time", timer.seconds());
         telemetry.update();

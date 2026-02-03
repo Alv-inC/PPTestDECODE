@@ -37,9 +37,9 @@ public class teleTest extends OpMode {
             new Pose(72.41025641025641, 72.20512820512819, 90);
     public static Pose startingPose; //See ExampleAuto to understand how to use this
     private boolean automatedDrive;
-    private Supplier<PathChain> pathChain;
+    private Supplier<PathChain> pathChain, ballPathChain;
     private TelemetryManager telemetryM;
-    private boolean slowMode = false;
+    private boolean slowMode = false, trackBall;
     private double slowModeMultiplier = 0.5;
     private ElapsedTime timer = new ElapsedTime();
     private Servo camera;
@@ -85,7 +85,7 @@ public class teleTest extends OpMode {
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(25.46153846153846, 90.94871794871796))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(-180), 0.8))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(135), 0.8))
                 .build();
     }
 
@@ -105,18 +105,50 @@ public class teleTest extends OpMode {
         telemetryM.update();
         flywheel.update();
 
+        limelight.trackBall(turret, trackBall);
+        follower.update();
+        double[] result = limelight.calculateBallPose(follower.getPose().getX(), follower.getPose().getY(), Math.toDegrees(follower.getHeading()), turret.getCurrentAngle()*1.25);
+        telemetry.addData("x", result[0]);
+        telemetry.addData("y", result[1]);
+        telemetry.addData("h", result[2]);
+        telemetry.addData("hr", Math.toRadians(result[2]));
+        telemetry.addData("heading", follower.getHeading());
+        ballPathChain = () -> follower.pathBuilder() //Lazy Curve Generation
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(result[0], result[1]))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(result[2]), 0.8))
+                .build();
         boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
+        if(gamepad1.left_bumper) camera.setPosition(0.19);
+        if(gamepad1.right_bumper) camera.setPosition(0.03);
 
         int targetTagId = -1;
         if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) {
+            limelight.switchPipeline(1);
             targetTagId = 20;
             limelight.trackTag_New(turret, targetTagId, trackingEnabled);
 
         }
         else if (gamepad2.right_trigger > 0.5 || gamepad1.right_trigger > 0.5) {
+            limelight.switchPipeline(1);
             targetTagId = 24;
             limelight.trackTag_New(turret, targetTagId, trackingEnabled);
 
+        }
+        if(gamepad1.xWasPressed()){
+            limelight.switchPipeline(0);
+            turret.startScan();
+            if(limelight.ballInView()){
+                turret.stopScan();
+                trackBall = true;
+            }
+        }
+        if(gamepad1.bWasPressed()){
+            turret.stopScan();
+            trackBall = false;
+        }
+        if(gamepad1.yWasPressed() && trackBall){
+            automatedDrive = true;
+            follower.followPath(ballPathChain.get());
         }
 
         if (gamepad2.dpad_up) turret.setTargetPosition(0);
@@ -161,9 +193,9 @@ public class teleTest extends OpMode {
         if(gamepad2.x) {
             flywheel.constantStop();
         }
-        if(gamepad1.dpad_up)hood.setHigh();
-        if(gamepad1.dpad_left)hood.setMid();
-        if(gamepad1.dpad_down)hood.setLow();
+        if(gamepad1.dpad_up)turret.setTargetAngle(0);
+        if(gamepad1.dpad_left)turret.setTargetAngle(90);
+        if(gamepad1.dpad_right)turret.setTargetPosition(-90);
 
 
 //
@@ -198,25 +230,11 @@ public class teleTest extends OpMode {
         double currentHeading = follower.getHeading();
         telemetryM.addData("current heading", currentHeading);
         double targetHeading = currentHeading + turretAngleRad;
-        boolean dpadUp = gamepad1.dpad_right;
-        if (dpadUp && !prevDpadUp) {
-            Path rotate = new Path(
-                    new BezierLine(follower::getPose, follower::getPose)
-
-            );
-            follower.turnTo(Math.toRadians(180));
-
-            follower.followPath(rotate);
+        if(gamepad1.aWasPressed()){
+            follower.followPath(pathChain.get());
             automatedDrive = true;
             turret.setTargetPosition(0);
         }
-        prevDpadUp = dpadUp;
-
-        if (gamepad1.xWasPressed()) {
-            follower.followPath(pathChain.get());
-            automatedDrive = true;
-        }
-
 
         //Stop automated following if the follower is done
         if (automatedDrive && (gamepad1.bWasPressed() || !follower.isBusy())) {

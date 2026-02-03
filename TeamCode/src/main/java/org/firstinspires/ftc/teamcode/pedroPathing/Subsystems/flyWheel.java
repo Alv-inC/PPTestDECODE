@@ -23,7 +23,7 @@ public class flyWheel {
     private final HardwareMap hardwareMap;
     private static PIDController spinPID;
     public CachingDcMotorEx fly1;
-    private CachingDcMotorEx fly2;
+    public CachingDcMotorEx fly2;
 
     private Servo block;
 
@@ -53,7 +53,7 @@ public class flyWheel {
         //blocker
         block = hardwareMap.get(Servo.class, "block");
         //block.setDirection(Servo.Direction.REVERSE);
-        block.setPosition(0.76);
+        block.setPosition(0.53);
 
         fly1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fly2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -109,7 +109,7 @@ public class flyWheel {
     }
         public void constantShoot(){
             p = 0.15;
-           targetVelocity = -1170;
+           targetVelocity = -1400;
         }
         public void uppies(){
             block.setPosition(0.53);

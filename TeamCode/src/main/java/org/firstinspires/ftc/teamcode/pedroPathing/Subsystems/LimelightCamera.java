@@ -40,11 +40,11 @@ public class LimelightCamera {
             SMALL_GEAR_TICKS_PER_REV * GEAR_RATIO;
     public static double TICKS_PER_DEG =
             TICKS_PER_TURRET_REV / 360.0;
-    public static double CAMERA_MOUNT_ANGLE = -26.5;
+    public static double CAMERA_MOUNT_ANGLE = -25.5;
     public static double CAMERA_HEIGHT = 0.3048;
     public static double TARGET_HEIGHT = 0.08;
     // --- State ---
-    private boolean validTarget = false;
+    private boolean validTarget, foundBall = false;
     private double txDeg, balltxDeg = 0.0;
     private double tzMeters = 0.0;
     private int lastTagId = -1;
@@ -75,7 +75,7 @@ public class LimelightCamera {
     public void update() {
         //updatePipeline();
         LLResult result = limelight.getLatestResult();
-
+        foundBall = false;
         validTarget = false;
         if (result == null) {
             telemetry.addLine("no result");
@@ -103,6 +103,7 @@ public class LimelightCamera {
                 telemetry.addLine("hi");
                 List<LLResultTypes.ColorResult> contours = result.getColorResults();
                 if(!contours.isEmpty()){
+                    foundBall = true;
                     telemetry.addLine("found ball");
                     validTarget = true;
                     LLResultTypes.ColorResult target = contours.get(0);
@@ -147,6 +148,9 @@ public class LimelightCamera {
         telemetry.addData("newTarget", newTarget + CORRECTION_GAIN);
         turret.setTargetPosition(newTarget + CORRECTION_GAIN);
     }
+    public boolean ballInView(){
+        return foundBall;
+    }
     /**
      * Converts a target measurement in the CAMERA frame into FIELD (absolute) XY.
      *
@@ -170,10 +174,10 @@ public class LimelightCamera {
         double fieldUnitsPerMeter = 39.3700787;
         // 1) Convert camera-measured target XY to FIELD units (still in camera frame)
         double xCam = ballDistance * fieldUnitsPerMeter;
-        double yCam = ballDistance   * fieldUnitsPerMeter;
+        double yCam = ballLateralDistance  * fieldUnitsPerMeter;
 
-        double cameraOffsetXForwardMeters = 0; // camera position on robot (forward +)
-        double cameraOffsetYLeftMeters = 0;     // camera position on robot (left +)
+        double cameraOffsetXForwardMeters = 0.08; // camera position on robot (forward +)
+        double cameraOffsetYLeftMeters = -0.08;     // camera position on robot (left +)
         // 2) Convert camera mounting offset to FIELD units (robot frame)
         double xOff = cameraOffsetXForwardMeters * fieldUnitsPerMeter;
         double yOff = cameraOffsetYLeftMeters * fieldUnitsPerMeter;
