@@ -40,7 +40,7 @@ public class LimelightCamera {
             SMALL_GEAR_TICKS_PER_REV * GEAR_RATIO;
     public static double TICKS_PER_DEG =
             TICKS_PER_TURRET_REV / 360.0;
-    public static double CAMERA_MOUNT_ANGLE = -25.5;
+    public static double CAMERA_MOUNT_ANGLE = -21;
     public static double CAMERA_HEIGHT = 0.3048;
     public static double TARGET_HEIGHT = 0.08;
     // --- State ---

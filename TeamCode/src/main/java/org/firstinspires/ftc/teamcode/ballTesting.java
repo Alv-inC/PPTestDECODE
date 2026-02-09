@@ -45,7 +45,7 @@ public class ballTesting extends LinearOpMode {
     public void runOpMode() {
         // ---- Init hardware ----
         servo = hardwareMap.get(Servo.class, "camera");
-        servo.setPosition(0.2);
+        servo.setPosition(0.08);
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         camera = new LimelightCamera(hardwareMap, telemetry);
         intake = hardwareMap.get(DcMotorEx.class, "intake");

@@ -16,18 +16,22 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 public class testServo extends OpMode {
 
-    public static double pos, pos2 = 0; // Adjustable from FTC Dashboard
-    Servo block;
+    public static double pc, pb, pl, pr = 0; // Adjustable from FTC Dashboard
+    Servo block, camera, hl, hr;
 
     @Override
     public void init() {
-
-        block = hardwareMap.get(Servo.class, "camera");
+        camera = hardwareMap.get(Servo.class, "camera");
+        block = hardwareMap.get(Servo.class, "block");
+        hl = hardwareMap.get(Servo.class, "hoodLeft");
+        hr = hardwareMap.get(Servo.class, "hoodRight");
     }
 
     @Override
     public void loop() {
-
-        block.setPosition(pos);
+        camera.setPosition(pc);
+        block.setPosition(pb);
+        hl.setPosition(pl);
+        hr.setPosition(pr);
     }
 }
