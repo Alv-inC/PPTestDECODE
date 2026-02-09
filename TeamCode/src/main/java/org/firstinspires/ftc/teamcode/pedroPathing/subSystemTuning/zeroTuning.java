@@ -29,11 +29,10 @@ public class zeroTuning extends OpMode {
 
     @Override
     public void init() {
-    a = hardwareMap.get(Servo.class, "hood");
+        a = hardwareMap.get(Servo.class, "hood");
     b = hardwareMap.get(Servo.class, "block");
-    b.setDirection(Servo.Direction.REVERSE);
     c = hardwareMap.get(Servo.class, "camera");
-    intake = hardwareMap.get(DcMotorEx.class, "intake");
+        c.setDirection(Servo.Direction.REVERSE);
 
 //        ServoControllerEx controller = (ServoControllerEx) a.getController();
 //        int port = a.getPortNumber();
@@ -45,10 +44,7 @@ public class zeroTuning extends OpMode {
     //0 open
     @Override
     public void loop() {
-        a.setPosition(val1);
-        b.setPosition(val2);
-        c.setPosition(0);
-        intake.setPower(-1);
+       a.setPosition(0);
 
 
     }

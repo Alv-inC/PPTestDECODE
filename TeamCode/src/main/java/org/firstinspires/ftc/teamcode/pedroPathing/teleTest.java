@@ -69,12 +69,13 @@ public class teleTest extends OpMode {
         flywheel = new flyWheel(hardwareMap, telemetry);
         flywheel.constantStop();
         hood = new Hood(hardwareMap);
-        hood.setHigh();
+        hood.setLow();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0);
+        camera.setDirection(Servo.Direction.REVERSE);
+        camera.setPosition(0.7);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(DEFAULT_POSE);
 //        follower.update();
