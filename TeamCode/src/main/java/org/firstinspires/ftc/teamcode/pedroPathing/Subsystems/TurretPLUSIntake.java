@@ -40,8 +40,8 @@ public class TurretPLUSIntake {
     public TurretPLUSIntake(HardwareMap hardwareMap, Telemetry telemetry, DcMotorEx encoder1) {
         this.telemetry = telemetry;
 
-        leftServo = hardwareMap.get(CRServo.class, "turret1");
-        rightServo = hardwareMap.get(CRServo.class, "turret2");
+        leftServo = hardwareMap.get(CRServo.class, "turret2");
+        rightServo = hardwareMap.get(CRServo.class, "turret1");
         this.encoder = encoder1;
         resetEncoder();
         pid = new PIDController(p, i, d);

@@ -16,12 +16,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-    .mass(10.65942)
-            .forwardZeroPowerAcceleration(-40.74040)
-            .lateralZeroPowerAcceleration(-65.69320)
+    .mass(13.6)
+            .forwardZeroPowerAcceleration(-50.9091)
+            .lateralZeroPowerAcceleration(-65.483)
             .centripetalScaling(0.00015)
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.007,0,0.000003,0.6,0.003))
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0.015, 0.1))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.02,0,0.000003,0.6,0.003))
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.13, 0, 0.015, 0.1))
             .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.1,0,0.01,0.01))
             .headingPIDFCoefficients(new PIDFCoefficients(0.8, 0, 0.06, 0.02));
     //intakeAngle -> angle of intake
@@ -38,16 +38,16 @@ public class Constants {
             .rightRearMotorName("rb")
             .leftRearMotorName("lb")
             .leftFrontMotorName("lf")
-            .xVelocity(76.204266)
-            .yVelocity(57.2692)
+            .xVelocity(63.714)
+            .yVelocity(53.420)
             .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             ;
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(0)
-            .strafePodX(-5)
+            .forwardPodY(-5)
+            .strafePodX(-7)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD)

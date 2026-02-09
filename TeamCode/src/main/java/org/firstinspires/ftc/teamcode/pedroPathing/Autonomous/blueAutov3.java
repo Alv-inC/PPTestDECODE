@@ -74,32 +74,32 @@ public class blueAutov3 extends OpMode {
 
         Shot2 = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(20.525, 59.879),
-                        new Pose(56.410, 78.455)
+                        new Pose(15.525, 59.879),
+                        new Pose(51.410, 78.455)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         Shot3 = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(10, 61),
-                        new Pose(56.410, 78.455)
+                        new Pose(0, 64),
+                        new Pose(54.410, 74.455)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         Shot4 = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(15.020, 84.730),
-                        new Pose(56.410, 78.455)
+                        new Pose(8.020, 84.730),
+                        new Pose(54.410, 78.455)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         Shot5 = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(14.5, 35.452),
-                        new Pose(56.410, 78.455)
+                        new Pose(7.5, 32.452),
+                        new Pose(54.410, 78.455)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -108,17 +108,17 @@ public class blueAutov3 extends OpMode {
 // === LINE PATHS ===
         secondLine = follower.pathBuilder()
                 .addPath(new BezierCurve(
-                        new Pose(56.410, 78.455),
-                        new Pose(53.065, 58.160),
-                        new Pose(20.525, 59.879)
+                        new Pose(51.410, 78.455),
+                        new Pose(48.065, 58.160),
+                        new Pose(15.525, 59.879)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         firstLine = follower.pathBuilder()
                 .addPath(new BezierCurve(
-                        new Pose(56.410, 78.455),
-                        new Pose(40.197, 84.972),
+                        new Pose(54.410, 78.455),
+                        new Pose(38.197, 84.972),
                         new Pose(19, 84.730)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -126,9 +126,9 @@ public class blueAutov3 extends OpMode {
 
         thirdLine = follower.pathBuilder()
                 .addPath(new BezierCurve(
-                        new Pose(56.410, 78.455),
-                        new Pose(59.281, 31.861),
-                        new Pose(14.317, 35.452)
+                        new Pose(54.410, 78.455),
+                        new Pose(54.281, 28.861),
+                        new Pose(7.317, 32.452)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -137,9 +137,9 @@ public class blueAutov3 extends OpMode {
 // === SWITCH PATH ===
         Switch = follower.pathBuilder()
                 .addPath(new BezierCurve(
-                        new Pose(56.410, 78.455),
+                        new Pose(56.410, 77.455),
                         new Pose(32.097, 60.135),
-                        new Pose(17, 63.1)
+                        new Pose(9, 63.1)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
                 .build();
@@ -147,16 +147,16 @@ public class blueAutov3 extends OpMode {
         // === SHIMMY PATHS (AFTER SWITCH) ===
         shimmyDown = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(17, 63.1),   // exactly Switch end
-                        new Pose(15.3, 45)    // move DOWN ~3 units
+                        new Pose(9, 63.1),   // exactly Switch end
+                        new Pose(3.5, 45)    // move DOWN ~3 units
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
 
         shimmyUp = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(15.3, 48),
-                        new Pose(15.3, 57)    // back to Switch end
+                        new Pose(3.5, 48),
+                        new Pose(3.5, 61)    // back to Switch end
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
@@ -249,7 +249,7 @@ public class blueAutov3 extends OpMode {
             // SHIMMY DOWN → SHIMMY UP
             // ===============================
             case 9:
-                if (!follower.isBusy()) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
                     follower.followPath(shimmyUp, true);
                     setPathState(10);
                 }
@@ -259,7 +259,7 @@ public class blueAutov3 extends OpMode {
             // SHIMMY UP → SHOT 3
             // ===============================
             case 10:
-                if (pathTimer.getElapsedTimeSeconds() > 2) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
                     follower.followPath(Shot3, true);
                     setPathState(11);
                 }
@@ -378,10 +378,11 @@ public class blueAutov3 extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.07);
+        camera.setDirection(Servo.Direction.REVERSE);
+        camera.setPosition(0.7);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
-        hood.setHigh();
+        hood.setLow();
         flyWheel.downies();
     }
 

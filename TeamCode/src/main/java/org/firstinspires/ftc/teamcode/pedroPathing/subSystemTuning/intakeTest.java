@@ -18,7 +18,17 @@ public class intakeTest extends OpMode {
 
     @Override
     public void loop() {
-
-        intake.setPower(intakePOW);
+        if(gamepad1.a){
+            intake.setPower(1);
+        }
+        if(gamepad1.x){
+            intake.setPower(0.8);
+        }
+        if(gamepad1.b){
+            intake.setPower(-1);
+        }
+        if(gamepad1.y){
+            intake.setPower(-0.8);
+        }
     }
 }
