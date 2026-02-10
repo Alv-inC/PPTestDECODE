@@ -75,7 +75,7 @@ public class teleTest extends OpMode {
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
         camera.setDirection(Servo.Direction.REVERSE);
-        camera.setPosition(0.7);
+        camera.setPosition(0.55);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(DEFAULT_POSE);
 //        follower.update();
@@ -115,8 +115,8 @@ public class teleTest extends OpMode {
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(result[2]), 0.8))
                 .build();
         boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
-        if(gamepad1.left_bumper) camera.setPosition(0.08);
-        if(gamepad1.right_bumper) camera.setPosition(0);
+        if(gamepad1.left_bumper) camera.setPosition(0.31);
+        if(gamepad1.right_bumper) camera.setPosition(0.55);
 
         int targetTagId = -1;
         if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) {
@@ -228,11 +228,11 @@ public class teleTest extends OpMode {
         double currentHeading = follower.getHeading();
         telemetryM.addData("current heading", currentHeading);
         double targetHeading = currentHeading + turretAngleRad;
-        if(gamepad1.aWasPressed()){
-            follower.followPath(pathChain.get());
-            automatedDrive = true;
-            turret.setTargetPosition(0);
-        }
+//        if(gamepad1.aWasPressed()){
+//            follower.followPath(pathChain.get());
+//            automatedDrive = true;
+//            turret.setTargetPosition(0);
+//        }
 
         //Stop automated following if the follower is done
         if (automatedDrive && (gamepad1.bWasPressed() || !follower.isBusy())) {

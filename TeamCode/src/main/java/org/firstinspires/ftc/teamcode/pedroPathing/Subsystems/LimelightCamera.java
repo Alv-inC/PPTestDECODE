@@ -89,12 +89,13 @@ public class LimelightCamera {
                     LLResultTypes.FiducialResult fid = fiducials.get(0); // first tag by default
                     lastTagId = fid.getFiducialId();
 
-                    Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
-                    double tx = tagPoseCam.getPosition().x;
-                    double tz = tagPoseCam.getPosition().z;
-                    tzMeters = tz;
-
-                    txDeg = Math.toDegrees(Math.atan2(tx, tz));
+//                    Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
+//                    double tx = tagPoseCam.getPosition().x;
+//                    double tz = tagPoseCam.getPosition().z;
+//                    tzMeters = tz;
+//                    txDeg = Math.toDegrees(Math.atan2(tx, tz));
+//                    telemetry.addData("thetxdeg", fid.getTargetXDegrees());
+                    txDeg = fid.getTargetXDegrees();
                     telemetry.addData("txDeg", txDeg);
                     if (Math.abs(txDeg) < DEADBAND_DEG) txDeg = 0.0;
                 }
@@ -137,33 +138,21 @@ public class LimelightCamera {
         if (!validTarget || lastTagId != targetTagId || targetTagId == -1 || !enabled) return;
 
         double correctionTicks = txDeg * TICKS_PER_DEG;
-        double newTarget = turret.getCurrentPosition() + correctionTicks;
-        telemetry.addData("newTarget", newTarget + CORRECTION_GAIN);
-        turret.setTargetPosition(newTarget + CORRECTION_GAIN);
+        double newTarget = turret.getCurrentPosition() - correctionTicks;
+        telemetry.addData("newTarget", newTarget);
+        turret.setTargetPosition(newTarget);
     }
     public void trackBall(TurretPLUSIntake turret, boolean enabled) {
         if (!enabled) return;
         double correctionTicks = balltxDeg * TICKS_PER_DEG;
-        double newTarget = turret.getCurrentPosition() + correctionTicks;
-        telemetry.addData("newTarget", newTarget + CORRECTION_GAIN);
-        turret.setTargetPosition(newTarget + CORRECTION_GAIN);
+        double newTarget = turret.getCurrentPosition() - correctionTicks;
+        telemetry.addData("newTarget", newTarget);
+        turret.setTargetPosition(newTarget);
     }
     public boolean ballInView(){
         return foundBall;
     }
-    /**
-     * Converts a target measurement in the CAMERA frame into FIELD (absolute) XY.
-     *
-     * Coordinate conventions (you must keep these consistent):
-     * - Robot pose: (robotXField, robotYField) in FIELD UNITS, robotHeadingDeg in degrees.
-     * - Robot heading: 0 deg points along +X field axis, positive CCW (standard math).
-     * - Camera frame input: xForwardMeters is forward from camera, yLeftMeters is left of camera.
-     * - turretHeadingDeg: camera/turret heading relative to FIELD +X axis (absolute).
-     *   If you only have turret angle relative to robot, compute:
-     *     turretHeadingDeg = robotHeadingDeg + turretAngleRelativeDeg
-     *
-     * Returns: double[]{targetXField, targetYField}
-     */
+
     public double[] calculateBallPose(
             double robotXField,
             double robotYField,

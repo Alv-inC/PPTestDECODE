@@ -11,27 +11,25 @@ import com.qualcomm.robotcore.hardware.Servo;
 //0.53 up
 
 //camera
-//0.12 straight, 0.03 up, 0.19 down
+//0.43 straight, 0.31 down, 0.55 up
 @TeleOp(name = "testServo")
 @Config
 public class testServo extends OpMode {
 
-    public static double pc, pb, pl, pr = 0; // Adjustable from FTC Dashboard
-    Servo block, camera, hl, hr;
+    public static double pb, pl, pr = 0.53; // Adjustable from FTC Dashboard
+    public static double pc = 0.7;
+    Servo block, camera;
 
     @Override
     public void init() {
         camera = hardwareMap.get(Servo.class, "camera");
         block = hardwareMap.get(Servo.class, "block");
-        hl = hardwareMap.get(Servo.class, "hoodLeft");
-        hr = hardwareMap.get(Servo.class, "hoodRight");
     }
 
     @Override
     public void loop() {
         camera.setPosition(pc);
-        block.setPosition(pb);
-        hl.setPosition(pl);
-        hr.setPosition(pr);
+        //block.setPosition(pb);
+
     }
 }
