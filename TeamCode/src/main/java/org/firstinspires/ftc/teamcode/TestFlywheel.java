@@ -17,6 +17,7 @@ public class TestFlywheel extends LinearOpMode {
     public static double TEST_VELOCITY = 0;  // set from Dashboard
     public static double INTAKE_POWER = 0;  // set from Dashboard
     public static boolean RUN_FLYWHEEL = false; // toggle from Dashboard
+    public static boolean RUN_POWER = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -24,8 +25,8 @@ public class TestFlywheel extends LinearOpMode {
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
         flyWheel shooter = new flyWheel(hardwareMap, telemetry);
-//        DcMotorEx intake = hardwareMap.get(DcMotorEx.class, "intake");
-//        intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooter.uppies();
+        DcMotorEx intake = hardwareMap.get(DcMotorEx.class, "intake");
 
         telemetry.addLine("Ready. Use Dashboard to set velocity and toggle RUN_FLYWHEEL.");
         telemetry.update();
@@ -35,13 +36,17 @@ public class TestFlywheel extends LinearOpMode {
         while (opModeIsActive()) {
             if (RUN_FLYWHEEL) {
                 shooter.constantShootAtVelocity((int)TEST_VELOCITY);
+                shooter.update();
             } else {
                 shooter.constantStop();
             }
-//            intake.setPower(INTAKE_POWER);
 
-
-            shooter.update();
+            if (RUN_POWER) {
+                shooter.uppies();;
+                shooter.fly1.setPower(-1);
+                shooter.fly2.setPower(-1);
+            }
+            intake.setPower(INTAKE_POWER);
 
             telemetry.addData("RUN_FLYWHEEL", RUN_FLYWHEEL);
             telemetry.addData("Target Velocity", flyWheel.targetVelocity);

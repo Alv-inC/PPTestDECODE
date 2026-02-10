@@ -40,12 +40,15 @@ public class LimelightCamera {
             SMALL_GEAR_TICKS_PER_REV * GEAR_RATIO;
     public static double TICKS_PER_DEG =
             TICKS_PER_TURRET_REV / 360.0;
-
+    public static double CAMERA_MOUNT_ANGLE = -21;
+    public static double CAMERA_HEIGHT = 0.3048;
+    public static double TARGET_HEIGHT = 0.08;
     // --- State ---
-    private boolean validTarget = false;
-    private double txDeg = 0.0;
+    private boolean validTarget, foundBall = false;
+    private double txDeg, balltxDeg = 0.0;
     private double tzMeters = 0.0;
     private int lastTagId = -1;
+    private double ballDistance, ballLateralDistance = 0;
 
     public LimelightCamera(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -58,34 +61,66 @@ public class LimelightCamera {
     public void updatePipeline() {
         limelight.pipelineSwitch(PIPELINE_INDEX);
     }
+    public void switchPipeline(int index) {
+        if (PIPELINE_INDEX != index) {
+            PIPELINE_INDEX = index;
+            limelight.pipelineSwitch(index);
+        }
+    }
+
 
     /**
      * Processes the latest camera frame and updates tag data.
      */
     public void update() {
-        updatePipeline();
+        //updatePipeline();
         LLResult result = limelight.getLatestResult();
-
+        foundBall = false;
         validTarget = false;
-
-        if (result != null && result.isValid()) {
-            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
-            if (!fiducials.isEmpty()) {
-                telemetry.addLine("found tag");
-                validTarget = true;
-                LLResultTypes.FiducialResult fid = fiducials.get(0); // first tag by default
-                lastTagId = fid.getFiducialId();
-
-                Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
-                double tx = tagPoseCam.getPosition().x;
-                double tz = tagPoseCam.getPosition().z;
-                tzMeters = tz;
-
-                txDeg = Math.toDegrees(Math.atan2(tx, tz));
-                telemetry.addData("txDeg", txDeg);
-                if (Math.abs(txDeg) < DEADBAND_DEG) txDeg = 0.0;
-            }
+        if (result == null) {
+            telemetry.addLine("no result");
+            return;
         }
+            if(PIPELINE_INDEX==1) {
+                List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+                if (!fiducials.isEmpty()) {
+                    telemetry.addLine("found tag");
+                    validTarget = true;
+                    LLResultTypes.FiducialResult fid = fiducials.get(0); // first tag by default
+                    lastTagId = fid.getFiducialId();
+
+//                    Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
+//                    double tx = tagPoseCam.getPosition().x;
+//                    double tz = tagPoseCam.getPosition().z;
+//                    tzMeters = tz;
+//                    txDeg = Math.toDegrees(Math.atan2(tx, tz));
+//                    telemetry.addData("thetxdeg", fid.getTargetXDegrees());
+                    txDeg = fid.getTargetXDegrees();
+                    telemetry.addData("txDeg", txDeg);
+                    if (Math.abs(txDeg) < DEADBAND_DEG) txDeg = 0.0;
+                }
+            }
+            else if(PIPELINE_INDEX==0 || PIPELINE_INDEX==3){
+                telemetry.addLine("hi");
+                List<LLResultTypes.ColorResult> contours = result.getColorResults();
+                if(!contours.isEmpty()){
+                    foundBall = true;
+                    telemetry.addLine("found ball");
+                    validTarget = true;
+                    LLResultTypes.ColorResult target = contours.get(0);
+                    balltxDeg = target.getTargetXDegrees();
+                    double ty = target.getTargetYDegrees();
+                    telemetry.addData("tydegrees", ty);
+// Inverted ty → subtract instead of add
+                    double angle = Math.toRadians(CAMERA_MOUNT_ANGLE - ty);
+                    double distance =
+                            (TARGET_HEIGHT - CAMERA_HEIGHT) / Math.tan(angle);
+                    ballDistance = distance;
+                    telemetry.addData("ball distance", distance);
+                    ballLateralDistance = ballDistance * Math.tan(Math.toRadians(balltxDeg));
+                    telemetry.addData("ball lateral distance", ballLateralDistance);
+                }
+            }
     }
 
     /**
@@ -103,12 +138,75 @@ public class LimelightCamera {
         if (!validTarget || lastTagId != targetTagId || targetTagId == -1 || !enabled) return;
 
         double correctionTicks = txDeg * TICKS_PER_DEG;
-        double newTarget = turret.getCurrentPosition() + correctionTicks;
-        telemetry.addData("newTarget", newTarget + CORRECTION_GAIN);
-        turret.setTargetPosition(newTarget + CORRECTION_GAIN);
+        double newTarget = turret.getCurrentPosition() - correctionTicks;
+        telemetry.addData("newTarget", newTarget);
+        turret.setTargetPosition(newTarget);
+    }
+    public void trackBall(TurretPLUSIntake turret, boolean enabled) {
+        if (!enabled) return;
+        double correctionTicks = balltxDeg * TICKS_PER_DEG;
+        double newTarget = turret.getCurrentPosition() - correctionTicks;
+        telemetry.addData("newTarget", newTarget);
+        turret.setTargetPosition(newTarget);
+    }
+    public boolean ballInView(){
+        return foundBall;
     }
 
+    public double[] calculateBallPose(
+            double robotXField,
+            double robotYField,
+            double robotHeadingDeg,
+            double turretAngleRelativeDeg
+    ) {
+        double turretHeadingDeg = robotHeadingDeg + turretAngleRelativeDeg;
+        double fieldUnitsPerMeter = 39.3700787;
+        // 1) Convert camera-measured target XY to FIELD units (still in camera frame)
+        double xCam = ballDistance * fieldUnitsPerMeter;
+        double yCam = ballLateralDistance  * fieldUnitsPerMeter;
 
+        double cameraOffsetXForwardMeters = 0.08; // camera position on robot (forward +)
+        double cameraOffsetYLeftMeters = -0.08;     // camera position on robot (left +)
+        // 2) Convert camera mounting offset to FIELD units (robot frame)
+        double xOff = cameraOffsetXForwardMeters * fieldUnitsPerMeter;
+        double yOff = cameraOffsetYLeftMeters * fieldUnitsPerMeter;
+
+        // 3) Rotate camera offset from ROBOT frame -> FIELD frame using robot heading
+        double rRad = Math.toRadians(robotHeadingDeg);
+        double cosR = Math.cos(rRad);
+        double sinR = Math.sin(rRad);
+
+        double xOffField = xOff * cosR - yOff * sinR;
+        double yOffField = xOff * sinR + yOff * cosR;
+
+        // Camera absolute position in field coords
+        double camXField = robotXField + xOffField;
+        double camYField = robotYField + yOffField;
+
+        // 4) Rotate target vector from CAMERA frame -> FIELD frame using turret (camera) heading
+        double tRad = Math.toRadians(turretHeadingDeg);
+        double cosT = Math.cos(tRad);
+        double sinT = Math.sin(tRad);
+
+        double xTargetFieldOffset = xCam * cosT - yCam * sinT;
+        double yTargetFieldOffset = xCam * sinT + yCam * cosT;
+
+        // 5) Translate from camera position to get absolute target position
+        double targetXField = camXField + xTargetFieldOffset;
+        double targetYField = camYField + yTargetFieldOffset;
+
+//        double dx = targetXField - robotXField;
+//        double dy = targetYField - robotYField;
+//
+//        double headingRad = Math.atan2(dy, dx);
+//        double headingDeg = Math.toDegrees(headingRad);
+
+        return new double[]{targetXField, targetYField, turretHeadingDeg};
+    }
+
+    public double getBallDistance() {
+        return ballDistance;
+    }
     public boolean hasValidTarget() {
         return validTarget;
     }

@@ -10,6 +10,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Configurable
 public class TurretPLUSIntake {
+    // Scan mode
+    public static boolean scanEnabled = false;
+    public static double scanMinDeg = -90;
+    public static double scanMaxDeg = 90;
+    public static double searchIncrement = 1;
+    public static int searchDirection = 1;
+    private double scanTargetDeg = 0;
 
     private final CRServo leftServo;
     private final CRServo rightServo;
@@ -25,7 +32,7 @@ public class TurretPLUSIntake {
     public static double currentTicks;
 
     // Motion
-    public static double targetPosition = 0;
+    public double targetPosition = 0;
 
     public static double power;
 
@@ -50,9 +57,21 @@ public class TurretPLUSIntake {
 
     public void update() {
         pid.setPID(p, i, d);
+        if (scanEnabled) {
+            scanTargetDeg += searchIncrement * searchDirection;
+            setTargetAngle(scanTargetDeg);
+            if (scanTargetDeg >= scanMaxDeg) {
+                scanTargetDeg = scanMaxDeg;
+                searchDirection = -1;
+            } else if (scanTargetDeg <= scanMinDeg) {
+                scanTargetDeg = scanMinDeg;
+                searchDirection = 1;
+            }
+        }
 
         currentTicks = encoder.getCurrentPosition();
         power = pid.calculate(currentTicks, targetPosition);
+        power = clamp(power, -1.0, 1.0);
         leftServo.setPower(power);
         rightServo.setPower(power);
 
@@ -94,6 +113,17 @@ public class TurretPLUSIntake {
         encoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         encoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         targetPosition = 0;
+    }
+    public void startScan() {
+        scanEnabled = true;
+        scanTargetDeg = clamp(getCurrentAngle(), scanMinDeg, scanMaxDeg);
+    }
+
+    public void stopScan() {
+        scanEnabled = false;
+    }
+    private double clamp(double v, double min, double max) {
+        return Math.max(min, Math.min(max, v));
     }
 
 //    public void intakeStop(){
