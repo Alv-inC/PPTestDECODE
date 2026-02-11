@@ -48,7 +48,7 @@ public class teleTest extends OpMode {
     private DcMotorEx intake;
     private Hood hood;
     LimelightCamera limelight;
-
+    private double autoTurretAngle = 0;
     boolean flag = false;
     boolean previousButtonState2a = false;
     private boolean prevDpadUp = false;
@@ -69,15 +69,16 @@ public class teleTest extends OpMode {
         flywheel = new flyWheel(hardwareMap, telemetry);
         flywheel.constantStop();
         hood = new Hood(hardwareMap);
-        hood.setLow();
+        hood.setHigh();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
         camera.setDirection(Servo.Direction.REVERSE);
-        camera.setPosition(0.55);
+        camera.setPosition(0.52);
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(DEFAULT_POSE);
+        Pose poseToUse = (startingPose != null) ? startingPose : DEFAULT_POSE;
+        follower.setStartingPose(poseToUse);
 //        follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
@@ -102,6 +103,9 @@ public class teleTest extends OpMode {
         telemetryM.update();
         flywheel.update();
 
+        if(limelight.tagInView()) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
+        else flywheel.constantShootAtVelocity(0);
+
         limelight.trackBall(turret, trackBall);
         follower.update();
         double[] result = limelight.calculateBallPose(follower.getPose().getX(), follower.getPose().getY(), Math.toDegrees(follower.getHeading()), turret.getCurrentAngle()*1.25);
@@ -115,8 +119,8 @@ public class teleTest extends OpMode {
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(result[2]), 0.8))
                 .build();
         boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
-        if(gamepad1.left_bumper) camera.setPosition(0.31);
-        if(gamepad1.right_bumper) camera.setPosition(0.55);
+        if(gamepad1.left_bumper) camera.setPosition(0.26);
+        if(gamepad1.right_bumper) camera.setPosition(0.52);
 
         int targetTagId = -1;
         if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) {
@@ -149,8 +153,7 @@ public class teleTest extends OpMode {
             follower.followPath(ballPathChain.get());
         }
 
-        if (gamepad2.dpad_up) turret.setTargetPosition(0);
-        else if(gamepad2.dpad_down) turret.setTargetAngle(90);
+        if (gamepad2.dpad_up) turret.setTargetAngle(0-autoTurretAngle);
 
         limelight.logTelemetry(telemetryM);
 
@@ -168,38 +171,41 @@ public class teleTest extends OpMode {
         previousButtonState2a = gamepad2.a;
 
         if(gamepad2.dpad_right){
-            intake.setPower(1);
+            intake.setPower(0.5);
         }
 
         if(gamepad2.b){
             intake.setPower(-1);
         }
         if(gamepad2.y){
-            intake.setPower(-0.7);
+            intake.setPower(-0.6);
         }
         if(gamepad2.left_bumper){
             flywheel.uppies();
-            flywheel.constantShootSlow();
+            //flywheel.constantShootSlow();
             //pause(0.5);       // 0.5 second pause
 
         }
         if(gamepad2.right_bumper){
             flywheel.uppies();
-            flywheel.constantShoot();
+            //flywheel.constantShoot();
             //pause(0.5);       // 0.5 second pause
         }
         if(gamepad2.x) {
             flywheel.constantStop();
         }
-        if(gamepad1.dpad_up)turret.setTargetAngle(0);
-        if(gamepad1.dpad_left)turret.setTargetAngle(90);
-        if(gamepad1.dpad_right)turret.setTargetPosition(-90);
+        if(gamepad1.dpad_up)turret.setTargetAngle(0-autoTurretAngle);
+        if(gamepad1.dpad_left)turret.setTargetAngle(90-autoTurretAngle);
+        if(gamepad1.dpad_right)turret.setTargetPosition(-90-autoTurretAngle);
 
 
-//
-//        if(gamepad2.dpad_down){
-//            intake.setPower(0);
-//        }
+
+        if(gamepad2.dpad_down){
+            hood.setMid();
+        }
+        if(gamepad2.dpad_left){
+            hood.setHigh();
+        }
 
         if (!automatedDrive) {
             //Make the last parameter false for field-centric

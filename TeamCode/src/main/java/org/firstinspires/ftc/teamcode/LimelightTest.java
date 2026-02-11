@@ -88,7 +88,7 @@ public class LimelightTest extends LinearOpMode {
 
                             double v = LimelightCamera.computeLaunchVelocity(tz);
                             telemetry.addData("target velocity", v);
-                            double target_motor_v = LimelightCamera.velocityToTicksPerSecond(v);
+                            double target_motor_v = LimelightCamera.velocityToTicksPerSecond(v, tz);
                             telemetry.addData("target motor velocity", target_motor_v);
                             double tx = tagPoseCam.getPosition().x;
 
