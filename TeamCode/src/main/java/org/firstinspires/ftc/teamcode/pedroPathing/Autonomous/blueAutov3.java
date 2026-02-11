@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.Autonomous;
 
+import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -21,13 +24,14 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
+@Configurable
 @Autonomous(name = "[NEW]blueAutoV3", group = "Tests")
 public class blueAutov3 extends OpMode {
     private ElapsedTime TotalTime = new ElapsedTime();
      private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
-
+    private TelemetryManager telemetryM;
     //MAYBE LATER PUT ALL THE POSES INSIDE A INITIALIZATION FUNCTION
     private final Pose startPose = new Pose(33.6, 135.4, Math.toRadians(180));
 
@@ -83,7 +87,7 @@ public class blueAutov3 extends OpMode {
         Shot3 = follower.pathBuilder()
                 .addPath(new BezierLine(
                         new Pose(0, 64),
-                        new Pose(54.410, 74.455)
+                        new Pose(57.410, 74.455)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -91,7 +95,7 @@ public class blueAutov3 extends OpMode {
         Shot4 = follower.pathBuilder()
                 .addPath(new BezierLine(
                         new Pose(8.020, 84.730),
-                        new Pose(54.410, 78.455)
+                        new Pose(57.410, 78.455)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -99,7 +103,7 @@ public class blueAutov3 extends OpMode {
         Shot5 = follower.pathBuilder()
                 .addPath(new BezierLine(
                         new Pose(7.5, 32.452),
-                        new Pose(54.410, 78.455)
+                        new Pose(57.410, 78.455)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -117,7 +121,7 @@ public class blueAutov3 extends OpMode {
 
         firstLine = follower.pathBuilder()
                 .addPath(new BezierCurve(
-                        new Pose(54.410, 78.455),
+                        new Pose(57.410, 78.455),
                         new Pose(38.197, 84.972),
                         new Pose(19, 84.730)
                 ))
@@ -126,9 +130,9 @@ public class blueAutov3 extends OpMode {
 
         thirdLine = follower.pathBuilder()
                 .addPath(new BezierCurve(
-                        new Pose(54.410, 78.455),
-                        new Pose(54.281, 28.861),
-                        new Pose(7.317, 32.452)
+                        new Pose(57.410, 78.455),
+                        new Pose(57.281, 28.861),
+                        new Pose(11, 32.452)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -137,9 +141,9 @@ public class blueAutov3 extends OpMode {
 // === SWITCH PATH ===
         Switch = follower.pathBuilder()
                 .addPath(new BezierCurve(
-                        new Pose(56.410, 77.455),
+                        new Pose(58.410, 77.455),
                         new Pose(32.097, 60.135),
-                        new Pose(9, 63.1)
+                        new Pose(7, 63.1)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
                 .build();
@@ -147,16 +151,16 @@ public class blueAutov3 extends OpMode {
         // === SHIMMY PATHS (AFTER SWITCH) ===
         shimmyDown = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(9, 63.1),   // exactly Switch end
-                        new Pose(3.5, 45)    // move DOWN ~3 units
+                        new Pose(7, 63.1),   // exactly Switch end
+                        new Pose(1.5, 49)    // move DOWN ~3 units
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
 
         shimmyUp = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(3.5, 48),
-                        new Pose(3.5, 61)    // back to Switch end
+                        new Pose(1.5, 52),
+                        new Pose(2, 67.9)    // back to Switch end
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
@@ -368,6 +372,7 @@ public class blueAutov3 extends OpMode {
 
     @Override
     public void init() {
+        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         flyWheel = new flyWheel(hardwareMap, telemetry);
         hood = new Hood(hardwareMap);
         pathTimer = new Timer();
@@ -379,7 +384,7 @@ public class blueAutov3 extends OpMode {
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
         camera.setDirection(Servo.Direction.REVERSE);
-        camera.setPosition(0.55);
+        camera.setPosition(0.52);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
@@ -391,8 +396,9 @@ public class blueAutov3 extends OpMode {
         limelight.update();
         int targetTagId = 20;
         limelight.trackTag_New(turret, targetTagId, isTracking);
+        isTracking = limelight.tagInView();
+        if(!isTracking)turret.setTargetPosition(0);
         turret.update();
-
 
 
         if (!hasStarted) {
@@ -406,10 +412,11 @@ public class blueAutov3 extends OpMode {
         autonomousPathUpdate();
 
         //Feedback to Driver Hub for debugging
-        telemetry.addData("path state", pathState);
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
-        telemetry.update();
+        telemetryM.addData("path state", pathState);
+        telemetryM.addData("x", follower.getPose().getX());
+        telemetryM.addData("y", follower.getPose().getY());
+        telemetryM.addData("heading", follower.getPose().getHeading());
+        telemetryM.addData("ISTRACKING", isTracking);
+        telemetryM.update();
     }
 }

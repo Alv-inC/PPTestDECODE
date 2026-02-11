@@ -10,9 +10,9 @@ public class Hood {
     private Servo hood;
     private final HardwareMap hardwareMap;
 
-    private final double hood_high = 0.2;
-    private final double hood_mid = 0;
-    private final double hood_low = 0;
+    private final double hood_high = 0.2; //47.5 degrees
+    private final double hood_mid = 0.4;
+    private final double hood_low = 0.58; //35.3
     public Hood(HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
         hood = hardwareMap.get(Servo.class, "hood");

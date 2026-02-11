@@ -381,7 +381,7 @@ public class redAutov3 extends OpMode {
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
         camera.setDirection(Servo.Direction.REVERSE);
-        camera.setPosition(0.55);
+        camera.setPosition(0.47);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();

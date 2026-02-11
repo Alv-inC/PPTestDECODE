@@ -25,7 +25,7 @@ public class LimelightCamera {
 
     private final Limelight3A limelight;
     private final Telemetry telemetry;
-
+    public static double coefficient = 290;
     // --- Tunable Dashboard Parameters ---
     public static int PIPELINE_INDEX = 1;
     public static double DEADBAND_DEG = 0.5;
@@ -44,11 +44,15 @@ public class LimelightCamera {
     public static double CAMERA_HEIGHT = 0.3048;
     public static double TARGET_HEIGHT = 0.08;
     // --- State ---
-    private boolean validTarget, foundBall = false;
+    private boolean validTarget, foundBall, foundTag = false;
     private double txDeg, balltxDeg = 0.0;
     private double tzMeters = 0.0;
     private int lastTagId = -1;
     private double ballDistance, ballLateralDistance = 0;
+    private double launchPower = 0;
+    private static int farCoefficient = 360; //2.75 m
+    private static int midCoefficient = 400; //1.75 m
+    private static int closeCoefficient = 435; //1 m
 
     public LimelightCamera(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -77,6 +81,7 @@ public class LimelightCamera {
         LLResult result = limelight.getLatestResult();
         foundBall = false;
         validTarget = false;
+        foundTag = false;
         if (result == null) {
             telemetry.addLine("no result");
             return;
@@ -86,15 +91,15 @@ public class LimelightCamera {
                 if (!fiducials.isEmpty()) {
                     telemetry.addLine("found tag");
                     validTarget = true;
+                    foundTag = true;
                     LLResultTypes.FiducialResult fid = fiducials.get(0); // first tag by default
                     lastTagId = fid.getFiducialId();
 
-//                    Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
-//                    double tx = tagPoseCam.getPosition().x;
-//                    double tz = tagPoseCam.getPosition().z;
-//                    tzMeters = tz;
-//                    txDeg = Math.toDegrees(Math.atan2(tx, tz));
-//                    telemetry.addData("thetxdeg", fid.getTargetXDegrees());
+                    Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
+                    tzMeters = tagPoseCam.getPosition().z;
+                    double launchSpeed = computeLaunchVelocity(tzMeters);
+                    launchPower = velocityToTicksPerSecond(launchSpeed, tzMeters);
+
                     txDeg = fid.getTargetXDegrees();
                     telemetry.addData("txDeg", txDeg);
                     if (Math.abs(txDeg) < DEADBAND_DEG) txDeg = 0.0;
@@ -152,7 +157,8 @@ public class LimelightCamera {
     public boolean ballInView(){
         return foundBall;
     }
-
+    public double getLaunchPower() {return launchPower;}
+    public boolean tagInView() {return foundTag; }
     public double[] calculateBallPose(
             double robotXField,
             double robotYField,
@@ -308,17 +314,24 @@ public class LimelightCamera {
 
         return result;
     }
-    public static double velocityToTicksPerSecond(double velocity) {
+    public static double velocityToTicksPerSecond(double velocity, double tz) {
         // Regression equation: motor ticks/s = 290 * v_target - 58
-        return 290.0 * velocity - 58.0;
+        double coeff;
+        if(tz <= 1) coeff = closeCoefficient;
+        else if(tz <= 2.2) coeff = midCoefficient;
+        else coeff = farCoefficient - 20;
+        return -1 * coeff * velocity;
+//        private int farCoefficient = 360; //2.75 m
+//        private int midcoefficient = 400; //1.75 m
+//        private int closeCoefficient = 435; //1 m
     }
     public static double computeLaunchVelocity(double xGoal) {
 
         // Constants
         double yGoal = 1.15;     // target height (meters)
-        double hBot = 0.33;      // shooter height (meters)
+        double hBot = 0.55;      // shooter height (meters)
         double g = 9.81;         // gravity (m/s^2)
-        double thetaDeg = 50.0;  // fixed launch angle
+        double thetaDeg = 45.7;  // fixed launch angle
         double thetaRad = Math.toRadians(thetaDeg);
 
         if (xGoal <= 0) {
