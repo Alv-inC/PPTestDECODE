@@ -56,17 +56,17 @@ public class farBlue extends OpMode {
         // === SHOTS PATHS ===
         Path1 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(64.523, 8.000),
+                                new Pose(56.897, 2.393),
 
-                                new Pose(62.056, 20.972)
+                                new Pose(53.981, 20.075)
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+                ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                 .build();
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(62.056, 20.972),
+                                new Pose(53.981, 20.075),
                                 new Pose(46.710, 39.061),
                                 new Pose(13.477, 36.047)
                         )
@@ -78,7 +78,7 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(13.477, 36.047),
 
-                                new Pose(62.327, 20.916)
+                                new Pose(53.579, 20.916)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -86,7 +86,7 @@ public class farBlue extends OpMode {
 
         Path4 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(62.327, 20.916),
+                                new Pose(53.579, 20.916),
 
                                 new Pose(9.850, 9.131)
                         )
@@ -98,13 +98,11 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(9.850, 9.131),
 
-                                new Pose(61.150, 20.879)
+                                new Pose(53.075, 20.206)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                 .build();
-
-
     }
 
 
@@ -116,7 +114,8 @@ public class farBlue extends OpMode {
             // ===============================
             case 0:
                 intake.setPower(-1);
-                flyWheel.constantShootAutoSlow(); // ONLY ONCE
+                flyWheel.constantShootAuto(); // ONLY ONCE
+                hood.setHigh();
                 follower.followPath(Path1, true);
                 setPathState(1);
                 break;

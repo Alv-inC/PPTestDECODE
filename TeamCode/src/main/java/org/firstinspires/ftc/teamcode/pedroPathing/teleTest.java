@@ -104,8 +104,7 @@ public class teleTest extends OpMode {
         flywheel.update();
 
         if(limelight.tagInView()) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
-        else flywheel.constantShootAtVelocity(0);
-
+//removed reset to 0
         limelight.trackBall(turret, trackBall);
         follower.update();
         double[] result = limelight.calculateBallPose(follower.getPose().getX(), follower.getPose().getY(), Math.toDegrees(follower.getHeading()), turret.getCurrentAngle()*1.25);
@@ -119,7 +118,7 @@ public class teleTest extends OpMode {
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(result[2]), 0.8))
                 .build();
         boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
-        if(gamepad1.left_bumper) camera.setPosition(0.26);
+       // if(gamepad1.left_bumper) camera.setPosition(0.26);
         if(gamepad1.right_bumper) camera.setPosition(0.52);
 
         int targetTagId = -1;
@@ -135,14 +134,14 @@ public class teleTest extends OpMode {
             limelight.trackTag_New(turret, targetTagId, trackingEnabled);
 
         }
-        if(gamepad1.xWasPressed()){
-            limelight.switchPipeline(0);
-            turret.startScan();
-            if(limelight.ballInView()){
-                turret.stopScan();
-                trackBall = true;
-            }
-        }
+//        if(gamepad1.xWasPressed()){
+//            limelight.switchPipeline(0);
+//            turret.startScan();
+//            if(limelight.ballInView()){
+//                turret.stopScan();
+//                trackBall = true;
+//            }
+//        }
         if(gamepad1.bWasPressed()){
             turret.stopScan();
             trackBall = false;
@@ -178,7 +177,7 @@ public class teleTest extends OpMode {
             intake.setPower(-1);
         }
         if(gamepad2.y){
-            intake.setPower(-0.6);
+            intake.setPower(-0.4);
         }
         if(gamepad2.left_bumper){
             flywheel.uppies();
