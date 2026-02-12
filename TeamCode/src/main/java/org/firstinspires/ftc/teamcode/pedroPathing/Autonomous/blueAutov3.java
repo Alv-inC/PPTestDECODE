@@ -42,8 +42,7 @@ public class blueAutov3 extends OpMode {
     private PathChain Shot3;
     private PathChain Shot4;
     private PathChain Shot5;
-    private boolean isTracking = true;
-
+    private boolean isTracking, flag = true;
 
     private PathChain secondLine;
     private PathChain thirdLine;
@@ -62,7 +61,7 @@ public class blueAutov3 extends OpMode {
     private float tiltAngle = 135;
     private int switchCycles = 0;
     private static final int MAX_SWITCH_CYCLES = 2;
-
+    public static int initialPower = -950;
     private boolean hasStarted = false;
     private Servo camera;
 
@@ -87,7 +86,7 @@ public class blueAutov3 extends OpMode {
         Shot3 = follower.pathBuilder()
                 .addPath(new BezierLine(
                         new Pose(0, 64),
-                        new Pose(57.410, 74.455)
+                        new Pose(60.10, 72.455)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -123,7 +122,7 @@ public class blueAutov3 extends OpMode {
                 .addPath(new BezierCurve(
                         new Pose(57.410, 78.455),
                         new Pose(38.197, 84.972),
-                        new Pose(19, 84.730)
+                        new Pose(22, 84.730)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -152,14 +151,14 @@ public class blueAutov3 extends OpMode {
         shimmyDown = follower.pathBuilder()
                 .addPath(new BezierLine(
                         new Pose(7, 63.1),   // exactly Switch end
-                        new Pose(1.5, 49)    // move DOWN ~3 units
+                        new Pose(0.3, 55)    // move DOWN ~3 units
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
 
         shimmyUp = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(1.5, 52),
+                        new Pose(0.3, 52),
                         new Pose(2, 67.9)    // back to Switch end
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
@@ -182,16 +181,16 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 1: // delay BEFORE shooting Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
                 }
                 break;
 
             case 2: // shooting window for Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.4) {
                     flyWheel.downies(); // STOP SHOOTING
-                    flyWheel.constantShootAuto();
+                    //flyWheel.constantShootAuto();
                     setPathState(3);
                 }
                 break;
@@ -201,6 +200,8 @@ public class blueAutov3 extends OpMode {
             // ===============================
             case 3:
                 if (!follower.isBusy()) {
+                    flag = false;
+                    hood.setHigh();
                     follower.followPath(secondLine, true);
                     setPathState(4);
                 }
@@ -397,7 +398,7 @@ public class blueAutov3 extends OpMode {
         int targetTagId = 20;
         limelight.trackTag_New(turret, targetTagId, isTracking);
         isTracking = limelight.tagInView();
-        if(!isTracking)turret.setTargetPosition(0);
+        if(!isTracking && !flag)turret.setTargetAngle(-7);
         turret.update();
 
 
@@ -408,6 +409,9 @@ public class blueAutov3 extends OpMode {
             pathState = 0; // ensure the FSM begins from the right state
         }
         follower.update();
+        double power = limelight.getLaunchPower();
+        if(limelight.tagInView() && !flag) flyWheel.setTargetVelocity(power);
+        else flyWheel.setTargetVelocity(initialPower);
         flyWheel.update();
         autonomousPathUpdate();
 
