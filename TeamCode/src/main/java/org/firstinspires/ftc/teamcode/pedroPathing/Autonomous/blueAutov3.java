@@ -58,6 +58,7 @@ public class blueAutov3 extends OpMode {
     private Hood hood;
 
     private DcMotorEx intake;
+    private boolean trackRN = false;
     private float tiltAngle = 135;
     private int switchCycles = 0;
     private static final int MAX_SWITCH_CYCLES = 2;
@@ -151,15 +152,15 @@ public class blueAutov3 extends OpMode {
         shimmyDown = follower.pathBuilder()
                 .addPath(new BezierLine(
                         new Pose(7, 63.1),   // exactly Switch end
-                        new Pose(0.3, 55)    // move DOWN ~3 units
+                        new Pose(-1, 54)    // move DOWN ~3 units
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
 
         shimmyUp = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(0.3, 52),
-                        new Pose(2, 67.9)    // back to Switch end
+                        new Pose(-1, 52),
+                        new Pose(-1, 64)    // back to Switch end
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
@@ -191,6 +192,7 @@ public class blueAutov3 extends OpMode {
                 if (pathTimer.getElapsedTimeSeconds() > 1.4) {
                     flyWheel.downies(); // STOP SHOOTING
                     //flyWheel.constantShootAuto();
+                    trackRN = true;
                     setPathState(3);
                 }
                 break;
@@ -264,7 +266,7 @@ public class blueAutov3 extends OpMode {
             // SHIMMY UP → SHOT 3
             // ===============================
             case 10:
-                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.4) {
                     follower.followPath(Shot3, true);
                     setPathState(11);
                 }
@@ -399,7 +401,10 @@ public class blueAutov3 extends OpMode {
         limelight.trackTag_New(turret, targetTagId, isTracking);
         isTracking = limelight.tagInView();
         if(!isTracking && !flag)turret.setTargetAngle(-7);
-        turret.update();
+        if(trackRN){
+            turret.update();
+        }
+
 
 
         if (!hasStarted) {
@@ -411,7 +416,7 @@ public class blueAutov3 extends OpMode {
         follower.update();
         double power = limelight.getLaunchPower();
         if(limelight.tagInView() && !flag) flyWheel.setTargetVelocity(power);
-        else flyWheel.setTargetVelocity(initialPower);
+        //else flyWheel.setTargetVelocity(initialPower);
         flyWheel.update();
         autonomousPathUpdate();
 

@@ -58,15 +58,15 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(56.897, 2.393),
 
-                                new Pose(53.981, 20.075)
+                                new Pose(56, 20.075)
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(0))
+                ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                 .build();
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(53.981, 20.075),
+                                new Pose(56, 20.075),
                                 new Pose(46.710, 39.061),
                                 new Pose(13.477, 36.047)
                         )
@@ -78,7 +78,7 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(13.477, 36.047),
 
-                                new Pose(53.579, 20.916)
+                                new Pose(56, 20.916)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -86,7 +86,7 @@ public class farBlue extends OpMode {
 
         Path4 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(53.579, 20.916),
+                                new Pose(56, 20.916),
 
                                 new Pose(9.850, 9.131)
                         )
@@ -98,7 +98,7 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(9.850, 9.131),
 
-                                new Pose(53.075, 20.206)
+                                new Pose(56, 20.206)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -128,7 +128,7 @@ public class farBlue extends OpMode {
                 break;
 
             case 2: // shooting window Shot 2
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     flyWheel.downies(); // STOP SHOOTING
                     setPathState(3);
                 }
@@ -153,7 +153,7 @@ public class farBlue extends OpMode {
                 }
                 break;
             case 6: // shooting window Shot 2
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     flyWheel.downies(); // STOP SHOOTING
                     setPathState(7);
                 }
@@ -177,7 +177,7 @@ public class farBlue extends OpMode {
                 }
                 break;
             case 10: // shooting window Shot 2
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     flyWheel.downies(); // STOP SHOOTING
                     setPathState(11);
                 }
