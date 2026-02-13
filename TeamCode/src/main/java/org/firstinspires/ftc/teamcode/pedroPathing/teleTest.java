@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 @Configurable
 @TeleOp(name = "testTele")
 public class teleTest extends OpMode {
+    public static double initialTurretPosition = 0;
     private Follower follower;
     private static final Pose DEFAULT_POSE =
             new Pose(72.41025641025641, 0, 90);
@@ -105,7 +106,7 @@ public class teleTest extends OpMode {
 
         telemetryM.addData("bot pose", follower.getPose());
         if(limelight.tagInView()) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
-        else flywheel.constantShootAtVelocity(1000);
+        else flywheel.constantShootAtVelocity(-1000);
 //removed reset to 0
         limelight.trackBall(turret, trackBall);
         follower.update();

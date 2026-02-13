@@ -66,6 +66,7 @@ public class redAutov3 extends OpMode {
     private boolean hasStarted = false;
     private Servo camera;
     public static double cameraDelay = 1.5;
+    private boolean updateEnd = false;
 
     public void buildPaths() {
         // === SHOTS PATHS ===
@@ -332,6 +333,8 @@ public class redAutov3 extends OpMode {
             // → THIRD LINE
             // ===============================
             case 17:
+                trackRN = false;
+                updateEnd = true;
                 if (!follower.isBusy()) {
                     follower.followPath(thirdLine, true);
                     setPathState(18);
@@ -403,6 +406,11 @@ public class redAutov3 extends OpMode {
         isTracking = limelight.tagInView();
         if(!isTracking && !flag)turret.setTargetAngle(7);
         if(trackRN){
+            turret.update();
+        }
+        if(updateEnd) {
+            isTracking = false;
+            turret.setTargetAngle(-42);
             turret.update();
         }
 
