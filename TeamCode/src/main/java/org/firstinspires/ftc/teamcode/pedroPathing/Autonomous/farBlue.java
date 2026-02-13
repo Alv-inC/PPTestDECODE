@@ -60,7 +60,7 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(56.897, 2.393),
 
-                                new Pose(56, 20.075)
+                                new Pose(56.2, 20.075)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -68,7 +68,7 @@ public class farBlue extends OpMode {
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(56, 20.075),
+                                new Pose(56.2, 20.075),
                                 new Pose(46.710, 39.061),
                                 new Pose(13.477, 36.047)
                         )
@@ -80,7 +80,7 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(13.477, 36.047),
 
-                                new Pose(56, 20.916)
+                                new Pose(56.2, 20.916)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -88,7 +88,7 @@ public class farBlue extends OpMode {
 
         Path4 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(56, 20.916),
+                                new Pose(56.2, 20.916),
                                 new Pose(32.248, 23.117),
                                 new Pose(9.850, 9.131)
                         )
@@ -99,7 +99,7 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(9.850, 9.131),
 
-                                new Pose(56, 20.206)
+                                new Pose(56.2, 20.206)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -107,7 +107,7 @@ public class farBlue extends OpMode {
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(56, 20.916),
+                                new Pose(56.2, 20.916),
                                 new Pose(32.748, 42.402),
                                 new Pose(12.467, 43.682)
                         )
@@ -119,7 +119,7 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(12.467, 43.682),
 
-                                new Pose(56, 20.916)
+                                new Pose(56.2, 20.916)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -135,14 +135,14 @@ public class farBlue extends OpMode {
             // ===============================
             case 0:
                 intake.setPower(-1);
-                flyWheel.constantShootAuto(); // ONLY ONCE
+//                flyWheel.constantShootAuto(); // ONLY ONCE
                 hood.setHigh();
                 follower.followPath(Path1, true);
                 setPathState(1);
                 break;
 
             case 1:
-                if (pathTimer.getElapsedTimeSeconds() > 3) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     flyWheel.uppies(); // START SHOOTING
                     setPathState(2);
                 }
@@ -256,8 +256,7 @@ public class farBlue extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setDirection(Servo.Direction.REVERSE);
-        camera.setPosition(0.55);
+        camera.setPosition(0.6);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
@@ -279,6 +278,8 @@ public class farBlue extends OpMode {
             hasStarted = true;
             pathState = 0; // ensure the FSM begins from the right state
         }
+        double power = limelight.getLaunchPower();
+        if(limelight.tagInView()) flyWheel.setTargetVelocity(power);
         follower.update();
         flyWheel.update();
         autonomousPathUpdate();

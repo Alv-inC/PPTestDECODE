@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
-@Autonomous(name = "[NEW]farRED", group = "Tests")
+@Autonomous(name = "[NEW]farRed", group = "Tests")
 public class farRed extends OpMode {
     private ElapsedTime TotalTime = new ElapsedTime();
     private Follower follower;
@@ -36,6 +36,8 @@ public class farRed extends OpMode {
     private PathChain Path3;
     private PathChain Path4;
     private PathChain Path5;
+    private PathChain Path6;
+    private PathChain Path7;
 
     private LimelightCamera limelight;
     private TurretPLUSIntake turret;
@@ -56,9 +58,9 @@ public class farRed extends OpMode {
         // === SHOTS PATHS ===
         Path1 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(64.523, 8.000).mirror(),
+                                new Pose(56.897, 2.393).mirror(),
 
-                                new Pose(62.056, 20.972).mirror()
+                                new Pose(56.2, 20.075).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -66,7 +68,7 @@ public class farRed extends OpMode {
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(62.056, 20.972).mirror(),
+                                new Pose(56.2, 20.075).mirror(),
                                 new Pose(46.710, 39.061).mirror(),
                                 new Pose(13.477, 36.047).mirror()
                         )
@@ -78,33 +80,50 @@ public class farRed extends OpMode {
                         new BezierLine(
                                 new Pose(13.477, 36.047).mirror(),
 
-                                new Pose(62.327, 20.916).mirror()
+                                new Pose(56.2, 20.916).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                 .build();
 
         Path4 = follower.pathBuilder().addPath(
-                        new BezierLine(
-                                new Pose(62.327, 20.916).mirror(),
-
+                        new BezierCurve(
+                                new Pose(56.2, 20.916).mirror(),
+                                new Pose(32.248, 23.117).mirror(),
                                 new Pose(9.850, 9.131).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                 .build();
-
         Path5 = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(9.850, 9.131).mirror(),
 
-                                new Pose(61.150, 20.879).mirror()
+                                new Pose(56.2, 20.206).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                 .build();
 
+        Path6 = follower.pathBuilder().addPath(
+                        new BezierCurve(
+                                new Pose(56.2, 20.916).mirror(),
+                                new Pose(32.748, 42.402).mirror(),
+                                new Pose(12.467, 43.682).mirror()
+                        )
+                ).setConstantHeadingInterpolation(Math.toRadians(0))
 
+                .build();
+
+        Path7 = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(12.467, 43.682).mirror(),
+
+                                new Pose(56.2, 20.916).mirror()
+                        )
+                ).setConstantHeadingInterpolation(Math.toRadians(0))
+
+                .build();
     }
 
 
@@ -116,20 +135,21 @@ public class farRed extends OpMode {
             // ===============================
             case 0:
                 intake.setPower(-1);
-                flyWheel.constantShootAutoSlow(); // ONLY ONCE
+//                flyWheel.constantShootAuto(); // ONLY ONCE
+                hood.setHigh();
                 follower.followPath(Path1, true);
                 setPathState(1);
                 break;
 
             case 1:
-                if (pathTimer.getElapsedTimeSeconds() > 3) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     flyWheel.uppies(); // START SHOOTING
                     setPathState(2);
                 }
                 break;
 
             case 2: // shooting window Shot 2
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     flyWheel.downies(); // STOP SHOOTING
                     setPathState(3);
                 }
@@ -154,7 +174,7 @@ public class farRed extends OpMode {
                 }
                 break;
             case 6: // shooting window Shot 2
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     flyWheel.downies(); // STOP SHOOTING
                     setPathState(7);
                 }
@@ -178,15 +198,38 @@ public class farRed extends OpMode {
                 }
                 break;
             case 10: // shooting window Shot 2
-                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     flyWheel.downies(); // STOP SHOOTING
                     setPathState(11);
                 }
                 break;
-
             case 11: // shooting window Shot 2
                 if (!follower.isBusy()) {
-                    setPathState(7);
+                    follower.followPath(Path6, true);
+                    setPathState(12);
+                }
+                break;
+            case 12: // shooting window Shot 2
+                if (!follower.isBusy()) {
+                    follower.followPath(Path7, true);
+                    setPathState(13);
+                }
+                break;
+            case 13:
+                if (!follower.isBusy()) {
+                    flyWheel.uppies(); // START SHOOTING
+                    setPathState(14);
+                }
+                break;
+            case 14: // shooting window Shot 2
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
+                    flyWheel.downies(); // STOP SHOOTING
+                    setPathState(15);
+                }
+                break;
+            case 15: // shooting window Shot 2
+                if (!follower.isBusy()) {
+                    setPathState(11);
                 }
                 teleTest.startingPose = follower.getPose();
                 break;
@@ -213,8 +256,7 @@ public class farRed extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setDirection(Servo.Direction.REVERSE);
-        camera.setPosition(0.55);
+        camera.setPosition(0.6);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
@@ -224,7 +266,7 @@ public class farRed extends OpMode {
     @Override
     public void loop() {
         limelight.update();
-        int targetTagId = 20;
+        int targetTagId = 24;
         limelight.trackTag_New(turret, targetTagId, isTracking);
         turret.update();
 
@@ -236,6 +278,8 @@ public class farRed extends OpMode {
             hasStarted = true;
             pathState = 0; // ensure the FSM begins from the right state
         }
+        double power = limelight.getLaunchPower();
+        if(limelight.tagInView()) flyWheel.setTargetVelocity(power);
         follower.update();
         flyWheel.update();
         autonomousPathUpdate();

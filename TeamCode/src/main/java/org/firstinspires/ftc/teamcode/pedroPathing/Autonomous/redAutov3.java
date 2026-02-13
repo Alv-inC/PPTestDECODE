@@ -87,7 +87,7 @@ public class redAutov3 extends OpMode {
 
         Shot3 = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(16, 45).mirror(),
+                        new Pose(14, 45).mirror(),
                         new Pose(60.10, 72.455).mirror()
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -143,8 +143,8 @@ public class redAutov3 extends OpMode {
         Switch = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         new Pose(58.410, 77.455).mirror(),
-                        new Pose(32.097, 59.135).mirror(),
-                        new Pose(24, 62.1).mirror()
+                        new Pose(32.097, 57.135).mirror(),
+                        new Pose(23, 60.1).mirror()
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
                 .build();
@@ -152,16 +152,16 @@ public class redAutov3 extends OpMode {
         // === SHIMMY PATHS (AFTER SWITCH) ===
         shimmyDown = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(24, 62.1).mirror(),   // exactly Switch end
-                        new Pose(16, 35).mirror()    // move DOWN ~3 units
+                        new Pose(23, 60.1).mirror(),   // exactly Switch end
+                        new Pose(14, 30).mirror()    // move DOWN ~3 units
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
 
         shimmyUp = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(16, 35).mirror(),
-                        new Pose(16, 45).mirror()    // back to Switch end
+                        new Pose(14, 30).mirror(),
+                        new Pose(14, 45).mirror()    // back to Switch end
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
@@ -388,7 +388,7 @@ public class redAutov3 extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.6);
+        camera.setPosition(0.7);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
