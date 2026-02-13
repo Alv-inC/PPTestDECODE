@@ -36,6 +36,8 @@ public class farBlue extends OpMode {
     private PathChain Path3;
     private PathChain Path4;
     private PathChain Path5;
+    private PathChain Path6;
+    private PathChain Path7;
 
     private LimelightCamera limelight;
     private TurretPLUSIntake turret;
@@ -85,20 +87,39 @@ public class farBlue extends OpMode {
                 .build();
 
         Path4 = follower.pathBuilder().addPath(
-                        new BezierLine(
+                        new BezierCurve(
                                 new Pose(56, 20.916),
-
+                                new Pose(32.248, 23.117),
                                 new Pose(9.850, 9.131)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                 .build();
-
         Path5 = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(9.850, 9.131),
 
                                 new Pose(56, 20.206)
+                        )
+                ).setConstantHeadingInterpolation(Math.toRadians(180))
+
+                .build();
+
+        Path6 = follower.pathBuilder().addPath(
+                        new BezierCurve(
+                                new Pose(56, 20.916),
+                                new Pose(32.748, 42.402),
+                                new Pose(12.467, 43.682)
+                        )
+                ).setConstantHeadingInterpolation(Math.toRadians(180))
+
+                .build();
+
+        Path7 = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(12.467, 43.682),
+
+                                new Pose(56, 20.916)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -182,10 +203,33 @@ public class farBlue extends OpMode {
                     setPathState(11);
                 }
                 break;
-
             case 11: // shooting window Shot 2
                 if (!follower.isBusy()) {
-                   setPathState(7);
+                    follower.followPath(Path6, true);
+                    setPathState(12);
+                }
+                break;
+            case 12: // shooting window Shot 2
+                if (!follower.isBusy()) {
+                    follower.followPath(Path7, true);
+                    setPathState(13);
+                }
+                break;
+            case 13:
+                if (!follower.isBusy()) {
+                    flyWheel.uppies(); // START SHOOTING
+                    setPathState(14);
+                }
+                break;
+            case 14: // shooting window Shot 2
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
+                    flyWheel.downies(); // STOP SHOOTING
+                    setPathState(15);
+                }
+                break;
+            case 15: // shooting window Shot 2
+                if (!follower.isBusy()) {
+                   setPathState(11);
                 }
                 teleTest.startingPose = follower.getPose();
                 break;
