@@ -105,6 +105,7 @@ public class teleTest extends OpMode {
 
         telemetryM.addData("bot pose", follower.getPose());
         if(limelight.tagInView()) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
+        else flywheel.constantShootAtVelocity(1000);
 //removed reset to 0
         limelight.trackBall(turret, trackBall);
         follower.update();

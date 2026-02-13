@@ -112,7 +112,7 @@ public class flyWheel {
            targetVelocity = -1400;
         }
         public void uppies(){
-            block.setPosition(0.39);
+            block.setPosition(0.65);
         }
     public void downies(){
         block.setPosition(0);
