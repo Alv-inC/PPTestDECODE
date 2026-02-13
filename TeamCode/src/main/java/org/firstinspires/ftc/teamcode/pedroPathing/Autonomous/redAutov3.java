@@ -65,6 +65,7 @@ public class redAutov3 extends OpMode {
     public static int initialPower = -950;
     private boolean hasStarted = false;
     private Servo camera;
+    public static double cameraDelay = 1.5;
 
     public void buildPaths() {
         // === SHOTS PATHS ===
@@ -86,7 +87,7 @@ public class redAutov3 extends OpMode {
 
         Shot3 = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(9, 64).mirror(),
+                        new Pose(18, 45).mirror(),
                         new Pose(60.10, 72.455).mirror()
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -185,6 +186,7 @@ public class redAutov3 extends OpMode {
                 if (pathTimer.getElapsedTimeSeconds() > 1) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
+                    trackRN = true;
                 }
                 break;
 
@@ -386,8 +388,7 @@ public class redAutov3 extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setDirection(Servo.Direction.REVERSE);
-        camera.setPosition(0.52);
+        camera.setPosition(0.6);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
@@ -400,7 +401,7 @@ public class redAutov3 extends OpMode {
         int targetTagId = 24;
         limelight.trackTag_New(turret, targetTagId, isTracking);
         isTracking = limelight.tagInView();
-        if(!isTracking && !flag)turret.setTargetAngle(-7);
+        if(!isTracking && !flag)turret.setTargetAngle(7);
         if(trackRN){
             turret.update();
         }

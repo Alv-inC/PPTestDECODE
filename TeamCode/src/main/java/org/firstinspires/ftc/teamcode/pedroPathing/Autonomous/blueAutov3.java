@@ -185,6 +185,7 @@ public class blueAutov3 extends OpMode {
                 if (pathTimer.getElapsedTimeSeconds() > 1) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
+                    trackRN = true;
                 }
                 break;
 
@@ -386,8 +387,7 @@ public class blueAutov3 extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setDirection(Servo.Direction.REVERSE);
-        camera.setPosition(0.52);
+        camera.setPosition(0.6);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
