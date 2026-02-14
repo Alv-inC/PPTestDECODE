@@ -286,7 +286,7 @@ public class farRed extends OpMode {
     @Override
     public void loop() {
         limelight.update();
-        int targetTagId = 20;
+        int targetTagId = 24;
         limelight.trackTag_New(turret, targetTagId, isTracking);
 
         if(trackRN){
@@ -294,7 +294,7 @@ public class farRed extends OpMode {
         }
         if(updateEnd) {
             isTracking = false;
-            turret.setTargetAngle(70);
+            turret.setTargetAngle(-70);
             turret.update();
         }
 
