@@ -136,7 +136,7 @@ public class blueAutov3 extends OpMode {
 //                        new Pose(57.281, 28.861),
 //                        new Pose(11, 32.452)
                         new Pose(57.410, 78.455),
-                        new Pose(53, 78.455)
+                        new Pose(51, 78.455)
 
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -403,7 +403,7 @@ public class blueAutov3 extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.67);
+        camera.setPosition(0.65);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
@@ -425,9 +425,6 @@ public class blueAutov3 extends OpMode {
             turret.setTargetAngle(35);
             turret.update();
         }
-
-
-
         if (!hasStarted) {
             pathTimer.resetTimer();   // reset your timer exactly when OpMode starts
             opmodeTimer.resetTimer();

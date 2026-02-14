@@ -204,6 +204,8 @@ public class TeleTest2 extends OpMode {
             //flywheel.constantShoot();
             //pause(0.5);       // 0.5 second pause
         }
+        if(gamepad2.xWasPressed()) flywheel.downies();
+
         if(gamepad2.x) {
             flywheel.constantStop();
         }
@@ -266,7 +268,7 @@ public class TeleTest2 extends OpMode {
 
         //Stop automated following if the follower is done
         if (automatedDrive && (gamepad1.bWasPressed() || !follower.isBusy())) {
-            follower.startTeleopDrive();
+            follower.pausePathFollowing();
             automatedDrive = false;
         }
 

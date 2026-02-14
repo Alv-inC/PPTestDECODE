@@ -76,7 +76,7 @@ public class teleTest extends OpMode {
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.67);
+        camera.setPosition(0.65);
         follower = Constants.createFollower(hardwareMap);
         Pose poseToUse = (startingPose != null) ? startingPose : DEFAULT_POSE;
         telemetryM.addData("starting pose", poseToUse);
@@ -119,8 +119,8 @@ public class teleTest extends OpMode {
         boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
 
         telemetryM.addData("bot pose", follower.getPose());
-        if(limelight.tagInView() && trackingEnabled) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
-        else flywheel.constantShootAtVelocity(-500);
+        if(limelight.tagInView()) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
+        else flywheel.constantShootAtVelocity(-1000);
 //removed reset to 0
         limelight.trackBall(turret, trackBall);
         follower.update();
@@ -196,6 +196,7 @@ public class teleTest extends OpMode {
         if(gamepad2.y){
             intake.setPower(-0.4);
         }
+        if(gamepad2.xWasPressed()) flywheel.downies();
         if(gamepad2.left_bumper){
             flywheel.uppies();
             //flywheel.constantShootSlow();
@@ -266,7 +267,7 @@ public class teleTest extends OpMode {
 
         //Stop automated following if the follower is done
         if (automatedDrive && (gamepad1.bWasPressed() || !follower.isBusy())) {
-            follower.breakFollowing();
+            follower.pausePathFollowing();
             follower.startTeleopDrive();
             automatedDrive = false;
         }

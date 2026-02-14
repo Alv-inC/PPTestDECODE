@@ -39,6 +39,8 @@ public class farBlue extends OpMode {
     private PathChain Path6;
     private PathChain Path7;
 
+    private PathChain leave;
+
     private LimelightCamera limelight;
     private TurretPLUSIntake turret;
     //subsystems
@@ -49,18 +51,20 @@ public class farBlue extends OpMode {
     private DcMotorEx intake;
     private float tiltAngle = 135;
     private int switchCycles = 0;
+    private int count = 0;
     private static final int MAX_SWITCH_CYCLES = 2;
 
     private boolean hasStarted = false;
     private Servo camera;
-
+    private boolean trackRN = true;
+    private boolean updateEnd = false;
     public void buildPaths() {
         // === SHOTS PATHS ===
         Path1 = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(56.897, 2.393),
 
-                                new Pose(56.2, 20.075)
+                                new Pose(56.3, 16.075)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -68,7 +72,7 @@ public class farBlue extends OpMode {
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(56.2, 20.075),
+                                new Pose(56.3, 16.075),
                                 new Pose(46.710, 39.061),
                                 new Pose(13.477, 36.047)
                         )
@@ -124,6 +128,15 @@ public class farBlue extends OpMode {
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                 .build();
+
+        leave = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(13.477, 36.047),
+                                new Pose(10, 36.047)
+                        )
+                ).setConstantHeadingInterpolation(Math.toRadians(180))
+
+                .build();
     }
 
 
@@ -168,7 +181,7 @@ public class farBlue extends OpMode {
                 }
                 break;
             case 5:
-                if (!follower.isBusy()) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     flyWheel.uppies(); // START SHOOTING
                     setPathState(6);
                 }
@@ -192,7 +205,7 @@ public class farBlue extends OpMode {
                 }
                 break;
             case 9:
-                if (!follower.isBusy()) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     flyWheel.uppies(); // START SHOOTING
                     setPathState(10);
                 }
@@ -216,7 +229,7 @@ public class farBlue extends OpMode {
                 }
                 break;
             case 13:
-                if (!follower.isBusy()) {
+                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                     flyWheel.uppies(); // START SHOOTING
                     setPathState(14);
                 }
@@ -229,10 +242,17 @@ public class farBlue extends OpMode {
                 break;
             case 15: // shooting window Shot 2
                 if (!follower.isBusy()) {
-                   setPathState(11);
+                        follower.followPath(leave, true);
+                        trackRN = false;
+                        updateEnd = true;
+                        setPathState(16);
+
                 }
-                teleTest.startingPose = follower.getPose();
                 break;
+            case 16:
+                if(!follower.isBusy()){
+                    teleTest.startingPose = follower.getPose();
+                }
 
         }
     }
@@ -256,7 +276,7 @@ public class farBlue extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.6);
+        camera.setPosition(0.65);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
@@ -268,9 +288,15 @@ public class farBlue extends OpMode {
         limelight.update();
         int targetTagId = 20;
         limelight.trackTag_New(turret, targetTagId, isTracking);
-        turret.update();
 
-
+        if(trackRN){
+            turret.update();
+        }
+        if(updateEnd) {
+            isTracking = false;
+            turret.setTargetAngle(70);
+            turret.update();
+        }
 
         if (!hasStarted) {
             pathTimer.resetTimer();   // reset your timer exactly when OpMode starts

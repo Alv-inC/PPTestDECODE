@@ -50,8 +50,8 @@ public class LimelightCamera {
     private int lastTagId = -1;
     private double ballDistance, ballLateralDistance = 0;
     private double launchPower = 0;
-    private static int farCoefficient = 360; //2.75 m
-    private static int midCoefficient = 400; //1.75 m
+    private static int farCoefficient = 350; //2.75 m
+    private static int midCoefficient = 391; //1.75 m
     private static int closeCoefficient = 435; //1 m
 
     public LimelightCamera(HardwareMap hardwareMap, Telemetry telemetry) {

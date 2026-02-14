@@ -137,7 +137,7 @@ public class redAutov3 extends OpMode {
 //                        new Pose(57.281, 28.861).mirror(),
 //                        new Pose(11, 32.452).mirror()
                                         new Pose(57.410, 78.455).mirror(),
-                                        new Pose(53, 78.455).mirror()
+                                        new Pose(51, 78.455).mirror()
 
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -149,7 +149,7 @@ public class redAutov3 extends OpMode {
                 .addPath(new BezierCurve(
                         new Pose(58.410, 77.455).mirror(),
                         new Pose(32.097, 55.135).mirror(),
-                        new Pose(20, 59.5).mirror()
+                        new Pose(19, 60.8).mirror()
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
                 .build();
@@ -157,15 +157,15 @@ public class redAutov3 extends OpMode {
         // === SHIMMY PATHS (AFTER SWITCH) ===
         shimmyDown = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(20, 59.5).mirror(),   // exactly Switch end
-                        new Pose(14, 12).mirror()    // move DOWN ~3 units
+                        new Pose(19, 60.8).mirror(),   // exactly Switch end
+                        new Pose(14, 25).mirror()    // move DOWN ~3 units
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
 
         shimmyUp = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(14, 12).mirror(),
+                        new Pose(14, 25).mirror(),
                         new Pose(14, 45).mirror()    // back to Switch end
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
@@ -401,7 +401,7 @@ public class redAutov3 extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.67);
+        camera.setPosition(0.65);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
