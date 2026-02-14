@@ -18,8 +18,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class testServo extends OpMode {
 
     public static double ph = 0.58; // Adjustable from FTC Dashboard
-    public static double pc = 0.5;
-    public static double pb = 0.58;
+    public static double pc = 0.67;
+    public static double pb = 0;
     Servo block, camera, hood;
 
     @Override

@@ -37,8 +37,8 @@ public class teleTest extends OpMode {
     private static final Pose DEFAULT_POSE =
             new Pose(72.41025641025641, 0, 90);
     public static Pose startingPose; //See ExampleAuto to understand how to use this
-    private boolean automatedDrive;
-    private Supplier<PathChain> pathChain, ballPathChain;
+    private boolean automatedDrive = false;
+    private Supplier<PathChain> pathChainBlueFar, pathChainBlueClose, pathChainBluePark, pathChainBlueGate, ballPathChain;
     private TelemetryManager telemetryM;
     private boolean slowMode = false, trackBall;
     private double slowModeMultiplier = 0.5;
@@ -53,7 +53,7 @@ public class teleTest extends OpMode {
     boolean flag = false;
     boolean previousButtonState2a = false;
     private boolean prevDpadUp = false;
-
+    private boolean intaking = false;
 
     //final constants
     private final double block_open = -1;
@@ -61,13 +61,13 @@ public class teleTest extends OpMode {
     private final double hood_high = 0.4;
     private final double hood_mid = 0.2;
     private final double hood_low = 0;
-    public static double x, y = 0;
+    public static double x, y, r = 0;
 
     @Override
     public void init() {
 
         //delete later prob
-
+        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         flywheel = new flyWheel(hardwareMap, telemetry);
         flywheel.constantStop();
         hood = new Hood(hardwareMap);
@@ -76,17 +76,30 @@ public class teleTest extends OpMode {
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.6);
+        camera.setPosition(0.67);
         follower = Constants.createFollower(hardwareMap);
         Pose poseToUse = (startingPose != null) ? startingPose : DEFAULT_POSE;
+        telemetryM.addData("starting pose", poseToUse);
+        telemetryM.update();
         follower.setStartingPose(poseToUse);
 //        follower.update();
-        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
-        pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(x, y))))
+        pathChainBlueClose = () -> follower.pathBuilder() //Lazy Curve Generation
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(59, 95))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(135), 0.8))
                 .build();
-    }
+        pathChainBlueFar = () -> follower.pathBuilder() //Lazy Curve Generation
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(70, 25))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(125), 0.8))
+                .build();
+        pathChainBluePark = () -> follower.pathBuilder() //Lazy Curve Generation
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(105, 25))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(0), 0.8))
+                .build();
+        pathChainBlueGate = () -> follower.pathBuilder() //Lazy Curve Generation
+                .addPath(new Path(new BezierLine(follower::getPose, new Pose(16, 70))))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(180), 0.8))
+                .build();
+    } // blue 25, 60, 170 red 40, 80, 80
 
     @Override
     public void start() {
@@ -102,11 +115,12 @@ public class teleTest extends OpMode {
         //Call this once per loop
         follower.update();
         telemetryM.update();
-        flywheel.update();
+
+        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
 
         telemetryM.addData("bot pose", follower.getPose());
-        if(limelight.tagInView()) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
-        else flywheel.constantShootAtVelocity(-1000);
+        if(limelight.tagInView() && trackingEnabled) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
+        else flywheel.constantShootAtVelocity(-500);
 //removed reset to 0
         limelight.trackBall(turret, trackBall);
         follower.update();
@@ -120,7 +134,6 @@ public class teleTest extends OpMode {
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(result[0], result[1]))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(result[2]), 0.8))
                 .build();
-        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
        // if(gamepad1.left_bumper) camera.setPosition(0.26);
         if(gamepad1.right_bumper) camera.setPosition(0.6);
 
@@ -137,6 +150,8 @@ public class teleTest extends OpMode {
             limelight.trackTag_New(turret, targetTagId, trackingEnabled);
 
         }
+
+        flywheel.update();
 //        if(gamepad1.xWasPressed()){
 //            limelight.switchPipeline(0);
 //            turret.startScan();
@@ -145,15 +160,14 @@ public class teleTest extends OpMode {
 //                trackBall = true;
 //            }
 //        }
-        if(gamepad1.bWasPressed()){
-            turret.stopScan();
-            trackBall = false;
-            automatedDrive = false;
-        }
-        if(gamepad1.yWasPressed() && trackBall){
-            automatedDrive = true;
-            follower.followPath(ballPathChain.get());
-        }
+//        if(gamepad1.bWasPressed()){
+//            turret.stopScan();
+//            trackBall = false;
+//        }
+//        if(gamepad1.yWasPressed() && trackBall){
+//            automatedDrive = true;
+//            follower.followPath(ballPathChain.get());
+//        }
 
         if (gamepad2.dpad_up) turret.setTargetAngle(0-autoTurretAngle);
 
@@ -186,16 +200,13 @@ public class teleTest extends OpMode {
             flywheel.uppies();
             //flywheel.constantShootSlow();
             //pause(0.5);       // 0.5 second pause
-
         }
         if(gamepad2.right_bumper){
             flywheel.uppies();
             //flywheel.constantShoot();
             //pause(0.5);       // 0.5 second pause
         }
-        if(gamepad2.x) {
-            flywheel.constantStop();
-        }
+
         if(gamepad1.dpad_up)turret.setTargetAngle(0-autoTurretAngle);
         if(gamepad1.dpad_left)turret.setTargetAngle(90-autoTurretAngle);
         if(gamepad1.dpad_right)turret.setTargetPosition(-90-autoTurretAngle);
@@ -233,13 +244,29 @@ public class teleTest extends OpMode {
         }
 
         if(gamepad1.leftStickButtonWasPressed()){
-            follower.followPath(pathChain.get());
+            follower.followPath(pathChainBlueClose.get());
+            automatedDrive = true;
+            //turret.setTargetPosition(0);
+        }
+        if(gamepad1.rightStickButtonWasPressed()){
+            follower.followPath(pathChainBlueFar.get());
+            automatedDrive = true;
+            //turret.setTargetPosition(0);
+        }
+        if(gamepad1.xWasPressed()){
+            follower.followPath(pathChainBlueGate.get());
+            automatedDrive = true;
+            turret.setTargetPosition(0);
+        }
+        if(gamepad1.yWasPressed()){
+            follower.followPath(pathChainBluePark.get());
             automatedDrive = true;
             turret.setTargetPosition(0);
         }
 
         //Stop automated following if the follower is done
         if (automatedDrive && (gamepad1.bWasPressed() || !follower.isBusy())) {
+            follower.breakFollowing();
             follower.startTeleopDrive();
             automatedDrive = false;
         }

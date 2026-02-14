@@ -132,9 +132,12 @@ public class blueAutov3 extends OpMode {
 
         thirdLine = follower.pathBuilder()
                 .addPath(new BezierCurve(
+//                        new Pose(57.410, 78.455),
+//                        new Pose(57.281, 28.861),
+//                        new Pose(11, 32.452)
                         new Pose(57.410, 78.455),
-                        new Pose(57.281, 28.861),
-                        new Pose(11, 32.452)
+                        new Pose(53, 78.455)
+
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
@@ -323,8 +326,14 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 16:
+                if(pathTimer.getElapsedTimeSeconds() > 1){
+                    trackRN = false;
+                    updateEnd = true;
+                }
                 if (pathTimer.getElapsedTimeSeconds() > 1.2) {
                     flyWheel.downies();
+//                    teleTest.startingPose = follower.getPose();
+//                    telemetryM.addData("end data", follower.getPose());
                     setPathState(17);
                 }
                 break;
@@ -340,34 +349,37 @@ public class blueAutov3 extends OpMode {
                     setPathState(18);
                 }
                 break;
-
-            // ===============================
-            // → SHOT 5
-            // ===============================
+//
+//            // ===============================
+//            // → SHOT 5
+//            // ===============================
             case 18:
                 if (!follower.isBusy()) {
-                    follower.followPath(Shot5, true);
+                    teleTest.startingPose = follower.getPose();
+                    telemetryM.addData("end data", follower.getPose());
+//                    follower.followPath(Shot5, true);
                     setPathState(19);
                 }
                 break;
-
-            case 19:
-                if (!follower.isBusy()) {
-                    flyWheel.uppies();
-                    setPathState(20);
-                }
-                break;
-
-            case 20:
-                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
-                    flyWheel.downies();
-                    setPathState(21);
-                }
-                break;
-
-            case 21:
-                teleTest.startingPose = follower.getPose();
-                break;
+//
+//            case 19:
+//                if (!follower.isBusy()) {
+//                    flyWheel.uppies();
+//                    setPathState(20);
+//                }
+//                break;
+//
+//            case 20:
+//                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+//                    flyWheel.downies();
+//                    setPathState(21);
+//                }
+//                break;
+//
+//            case 21:
+//                teleTest.startingPose = follower.getPose();
+//                telemetryM.addData("end data", follower.getPose());
+//                break;
         }
     }
 
@@ -391,7 +403,7 @@ public class blueAutov3 extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.6);
+        camera.setPosition(0.67);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
@@ -410,7 +422,7 @@ public class blueAutov3 extends OpMode {
         }
         if(updateEnd) {
             isTracking = false;
-            turret.setTargetAngle(42);
+            turret.setTargetAngle(35);
             turret.update();
         }
 

@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
+import org.firstinspires.ftc.teamcode.pedroPathing.TeleTest2;
 import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
 @Configurable
@@ -59,7 +60,7 @@ public class redAutov3 extends OpMode {
 
     private DcMotorEx intake;
     private boolean trackRN = false;
-    private float tiltAngle = 45;
+    private float tiltAngle = 35;
     private int switchCycles = 0;
     private static final int MAX_SWITCH_CYCLES = 2;
     public static int initialPower = -950;
@@ -132,9 +133,12 @@ public class redAutov3 extends OpMode {
 
         thirdLine = follower.pathBuilder()
                 .addPath(new BezierCurve(
-                        new Pose(57.410, 78.455).mirror(),
-                        new Pose(57.281, 28.861).mirror(),
-                        new Pose(11, 32.452).mirror()
+//                        new Pose(57.410, 78.455).mirror(),
+//                        new Pose(57.281, 28.861).mirror(),
+//                        new Pose(11, 32.452).mirror()
+                                        new Pose(57.410, 78.455).mirror(),
+                                        new Pose(53, 78.455).mirror()
+
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
@@ -144,8 +148,8 @@ public class redAutov3 extends OpMode {
         Switch = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         new Pose(58.410, 77.455).mirror(),
-                        new Pose(32.097, 57.135).mirror(),
-                        new Pose(23, 60.1).mirror()
+                        new Pose(32.097, 55.135).mirror(),
+                        new Pose(20, 59.5).mirror()
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
                 .build();
@@ -153,15 +157,15 @@ public class redAutov3 extends OpMode {
         // === SHIMMY PATHS (AFTER SWITCH) ===
         shimmyDown = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(23, 60.1).mirror(),   // exactly Switch end
-                        new Pose(14, 25).mirror()    // move DOWN ~3 units
+                        new Pose(20, 59.5).mirror(),   // exactly Switch end
+                        new Pose(14, 12).mirror()    // move DOWN ~3 units
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
 
         shimmyUp = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(14, 25).mirror(),
+                        new Pose(14, 12).mirror(),
                         new Pose(14, 45).mirror()    // back to Switch end
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))
@@ -323,7 +327,12 @@ public class redAutov3 extends OpMode {
                 break;
 
             case 16:
+                if(pathTimer.getElapsedTimeSeconds() > 1){
+                    trackRN = false;
+                    updateEnd = true;
+                }
                 if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+//                    TeleTest2.startingPose = follower.getPose();
                     flyWheel.downies();
                     setPathState(17);
                 }
@@ -346,28 +355,29 @@ public class redAutov3 extends OpMode {
             // ===============================
             case 18:
                 if (!follower.isBusy()) {
-                    follower.followPath(Shot5, true);
+                    TeleTest2.startingPose = follower.getPose();
+                    telemetryM.addData("ending pose", follower.getPose());
                     setPathState(19);
                 }
                 break;
-
-            case 19:
-                if (!follower.isBusy()) {
-                    flyWheel.uppies();
-                    setPathState(20);
-                }
-                break;
-
-            case 20:
-                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
-                    flyWheel.downies();
-                    setPathState(21);
-                }
-                break;
-
-            case 21:
-                teleTest.startingPose = follower.getPose();
-                break;
+//
+//            case 19:
+//                if (!follower.isBusy()) {
+//                    flyWheel.uppies();
+//                    setPathState(20);
+//                }
+//                break;
+//
+//            case 20:
+//                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+//                    flyWheel.downies();
+//                    setPathState(21);
+//                }
+//                break;
+//
+//            case 21:
+//                teleTest.startingPose = follower.getPose();
+//                break;
         }
     }
 
@@ -391,7 +401,7 @@ public class redAutov3 extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.7);
+        camera.setPosition(0.67);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
@@ -410,7 +420,7 @@ public class redAutov3 extends OpMode {
         }
         if(updateEnd) {
             isTracking = false;
-            turret.setTargetAngle(-42);
+            turret.setTargetAngle(-35);
             turret.update();
         }
 
