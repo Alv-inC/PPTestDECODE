@@ -398,6 +398,9 @@ public class betterBlue extends OpMode {
 
                     flyWheel.downies();
 
+                    trackRN = false;
+                    updateEnd = true;
+
                     follower.followPath(Path10, true);
 
                     setPathState(16);
@@ -408,9 +411,9 @@ public class betterBlue extends OpMode {
 
 
             case 16:
-
-                updateEnd = true;
-
+                if(!follower.isBusy()){
+                    teleTest.startingPose = follower.getPose();
+                }
                 break;
         }
     }
@@ -502,7 +505,7 @@ public class betterBlue extends OpMode {
         }
 
         follower.update();
-
+//        botPose = follower.getPose();
         double power = limelight.getLaunchPower();
 
         if (limelight.tagInView() && !flag)

@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
+import org.firstinspires.ftc.teamcode.pedroPathing.TeleTest2;
 import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
 @Autonomous(name = "[NEW]farRED", group = "Tests")
@@ -252,7 +253,7 @@ public class farRed extends OpMode {
                 break;
             case 16:
                 if(!follower.isBusy()){
-                    teleTest.startingPose = follower.getPose();
+                    TeleTest2.startingPose = follower.getPose();
                 }
 
         }

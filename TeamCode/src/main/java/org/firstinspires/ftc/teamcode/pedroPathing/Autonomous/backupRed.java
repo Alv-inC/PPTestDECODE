@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
+import org.firstinspires.ftc.teamcode.pedroPathing.TeleTest2;
 import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
 import java.nio.file.Paths;
@@ -381,6 +382,9 @@ public class backupRed extends OpMode {
 
                     flyWheel.downies();
 
+                    trackRN = false;
+                    updateEnd = true;
+
                     follower.followPath(Path10, true);
 
                     setPathState(16);
@@ -391,9 +395,9 @@ public class backupRed extends OpMode {
 
 
             case 16:
-
-                updateEnd = true;
-
+                if(!follower.isBusy()){
+                    TeleTest2.startingPose = follower.getPose();
+                }
                 break;
         }
     }
@@ -458,7 +462,7 @@ public class backupRed extends OpMode {
         isTracking = limelight.tagInView();
 
         if (!isTracking && !flag)
-            turret.setTargetAngle(-7);
+            turret.setTargetAngle(7);
 
         if (trackRN)
             turret.update();
@@ -467,7 +471,7 @@ public class backupRed extends OpMode {
 
             isTracking = false;
 
-            turret.setTargetAngle(35);
+            turret.setTargetAngle(-50);
 
             turret.update();
 

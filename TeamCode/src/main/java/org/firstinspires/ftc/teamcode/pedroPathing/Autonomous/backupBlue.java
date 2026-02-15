@@ -381,6 +381,9 @@ public class backupBlue extends OpMode {
 
                     flyWheel.downies();
 
+                    trackRN = false;
+                    updateEnd = true;
+
                     follower.followPath(Path10, true);
 
                     setPathState(16);
@@ -391,9 +394,9 @@ public class backupBlue extends OpMode {
 
 
             case 16:
-
-                updateEnd = true;
-
+                if(!follower.isBusy()){
+                    teleTest.startingPose = follower.getPose();
+                }
                 break;
         }
     }
@@ -467,7 +470,7 @@ public class backupBlue extends OpMode {
 
             isTracking = false;
 
-            turret.setTargetAngle(35);
+            turret.setTargetAngle(50);
 
             turret.update();
 
