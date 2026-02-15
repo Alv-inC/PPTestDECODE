@@ -21,6 +21,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.blueAutov3;
+import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.farRed;
+import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.redAutov3;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
@@ -78,6 +81,8 @@ public class TeleTest2 extends OpMode {
         camera = hardwareMap.get(Servo.class, "camera");
         camera.setPosition(0.67);
         follower = Constants.createFollower(hardwareMap);
+        startingPose = (startingPose != null) ? startingPose : redAutov3.botPose;
+        startingPose = (startingPose != null) ? startingPose : farRed.botPose;
         Pose poseToUse = (startingPose != null) ? startingPose : DEFAULT_POSE;
         telemetryM.addData("starting pose", poseToUse);
         telemetryM.update();
@@ -216,7 +221,7 @@ public class TeleTest2 extends OpMode {
 
 
         if(gamepad2.dpad_down){
-            hood.setMid();
+            hood.setLow();
         }
         if(gamepad2.dpad_left){
             hood.setHigh();

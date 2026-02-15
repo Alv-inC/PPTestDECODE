@@ -21,6 +21,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.blueAutov3;
+import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.farBlue;
+import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.farRed;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
@@ -78,6 +81,8 @@ public class teleTest extends OpMode {
         camera = hardwareMap.get(Servo.class, "camera");
         camera.setPosition(0.65);
         follower = Constants.createFollower(hardwareMap);
+        startingPose = (startingPose != null) ? startingPose : blueAutov3.botPose;
+        startingPose = (startingPose != null) ? startingPose : farBlue.botPose;
         Pose poseToUse = (startingPose != null) ? startingPose : DEFAULT_POSE;
         telemetryM.addData("starting pose", poseToUse);
         telemetryM.update();
@@ -116,7 +121,7 @@ public class teleTest extends OpMode {
         follower.update();
         telemetryM.update();
 
-        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5);
+        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5 || gamepad1.left_trigger >0.5 || gamepad1.right_trigger > 0.5);
 
         telemetryM.addData("bot pose", follower.getPose());
         if(limelight.tagInView()) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
@@ -215,7 +220,7 @@ public class teleTest extends OpMode {
 
 
         if(gamepad2.dpad_down){
-            hood.setMid();
+            hood.setLow();
         }
         if(gamepad2.dpad_left){
             hood.setHigh();

@@ -58,13 +58,14 @@ public class farBlue extends OpMode {
     private Servo camera;
     private boolean trackRN = true;
     private boolean updateEnd = false;
+    public static Pose botPose;
     public void buildPaths() {
         // === SHOTS PATHS ===
         Path1 = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(56.897, 2.393),
 
-                                new Pose(56.3, 16.075)
+                                new Pose(56.3, 14.075)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -72,7 +73,7 @@ public class farBlue extends OpMode {
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(56.3, 16.075),
+                                new Pose(56.3, 14.075),
                                 new Pose(46.710, 39.061),
                                 new Pose(13.477, 36.047)
                         )
@@ -84,7 +85,7 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(13.477, 36.047),
 
-                                new Pose(56.2, 20.916)
+                                new Pose(56.2, 18.916)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -92,7 +93,7 @@ public class farBlue extends OpMode {
 
         Path4 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(56.2, 20.916),
+                                new Pose(56.2, 18.916),
                                 new Pose(32.248, 23.117),
                                 new Pose(9.850, 9.131)
                         )
@@ -103,7 +104,7 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(9.850, 9.131),
 
-                                new Pose(56.2, 20.206)
+                                new Pose(56.2, 18.206)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -111,7 +112,7 @@ public class farBlue extends OpMode {
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(56.2, 20.916),
+                                new Pose(56.2, 18.916),
                                 new Pose(32.748, 42.402),
                                 new Pose(12.467, 43.682)
                         )
@@ -123,7 +124,7 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(12.467, 43.682),
 
-                                new Pose(56.2, 20.916)
+                                new Pose(56.2, 18.916)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -131,8 +132,8 @@ public class farBlue extends OpMode {
 
         leave = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(13.477, 36.047),
-                                new Pose(10, 36.047)
+                                new Pose(56.2, 18.916),
+                                new Pose(50, 18.196)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -307,6 +308,8 @@ public class farBlue extends OpMode {
         double power = limelight.getLaunchPower();
         if(limelight.tagInView()) flyWheel.setTargetVelocity(power);
         follower.update();
+        botPose = follower.getPose();
+
         flyWheel.update();
         autonomousPathUpdate();
 

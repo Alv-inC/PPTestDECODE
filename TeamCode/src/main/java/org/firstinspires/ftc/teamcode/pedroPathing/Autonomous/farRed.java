@@ -58,13 +58,14 @@ public class farRed extends OpMode {
     private Servo camera;
     private boolean trackRN = true;
     private boolean updateEnd = false;
+    public static Pose botPose;
     public void buildPaths() {
         // === SHOTS PATHS ===
         Path1 = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(56.897, 2.393).mirror(),
 
-                                new Pose(56.3, 16.075).mirror()
+                                new Pose(56.3, 14.075).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -72,7 +73,7 @@ public class farRed extends OpMode {
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(56.3, 16.075).mirror(),
+                                new Pose(56.3, 14.075).mirror(),
                                 new Pose(46.710, 39.061).mirror(),
                                 new Pose(13.477, 36.047).mirror()
                         )
@@ -84,7 +85,7 @@ public class farRed extends OpMode {
                         new BezierLine(
                                 new Pose(13.477, 36.047).mirror(),
 
-                                new Pose(56.2, 20.916).mirror()
+                                new Pose(56.2, 18.916).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -92,7 +93,7 @@ public class farRed extends OpMode {
 
         Path4 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(56.2, 20.916).mirror(),
+                                new Pose(56.2, 18.916).mirror(),
                                 new Pose(32.248, 23.117).mirror(),
                                 new Pose(9.850, 9.131).mirror()
                         )
@@ -103,7 +104,7 @@ public class farRed extends OpMode {
                         new BezierLine(
                                 new Pose(9.850, 9.131).mirror(),
 
-                                new Pose(56.2, 20.206).mirror()
+                                new Pose(56.2, 18.206).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -111,7 +112,7 @@ public class farRed extends OpMode {
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(56.2, 20.916).mirror(),
+                                new Pose(56.2, 18.916).mirror(),
                                 new Pose(32.748, 42.402).mirror(),
                                 new Pose(12.467, 43.682).mirror()
                         )
@@ -123,7 +124,7 @@ public class farRed extends OpMode {
                         new BezierLine(
                                 new Pose(12.467, 43.682).mirror(),
 
-                                new Pose(56.2, 20.916).mirror()
+                                new Pose(56.2, 18.916).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -131,8 +132,8 @@ public class farRed extends OpMode {
 
         leave = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(13.477, 36.047).mirror(),
-                                new Pose(10, 36.047).mirror()
+                                new Pose(56.2, 18.916).mirror(),
+                                new Pose(50, 18.196).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -307,6 +308,8 @@ public class farRed extends OpMode {
         double power = limelight.getLaunchPower();
         if(limelight.tagInView()) flyWheel.setTargetVelocity(power);
         follower.update();
+        botPose = follower.getPose();
+
         flyWheel.update();
         autonomousPathUpdate();
 

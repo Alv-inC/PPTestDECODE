@@ -50,9 +50,9 @@ public class LimelightCamera {
     private int lastTagId = -1;
     private double ballDistance, ballLateralDistance = 0;
     private double launchPower = 0;
-    private static int farCoefficient = 350; //2.75 m
-    private static int midCoefficient = 391; //1.75 m
-    private static int closeCoefficient = 435; //1 m
+    public static int farCoefficient = 330; //2.75 m
+    public static int midCoefficient = 391; //1.75 m
+    public static int closeCoefficient = 435; //1 m
 
     public LimelightCamera(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -237,7 +237,7 @@ public class LimelightCamera {
 
         // Default values
         double yGoalVal = 1.15;          // meters, example target height
-        double hBotVal = 0.33;             // meters, shooter height
+        double hBotVal = 0.4;             // meters, shooter height
         double gVal = 9.81;                     // m/s^2
         double thetaMinVal = (thetaMinDeg != null) ? thetaMinDeg : 20.0;  // degrees
         double thetaMaxVal = (thetaMaxDeg != null) ? thetaMaxDeg : 60.0;  // degrees
@@ -314,16 +314,43 @@ public class LimelightCamera {
 
         return result;
     }
+    public static double getClosestY(double inputX) {
+        double[][] points = {
+                {0.73, 600},
+                {0.93, 480},
+                {1.12, 440},
+                {1.30, 420},
+                {1.49, 390},
+                {1.65, 365},
+                {1.96, 355},
+                {2.10, 345},
+                {2.30, 320},
+                {2.58, 320},
+                {2.79, 310},
+                {2.90, 310}
+        };
+
+        double closestY = points[0][1];
+        double minDiff = Math.abs(inputX - points[0][0]);
+
+        for (int i = 1; i < points.length; i++) {
+            double diff = Math.abs(inputX - points[i][0]);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestY = points[i][1];
+            }
+        }
+
+        return closestY;
+    }
+
     public static double velocityToTicksPerSecond(double velocity, double tz) {
-        // Regression equation: motor ticks/s = 290 * v_target - 58
         double coeff;
-        if(tz <= 1) coeff = closeCoefficient;
-        else if(tz <= 2.2) coeff = midCoefficient;
-        else coeff = farCoefficient - 20;
+//        if(tz <= 1) coeff = closeCoefficient;
+//        else if(tz <= 2.5) coeff = midCoefficient;
+//        else coeff = farCoefficient;
+        coeff = getClosestY(tz);
         return -1 * coeff * velocity;
-//        private int farCoefficient = 360; //2.75 m
-//        private int midcoefficient = 400; //1.75 m
-//        private int closeCoefficient = 435; //1 m
     }
     public static double computeLaunchVelocity(double xGoal) {
 

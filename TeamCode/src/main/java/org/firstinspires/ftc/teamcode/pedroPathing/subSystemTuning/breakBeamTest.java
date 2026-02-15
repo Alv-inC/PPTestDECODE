@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp(name = "BreakBeamTest")
 public class breakBeamTest extends OpMode {
+    private DcMotorEx intake;
     private boolean object1Detected;
     private boolean object2Detected;
     private boolean object3Detected;
@@ -24,6 +25,7 @@ public class breakBeamTest extends OpMode {
         beamSensor2.setMode(DigitalChannel.Mode.INPUT);
         beamSensor3 = hardwareMap.get(DigitalChannel.class, "bb3");
         beamSensor3.setMode(DigitalChannel.Mode.INPUT);
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
 
 
     }
@@ -41,5 +43,12 @@ public class breakBeamTest extends OpMode {
         } else {
             telemetry.addData("Status", "NOT FULLL");
         }
+        if(gamepad1.a){
+            intake.setPower(-1);
+        }
+        if(gamepad1.b){
+            intake.setPower(0);
+        }
+
     }
 }

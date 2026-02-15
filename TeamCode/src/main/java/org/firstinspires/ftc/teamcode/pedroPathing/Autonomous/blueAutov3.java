@@ -67,6 +67,7 @@ public class blueAutov3 extends OpMode {
     private Servo camera;
     private double initTurretPosition = 0;
     private boolean updateEnd = false;
+    public static Pose botPose;
 
     public void buildPaths() {
         // === SHOTS PATHS ===
@@ -432,6 +433,8 @@ public class blueAutov3 extends OpMode {
             pathState = 0; // ensure the FSM begins from the right state
         }
         follower.update();
+        botPose = follower.getPose();
+
         double power = limelight.getLaunchPower();
         if(limelight.tagInView() && !flag) flyWheel.setTargetVelocity(power);
         //else flyWheel.setTargetVelocity(initialPower);
