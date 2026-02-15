@@ -303,7 +303,7 @@ public class farRed extends OpMode {
             pathTimer.resetTimer();   // reset your timer exactly when OpMode starts
             opmodeTimer.resetTimer();
             hasStarted = true;
-            pathState = 0; // ensure the FSM begins from the right state
+            pathState = 0; // ensure the FSM begins from the rigt state
         }
         double power = limelight.getLaunchPower();
         if(limelight.tagInView()) flyWheel.setTargetVelocity(power);
