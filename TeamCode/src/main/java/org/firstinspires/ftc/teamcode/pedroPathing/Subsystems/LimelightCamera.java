@@ -140,7 +140,7 @@ public class LimelightCamera {
     }
     public void trackTag_New(TurretPLUSIntake turret, int targetTagId, boolean enabled) {
         telemetry.addData("target id", targetTagId);
-        if (!validTarget || lastTagId != targetTagId || targetTagId == -1 || !enabled) return;
+        if (!validTarget || targetTagId != lastTagId || targetTagId == -1 || !enabled) return;
 
         double correctionTicks = txDeg * TICKS_PER_DEG;
         double newTarget = turret.getCurrentPosition() - correctionTicks;

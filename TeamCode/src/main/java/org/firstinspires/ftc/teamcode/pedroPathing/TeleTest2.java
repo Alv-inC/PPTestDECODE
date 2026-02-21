@@ -66,6 +66,13 @@ public class TeleTest2 extends OpMode {
     private final double hood_mid = 0.2;
     private final double hood_low = 0;
     public static double x, y, r = 0;
+    // Tunables
+    private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
+    private static final int NO_TAG_POWER = -1000;
+
+    // State
+    private long lastTagSeenMs = 0;
+    private int lastGoodPower = NO_TAG_POWER;
 
     @Override
     public void init() {
@@ -125,8 +132,19 @@ public class TeleTest2 extends OpMode {
         flywheel.update();
 
         telemetryM.addData("bot pose", follower.getPose());
-        if(limelight.tagInView()) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
-        else flywheel.constantShootAtVelocity(-1000);
+//        if(limelight.tagInView()) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
+//        else flywheel.constantShootAtVelocity(-1000);
+        long now = System.currentTimeMillis();
+
+        if (limelight.tagInView()) {
+            lastTagSeenMs = now;
+            lastGoodPower = (int) limelight.getLaunchPower();
+        }
+
+        boolean tagRecentlySeen = (now - lastTagSeenMs) <= TAG_HOLD_MS;
+        int targetPower = tagRecentlySeen ? lastGoodPower : NO_TAG_POWER;
+
+        flywheel.constantShootAtVelocity(targetPower);
 //removed reset to 0
         limelight.trackBall(turret, trackBall);
         follower.update();
@@ -168,7 +186,6 @@ public class TeleTest2 extends OpMode {
 //            }
 //        }
         if(gamepad1.bWasPressed()){
-            turret.stopScan();
             trackBall = false;
         }
 //        if(gamepad1.yWasPressed() && trackBall){
@@ -198,7 +215,7 @@ public class TeleTest2 extends OpMode {
         }
 
         if(gamepad2.b){
-            intake.setPower(-1);
+            intake.setPower(-0.9);
         }
         if(gamepad2.y){
             intake.setPower(-0.4);
@@ -237,17 +254,17 @@ public class TeleTest2 extends OpMode {
 
             //This is the normal version to use in the TeleOp
             if (!slowMode) follower.setTeleOpDrive(
-                    -gamepad1.left_stick_y,
-                    -gamepad1.left_stick_x,
-                    -gamepad1.right_stick_x,
+                    -gamepad1.left_stick_y * 0.75,
+                    -gamepad1.left_stick_x * 0.85,
+                    -gamepad1.right_stick_x * 0.8 * 0.6,
                     true// Robot Centric
             );
 
                 //This is how it looks with slowMode on
             else follower.setTeleOpDrive(
-                    -gamepad1.left_stick_y * slowModeMultiplier,
-                    -gamepad1.left_stick_x * slowModeMultiplier,
-                    -gamepad1.right_stick_x * slowModeMultiplier * 0.6,
+                    -gamepad1.left_stick_y * slowModeMultiplier * 0.75,
+                    -gamepad1.left_stick_x * slowModeMultiplier * 0.85,
+                    -gamepad1.right_stick_x * slowModeMultiplier * 0.8 * 0.6,
                     true // Robot Centric
             );
 
@@ -282,12 +299,12 @@ public class TeleTest2 extends OpMode {
         }
 
 //        Slow Mode
-        if (gamepad1.rightBumperWasPressed()) {
-            follower.setMaxPower(0.7);
-        }
-        if(gamepad1.leftBumperWasPressed()){
-            follower.setMaxPower(1);
-        }
+//        if (gamepad1.rightBumperWasPressed()) {
+//            follower.setMaxPower(0.7);
+//        }
+//        if(gamepad1.leftBumperWasPressed()){
+//            follower.setMaxPower(1);
+//        }
 
 //        //Optional way to change slow mode strength
 //        if (gamepad1.xWasPressed()) {

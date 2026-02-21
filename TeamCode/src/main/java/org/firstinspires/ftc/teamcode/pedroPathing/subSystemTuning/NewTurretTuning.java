@@ -48,10 +48,6 @@ public class NewTurretTuning extends OpMode {
 
         limelightCamera.update();
 
-        TurretPLUSIntake.p = p;
-        TurretPLUSIntake.i = i;
-        TurretPLUSIntake.d = d;
-
         limelightCamera.trackTag_New(turret, targetTagId, trackingEnabled);
         turret.setTargetPosition(targetPosition);
         turret.update();

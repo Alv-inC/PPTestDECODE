@@ -99,15 +99,15 @@ public class ballTesting extends LinearOpMode {
 //            }
         }
     }
-    public void automaticIntake(){
-        turret.startScan();
-        if(camera.ballInView()){
-            turret.stopScan();
-            trackBall = true;
-            pause(1.5);
-            follower.followPath(pathChain.get());
-        }
-    }
+//    public void automaticIntake(){
+//        turret.startScan();
+//        if(camera.ballInView()){
+//            turret.stopScan();
+//            trackBall = true;
+//            pause(1.5);
+//            follower.followPath(pathChain.get());
+//        }
+//    }
     private void pause(double seconds) {
         double start = timer.seconds();
         while (timer.seconds() - start < seconds) {
