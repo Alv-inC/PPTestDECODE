@@ -65,6 +65,7 @@ public class backupRed extends OpMode {
 
     private Servo camera;
 
+    public static Pose botPose;
     // =============================
     // BUILD PATHS
     // =============================
@@ -81,14 +82,14 @@ public class backupRed extends OpMode {
         Path2 = follower.pathBuilder()
                 .addPath(new BezierLine(
                         new Pose(50.393, 84.000).mirror(),
-                        new Pose(17.785, 84.159).mirror()
+                        new Pose(19, 84.159).mirror()
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
         Path3 = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(13.523, 84.159).mirror(),
+                        new Pose(14.523, 84.159).mirror(),
                         new Pose(50.393, 84.000).mirror()
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -139,7 +140,7 @@ public class backupRed extends OpMode {
                         new BezierCurve(
                                 new Pose(50.570, 84.224).mirror(),
                                 new Pose(42.355, 8.757).mirror(),
-                                new Pose(8.6, 9.18).mirror()
+                                new Pose(13.5, 9.18).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -147,7 +148,7 @@ public class backupRed extends OpMode {
 
         Path9 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(8.6, 9.18).mirror(),
+                                new Pose(13.5, 9.18).mirror(),
 
                                 new Pose(50.215, 84.215).mirror()
                         )
@@ -455,7 +456,7 @@ public class backupRed extends OpMode {
 
         limelight.update();
 
-        int targetTagId = 20;
+        int targetTagId = 24;
 
         limelight.trackTag_New(turret, targetTagId, isTracking);
 
@@ -471,7 +472,7 @@ public class backupRed extends OpMode {
 
             isTracking = false;
 
-            turret.setTargetAngle(-50);
+            turret.setTargetAngle(-45);
 
             turret.update();
 
@@ -489,6 +490,7 @@ public class backupRed extends OpMode {
         }
 
         follower.update();
+        botPose = follower.getPose();
 
         double power = limelight.getLaunchPower();
 

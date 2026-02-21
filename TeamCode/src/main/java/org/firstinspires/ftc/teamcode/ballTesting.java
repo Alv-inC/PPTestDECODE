@@ -45,7 +45,7 @@ public class ballTesting extends LinearOpMode {
     public void runOpMode() {
         // ---- Init hardware ----
         servo = hardwareMap.get(Servo.class, "camera");
-        servo.setPosition(0.26);
+        servo.setPosition(0.5);
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         camera = new LimelightCamera(hardwareMap, telemetry);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
@@ -74,40 +74,40 @@ public class ballTesting extends LinearOpMode {
 //            telemetry.addData("x", pose.getX());
 //            telemetry.addData("y", pose.getX());
 //            telemetry.addData("heading", pose.getHeading());
-            if(runIntake) intake.setPower(intakePower);
-            if(go){
-                follower.followPath(pathChain.get());
-                go = false;
-            }
-            if(search){
-                turret.startScan();
-                search = false;
-            }
-            else{
-
-            }
-            if(gamepad1.xWasPressed()){
-                turret.startScan();
-                if(camera.ballInView()){
-                    turret.stopScan();
-                    trackBall = true;
-                }
-            }
-            if(gamepad1.yWasPressed() && trackBall){
-                follower.followPath(pathChain.get());
-
-            }
+//            if(runIntake) intake.setPower(intakePower);
+//            if(go){
+//                follower.followPath(pathChain.get());
+//                go = false;
+//            }
+//            if(search){
+//                turret.startScan();
+//                search = false;
+//            }
+//            else{
+//
+//            }
+//            if(gamepad1.xWasPressed()){
+//                turret.startScan();
+//                if(camera.ballInView()){
+//                    turret.stopScan();
+//                    trackBall = true;
+//                }
+//            }
+//            if(gamepad1.yWasPressed() && trackBall){
+//                follower.followPath(pathChain.get());
+//
+//            }
         }
     }
-    public void automaticIntake(){
-        turret.startScan();
-        if(camera.ballInView()){
-            turret.stopScan();
-            trackBall = true;
-            pause(1.5);
-            follower.followPath(pathChain.get());
-        }
-    }
+//    public void automaticIntake(){
+//        turret.startScan();
+//        if(camera.ballInView()){
+//            turret.stopScan();
+//            trackBall = true;
+//            pause(1.5);
+//            follower.followPath(pathChain.get());
+//        }
+//    }
     private void pause(double seconds) {
         double start = timer.seconds();
         while (timer.seconds() - start < seconds) {

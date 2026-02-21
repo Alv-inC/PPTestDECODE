@@ -20,8 +20,8 @@ public class Constants {
             .forwardZeroPowerAcceleration(-34.292)
             .lateralZeroPowerAcceleration(-68.89)
             .centripetalScaling(0.00015)
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.023,0,0.000003,0.6,0.003))
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.15, 0, 0.015, 0.1))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.003,0,0.000003,0.6,0.003))
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.13, 0, 0.015, 0.1))
             .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.1,0,0.01,0.01))
             .headingPIDFCoefficients(new PIDFCoefficients(0.8, 0, 0.06, 0.02));
     //intakeAngle -> angle of intake
@@ -54,7 +54,7 @@ public class Constants {
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 0.8, 0.8);
+    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 2, 2);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
