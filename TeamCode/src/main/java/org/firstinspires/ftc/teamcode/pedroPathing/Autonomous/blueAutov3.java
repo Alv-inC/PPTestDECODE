@@ -33,7 +33,7 @@ public class blueAutov3 extends OpMode {
     private int pathState;
     private TelemetryManager telemetryM;
     //MAYBE LATER PUT ALL THE POSES INSIDE A INITIALIZATION FUNCTION
-    private final Pose startPose = new Pose(33.6, 135.4, Math.toRadians(180));
+    private final Pose startPose = new Pose(26.198, 128.671, Math.toRadians(135));
 
     private PathChain firstLine;
     private PathChain Switch;
@@ -71,12 +71,14 @@ public class blueAutov3 extends OpMode {
 
     public void buildPaths() {
         // === SHOTS PATHS ===
-        Shot1 = follower.pathBuilder()
-                .addPath(new BezierLine(
-                        new Pose(33.600, 135.400),
-                        new Pose(56.410, 78.455)
-                ))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+        Shot1 = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(26.198, 128.671),
+
+                                new Pose(56.410, 78.455)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+
                 .build();
 
         Shot2 = follower.pathBuilder()
@@ -181,6 +183,7 @@ public class blueAutov3 extends OpMode {
             // AUTO INIT + START → SHOT 1
             // ===============================
             case 0:
+                trackRN = true;
                 intake.setPower(-1);
                 flyWheel.constantShootAutoSlow(); // ONLY ONCE
                 follower.followPath(Shot1, true);
@@ -191,7 +194,6 @@ public class blueAutov3 extends OpMode {
                 if (pathTimer.getElapsedTimeSeconds() > 1) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
-                    trackRN = true;
                 }
                 break;
 
@@ -199,7 +201,7 @@ public class blueAutov3 extends OpMode {
                 if (pathTimer.getElapsedTimeSeconds() > 1.4) {
                     flyWheel.downies(); // STOP SHOOTING
                     //flyWheel.constantShootAuto();
-                    trackRN = true;
+
                     setPathState(3);
                 }
                 break;
