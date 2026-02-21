@@ -16,12 +16,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-    .mass(13.6)
-            .forwardZeroPowerAcceleration(-50.9091)
-            .lateralZeroPowerAcceleration(-65.483)
+    .mass(11.34)
+            .forwardZeroPowerAcceleration(-34.292)
+            .lateralZeroPowerAcceleration(-68.89)
             .centripetalScaling(0.00015)
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.02,0,0.000003,0.6,0.003))
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.13, 0, 0.015, 0.1))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.023,0,0.000003,0.6,0.003))
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.15, 0, 0.015, 0.1))
             .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.1,0,0.01,0.01))
             .headingPIDFCoefficients(new PIDFCoefficients(0.8, 0, 0.06, 0.02));
     //intakeAngle -> angle of intake
@@ -38,8 +38,8 @@ public class Constants {
             .rightRearMotorName("rb")
             .leftRearMotorName("lb")
             .leftFrontMotorName("lf")
-            .xVelocity(63.714)
-            .yVelocity(53.420)
+            .xVelocity(78.97)
+            .yVelocity(56.624)
             .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
