@@ -28,7 +28,7 @@ public class TurretPLUSIntake {
     // PID
     public static double p = 0.00024;
     public static double i = 0.0;
-    public static double d = 0.000003;
+    public static double d = 0.000017;
     public static double currentTicks;
 
     // Motion

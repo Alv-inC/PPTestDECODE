@@ -90,7 +90,7 @@ public class blueAutov3 extends OpMode {
         Shot3 = follower.pathBuilder()
                 .addPath(new BezierLine(
                         new Pose(0, 64),
-                        new Pose(60.10, 72.455)
+                        new Pose(61.70, 72.455)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();

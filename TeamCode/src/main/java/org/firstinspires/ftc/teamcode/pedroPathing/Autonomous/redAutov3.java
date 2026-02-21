@@ -91,7 +91,7 @@ public class redAutov3 extends OpMode {
         Shot3 = follower.pathBuilder()
                 .addPath(new BezierLine(
                         new Pose(14, 45).mirror(),
-                        new Pose(60.10, 75.455).mirror()
+                        new Pose(58, 75.455).mirror()
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
@@ -148,9 +148,9 @@ public class redAutov3 extends OpMode {
 // === SWITCH PATH ===
         Switch = follower.pathBuilder()
                 .addPath(new BezierCurve(
-                        new Pose(58.410, 77.455).mirror(),
+                        new Pose(57, 77.455).mirror(),
                         new Pose(32.097, 55.135).mirror(),
-                        new Pose(19, 60.8).mirror()
+                        new Pose(21, 60.8).mirror()
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(tiltAngle))
                 .build();
@@ -158,7 +158,7 @@ public class redAutov3 extends OpMode {
         // === SHIMMY PATHS (AFTER SWITCH) ===
         shimmyDown = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(19, 60.8).mirror(),   // exactly Switch end
+                        new Pose(21, 60.8).mirror(),   // exactly Switch end
                         new Pose(14, 25).mirror()    // move DOWN ~3 units
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(90))

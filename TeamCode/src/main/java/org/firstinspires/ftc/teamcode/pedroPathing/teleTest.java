@@ -21,9 +21,11 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.backupBlue;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.blueAutov3;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.farBlue;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.farRed;
+import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.redAutov3;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
@@ -65,7 +67,7 @@ public class teleTest extends OpMode {
     private final double hood_mid = 0.2;
     private final double hood_low = 0;
     public static double x, y, r = 0;
-
+    boolean trackingEnabled = true;
     @Override
     public void init() {
 
@@ -82,6 +84,7 @@ public class teleTest extends OpMode {
         camera.setPosition(0.65);
         follower = Constants.createFollower(hardwareMap);
         startingPose = (startingPose != null) ? startingPose : blueAutov3.botPose;
+        startingPose = (startingPose != null) ? startingPose : backupBlue.botPose;
         startingPose = (startingPose != null) ? startingPose : farBlue.botPose;
         Pose poseToUse = (startingPose != null) ? startingPose : DEFAULT_POSE;
         telemetryM.addData("starting pose", poseToUse);
@@ -121,7 +124,9 @@ public class teleTest extends OpMode {
         follower.update();
         telemetryM.update();
 
-        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5 || gamepad1.left_trigger >0.5 || gamepad1.right_trigger > 0.5);
+//        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5 || gamepad1.left_trigger >0.5 || gamepad1.right_trigger > 0.5);
+        if(gamepad2.right_trigger > 0.5  || gamepad1.right_trigger > 0.5) trackingEnabled = true;
+        if(gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) trackingEnabled = false;
 
         telemetryM.addData("bot pose", follower.getPose());
         if(limelight.tagInView()) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
@@ -140,21 +145,21 @@ public class teleTest extends OpMode {
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(result[2]), 0.8))
                 .build();
        // if(gamepad1.left_bumper) camera.setPosition(0.26);
-        if(gamepad1.right_bumper) camera.setPosition(0.6);
+//        if(gamepad1.right_bumper) camera.setPosition(0.6);
 
         int targetTagId = -1;
-        if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) {
+//        if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5 || true) {
             limelight.switchPipeline(1);
             targetTagId = 20;
             limelight.trackTag_New(turret, targetTagId, trackingEnabled);
 
-        }
-        else if (gamepad2.right_trigger > 0.5 || gamepad1.right_trigger > 0.5) {
-            limelight.switchPipeline(1);
-            targetTagId = 24;
-            limelight.trackTag_New(turret, targetTagId, trackingEnabled);
-
-        }
+//        }
+//        else if (gamepad2.right_trigger > 0.5 || gamepad1.right_trigger > 0.5) {
+//            limelight.switchPipeline(1);
+//            targetTagId = 24;
+//            limelight.trackTag_New(turret, targetTagId, trackingEnabled);
+//
+//        }
 
         flywheel.update();
 //        if(gamepad1.xWasPressed()){
@@ -249,16 +254,16 @@ public class teleTest extends OpMode {
 
         }
 
-        if(gamepad1.leftStickButtonWasPressed()){
-            follower.followPath(pathChainBlueClose.get());
-            automatedDrive = true;
-            //turret.setTargetPosition(0);
-        }
-        if(gamepad1.rightStickButtonWasPressed()){
-            follower.followPath(pathChainBlueFar.get());
-            automatedDrive = true;
-            //turret.setTargetPosition(0);
-        }
+//        if(gamepad1.leftStickButtonWasPressed()){
+//            follower.followPath(pathChainBlueClose.get());
+//            automatedDrive = true;
+//            //turret.setTargetPosition(0);
+//        }
+//        if(gamepad1.rightStickButtonWasPressed()){
+//            follower.followPath(pathChainBlueFar.get());
+//            automatedDrive = true;
+//            //turret.setTargetPosition(0);
+//        }
         if(gamepad1.xWasPressed()){
             follower.followPath(pathChainBlueGate.get());
             automatedDrive = true;

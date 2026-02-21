@@ -63,6 +63,7 @@ public class backupBlue extends OpMode {
     private boolean updateEnd = false;
 
     private Servo camera;
+    public static Pose botPose;
 
     // =============================
     // BUILD PATHS
@@ -80,14 +81,14 @@ public class backupBlue extends OpMode {
         Path2 = follower.pathBuilder()
                 .addPath(new BezierLine(
                         new Pose(50.393, 84.000),
-                        new Pose(17.785, 84.159)
+                        new Pose(19, 84.159)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
         Path3 = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        new Pose(13.523, 84.159),
+                        new Pose(14.523, 84.159),
                         new Pose(50.393, 84.000)
                 ))
                 .setConstantHeadingInterpolation(Math.toRadians(180))
@@ -138,7 +139,7 @@ public class backupBlue extends OpMode {
                         new BezierCurve(
                                 new Pose(50.570, 84.224),
                                 new Pose(42.355, 8.757),
-                                new Pose(8.6, 9.18)
+                                new Pose(13.5, 9.18)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -146,7 +147,7 @@ public class backupBlue extends OpMode {
 
         Path9 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(8.6, 9.18),
+                                new Pose(13.5, 9.18),
 
                                 new Pose(50.215, 84.215)
                         )
@@ -470,7 +471,7 @@ public class backupBlue extends OpMode {
 
             isTracking = false;
 
-            turret.setTargetAngle(50);
+            turret.setTargetAngle(45);
 
             turret.update();
 
@@ -488,6 +489,7 @@ public class backupBlue extends OpMode {
         }
 
         follower.update();
+        botPose = follower.getPose();
 
         double power = limelight.getLaunchPower();
 
@@ -495,6 +497,7 @@ public class backupBlue extends OpMode {
             flyWheel.setTargetVelocity(power);
 
         flyWheel.update();
+        botPose = follower.getPose();
 
         autonomousPathUpdate();
 
