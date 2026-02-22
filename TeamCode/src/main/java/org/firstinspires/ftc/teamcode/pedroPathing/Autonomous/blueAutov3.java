@@ -33,7 +33,7 @@ public class blueAutov3 extends OpMode {
     private int pathState;
     private TelemetryManager telemetryM;
     //MAYBE LATER PUT ALL THE POSES INSIDE A INITIALIZATION FUNCTION
-    private final Pose startPose = new Pose(19.0325, 128.04189, Math.toRadians(135));
+    private final Pose startPose = new Pose(19.0325, 132.5, Math.toRadians(135));
 
     private PathChain firstLine;
     private PathChain Switch;
@@ -73,7 +73,7 @@ public class blueAutov3 extends OpMode {
         // === SHOTS PATHS ===
         Shot1 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(19.0325, 131.04189),
+                                new Pose(19.0325, 132.5),
 
                                 new Pose(56.410, 78.455)
                         )
