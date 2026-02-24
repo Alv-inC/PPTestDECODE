@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import dev.frozenmilk.dairy.cachinghardware.CachingDcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 import java.util.List;
 
@@ -139,6 +140,10 @@ public class flyWheel {
         //p = 0;
         //targetVelocity = 0;
     }
+    public double getFlyCurrent(){
+        return fly1.getCurrent(CurrentUnit.AMPS) + fly2.getCurrent(CurrentUnit.AMPS);
+    }
+
     public boolean isCurrentVelocityEnough(){
         return fly1.getVelocity() <= -1185;
     }

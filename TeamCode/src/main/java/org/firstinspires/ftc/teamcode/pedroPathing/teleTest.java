@@ -13,6 +13,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -21,6 +22,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.backupBlue;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.blueAutov3;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.farBlue;
@@ -72,9 +74,15 @@ public class teleTest extends OpMode {
     private static final int NO_TAG_POWER = -1000;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
+    private DcMotorEx lf, lb, rf, rb;
+
     @Override
     public void init() {
-
+        //delete later
+        DcMotorEx lf = hardwareMap.get(DcMotorEx.class, "lf");
+        DcMotorEx lb = hardwareMap.get(DcMotorEx.class, "lb");
+        DcMotorEx rf = hardwareMap.get(DcMotorEx.class, "rf");
+        DcMotorEx rb = hardwareMap.get(DcMotorEx.class, "rb");
         //delete later prob
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         flywheel = new flyWheel(hardwareMap, telemetry);
@@ -316,9 +324,20 @@ public class teleTest extends OpMode {
 //            slowModeMultiplier -= 0.25;
 //        }
 
-        telemetryM.debug("position", follower.getPose());
-        telemetryM.debug("velocity", follower.getVelocity());
-        telemetryM.debug("automatedDrive", automatedDrive);
+//        telemetryM.debug("position", follower.getPose());
+//        telemetryM.debug("velocity", follower.getVelocity());
+//        telemetryM.debug("automatedDrive", automatedDrive);
+        LynxModule hub = hardwareMap.get(LynxModule.class, "Control Hub");
+        double hubCurrent = hub.getI2cBusCurrent(CurrentUnit.AMPS);
+
+        telemetryM.addData("HUB CURRENT", intake.getCurrent(CurrentUnit.AMPS));
+        telemetryM.addData("flywheel Current", flywheel.getFlyCurrent());
+        telemetryM.addData("HUB CURRENT", hubCurrent);
+        telemetry.addData("LF Current", lb.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("RF Current", rf.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("LB Current", lb.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("RB Current", rb.getCurrent(CurrentUnit.AMPS));
+        telemetry.update();
     }
     private void pause(double seconds) {
         double start = timer.seconds();

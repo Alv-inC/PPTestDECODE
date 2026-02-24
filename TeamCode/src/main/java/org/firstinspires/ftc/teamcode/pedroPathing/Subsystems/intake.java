@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
 import dev.frozenmilk.dairy.cachinghardware.CachingDcMotorEx;
 
 @Configurable
@@ -26,6 +28,10 @@ public class intake {
     }
     public void goSlow(){
         intake.setPower(0.4);
+    }
+
+    public double getCurrent(){
+        return intake.getCurrent(CurrentUnit.AMPS);
     }
 
 

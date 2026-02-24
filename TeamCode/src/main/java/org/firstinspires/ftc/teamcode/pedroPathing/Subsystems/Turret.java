@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 import dev.frozenmilk.dairy.cachinghardware.CachingDcMotorEx;
 
@@ -62,6 +63,7 @@ public class Turret {
     public void setPower(double power) {
         this.setPower(power);
     }
+
 
     public void reset(){
         turretMotor.setDirection(DcMotorSimple.Direction.FORWARD);
