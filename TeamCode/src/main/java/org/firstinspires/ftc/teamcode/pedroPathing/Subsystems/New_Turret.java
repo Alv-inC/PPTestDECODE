@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Configurable
-@TeleOp(name = "New Turret")
 public class New_Turret {
 
     private DcMotorEx motor;
