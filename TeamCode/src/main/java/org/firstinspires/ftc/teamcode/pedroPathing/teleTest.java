@@ -30,6 +30,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.farRed;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.redAutov3;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.New_Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
@@ -51,7 +52,7 @@ public class teleTest extends OpMode {
     private double slowModeMultiplier = 0.5;
     private ElapsedTime timer = new ElapsedTime();
     private Servo camera;
-    private TurretPLUSIntake turret;
+    private New_Turret turret;
     private flyWheel flywheel;
     private DcMotorEx intake;
     private Hood hood;
@@ -90,7 +91,7 @@ public class teleTest extends OpMode {
         hood = new Hood(hardwareMap);
         hood.setHigh();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
-        turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
+        turret = new New_Turret(hardwareMap, telemetry);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         limelight.switchPipeline(1);
         camera = hardwareMap.get(Servo.class, "camera");
@@ -140,7 +141,7 @@ public class teleTest extends OpMode {
 //        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5 || gamepad1.left_trigger >0.5 || gamepad1.right_trigger > 0.5);
         if(gamepad2.right_trigger > 0.5  || gamepad1.right_trigger > 0.5) trackingEnabled = true;
         if(gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) trackingEnabled = false;
-
+        limelight.trackTag(turret, 20, trackingEnabled);
         telemetryM.addData("bot pose", follower.getPose());
 //        if(limelight.tagInView()) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
 //        else flywheel.constantShootAtVelocity(-1000);
@@ -156,7 +157,7 @@ public class teleTest extends OpMode {
 
         flywheel.constantShootAtVelocity(targetPower);
 //removed reset to 0
-        limelight.trackBall(turret, trackBall);
+        //limelight.trackBall(turret, trackBall);
         follower.update();
         double[] result = limelight.calculateBallPose(follower.getPose().getX(), follower.getPose().getY(), Math.toDegrees(follower.getHeading()), turret.getCurrentAngle()*1.25);
         telemetry.addData("x", result[0]);
@@ -171,17 +172,17 @@ public class teleTest extends OpMode {
        // if(gamepad1.left_bumper) camera.setPosition(0.26);
 //        if(gamepad1.right_bumper) camera.setPosition(0.6);
 
-        int targetTagId = -1;
+//        int targetTagId = -1;
 //        if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5 || true) {
-            limelight.switchPipeline(1);
-            targetTagId = 20;
-            limelight.trackTag_New(turret, targetTagId, trackingEnabled);
-
+//            limelight.switchPipeline(1);
+//            targetTagId = 20;
+//            limelight.trackTag(turret, targetTagId, trackingEnabled);
+//
 //        }
 //        else if (gamepad2.right_trigger > 0.5 || gamepad1.right_trigger > 0.5) {
 //            limelight.switchPipeline(1);
 //            targetTagId = 24;
-//            limelight.trackTag_New(turret, targetTagId, trackingEnabled);
+//            limelight.trackTag(turret, targetTagId, trackingEnabled);
 //
 //        }
 
@@ -291,12 +292,10 @@ public class teleTest extends OpMode {
         if(gamepad1.xWasPressed()){
             follower.followPath(pathChainBlueGate.get());
             automatedDrive = true;
-            turret.setTargetPosition(0);
         }
         if(gamepad1.yWasPressed()){
             follower.followPath(pathChainBluePark.get());
             automatedDrive = true;
-            turret.setTargetPosition(0);
         }
 
         //Stop automated following if the follower is done
@@ -333,10 +332,10 @@ public class teleTest extends OpMode {
         telemetryM.addData("HUB CURRENT", intake.getCurrent(CurrentUnit.AMPS));
         telemetryM.addData("flywheel Current", flywheel.getFlyCurrent());
         telemetryM.addData("HUB CURRENT", hubCurrent);
-        telemetry.addData("LF Current", lb.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("RF Current", rf.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("LB Current", lb.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("RB Current", rb.getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("LF Current", .getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("RF Current", rf.getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("LB Current", lb.getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("RB Current", rb.getCurrent(CurrentUnit.AMPS));
         telemetry.update();
     }
     private void pause(double seconds) {
