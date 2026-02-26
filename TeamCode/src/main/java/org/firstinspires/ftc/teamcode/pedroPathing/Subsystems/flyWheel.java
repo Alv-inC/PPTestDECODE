@@ -116,7 +116,7 @@ public class flyWheel {
             block.setPosition(0);
         }
     public void downies(){
-        block.setPosition(0.3);
+        block.setPosition(0.15);
     }
     public void zero(){
         block.setPosition(0);
