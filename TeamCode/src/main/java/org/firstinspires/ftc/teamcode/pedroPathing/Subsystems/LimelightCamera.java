@@ -30,16 +30,19 @@ public class LimelightCamera {
     public static int PIPELINE_INDEX = 1;
     public static double DEADBAND_DEG = 0.5;
     public static double CORRECTION_GAIN = 70;
-//    public static double TICKS_PER_REV = 384.5;
-//    public static double GEAR_RATIO = 1.0;
-//    public static double TICKS_PER_DEG = (TICKS_PER_REV * GEAR_RATIO) / 360.0;
-
-    public static double SMALL_GEAR_TICKS_PER_REV = 8192;
-    public static double GEAR_RATIO = (double) 125 /33; // big / small
+    public static double MOTOR_TICKS_PER_REV = 384.5; // example: goBILDA 312 RPM
+    public static double GEAR_RATIO = (double) 125 /39;            // turret gear reduction
     public static double TICKS_PER_TURRET_REV =
-            SMALL_GEAR_TICKS_PER_REV * GEAR_RATIO;
+            MOTOR_TICKS_PER_REV * GEAR_RATIO;
     public static double TICKS_PER_DEG =
             TICKS_PER_TURRET_REV / 360.0;
+//
+//    public static double SMALL_GEAR_TICKS_PER_REV = 8192;
+//    public static double GEAR_RATIO = (double) 125 /33; // big / small
+//    public static double TICKS_PER_TURRET_REV =
+//            SMALL_GEAR_TICKS_PER_REV * GEAR_RATIO;
+//    public static double TICKS_PER_DEG =
+//            TICKS_PER_TURRET_REV / 360.0;
     public static double CAMERA_MOUNT_ANGLE = -21;
     public static double CAMERA_HEIGHT = 0.3048;
     public static double TARGET_HEIGHT = 0.08;
@@ -131,12 +134,12 @@ public class LimelightCamera {
     /**
      * Performs turret correction only if the target tag matches and trigger logic allows.
      */
-    public void trackTag(TurretPLUSIntake turret, int targetTagId, boolean enabled) {
+    public void trackTag(New_Turret turret, int targetTagId, boolean enabled) {
         if (!validTarget || lastTagId != targetTagId || targetTagId == -1 || !enabled) return;
 
         double correctionTicks = txDeg * TICKS_PER_DEG;
-        double newTarget = turret.getCurrentPosition() + correctionTicks;
-        turret.setTargetPosition(newTarget);
+        double newTarget = turret.getCurrentTicks() - correctionTicks;
+        turret.setTargetTicks(newTarget);
     }
     public void trackTag_New(TurretPLUSIntake turret, int targetTagId, boolean enabled) {
         telemetry.addData("target id", targetTagId);
