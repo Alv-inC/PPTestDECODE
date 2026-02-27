@@ -146,7 +146,7 @@ public class TeleTest2 extends OpMode {
 
         flywheel.constantShootAtVelocity(targetPower);
 //removed reset to 0
-        limelight.trackBall(turret, trackBall);
+//        limelight.trackBall(turret, trackBall);
         follower.update();
         double[] result = limelight.calculateBallPose(follower.getPose().getX(), follower.getPose().getY(), Math.toDegrees(follower.getHeading()), turret.getCurrentAngle()*1.25);
         telemetry.addData("x", result[0]);

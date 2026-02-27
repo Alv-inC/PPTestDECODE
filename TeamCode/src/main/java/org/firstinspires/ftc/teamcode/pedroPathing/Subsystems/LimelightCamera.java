@@ -82,6 +82,7 @@ public class LimelightCamera {
     public void update() {
         //updatePipeline();
         LLResult result = limelight.getLatestResult();
+
         foundBall = false;
         validTarget = false;
         foundTag = false;
@@ -120,7 +121,7 @@ public class LimelightCamera {
                     double ty = target.getTargetYDegrees();
                     telemetry.addData("tydegrees", ty);
 // Inverted ty → subtract instead of add
-                    double angle = Math.toRadians(CAMERA_MOUNT_ANGLE - ty);
+                    double angle = Math.toRadians(CAMERA_MOUNT_ANGLE + ty);
                     double distance =
                             (TARGET_HEIGHT - CAMERA_HEIGHT) / Math.tan(angle);
                     ballDistance = distance;
@@ -128,6 +129,19 @@ public class LimelightCamera {
                     ballLateralDistance = ballDistance * Math.tan(Math.toRadians(balltxDeg));
                     telemetry.addData("ball lateral distance", ballLateralDistance);
                 }
+            }
+            else if(PIPELINE_INDEX == 5) {
+                balltxDeg = result.getTx();
+                double ty = result.getTy();
+                telemetry.addData("tydegrees", ty);
+// Inverted ty → subtract instead of add
+                double angle = Math.toRadians(CAMERA_MOUNT_ANGLE + ty);
+                double distance =
+                        (TARGET_HEIGHT - CAMERA_HEIGHT) / Math.tan(angle);
+                ballDistance = distance;
+                telemetry.addData("ball distance", distance);
+                ballLateralDistance = ballDistance * Math.tan(Math.toRadians(balltxDeg));
+                telemetry.addData("ball lateral distance", ballLateralDistance);
             }
     }
 
@@ -150,12 +164,12 @@ public class LimelightCamera {
         telemetry.addData("newTarget", newTarget);
         turret.setTargetPosition(newTarget);
     }
-    public void trackBall(TurretPLUSIntake turret, boolean enabled) {
+    public void trackBall(New_Turret turret, boolean enabled) {
         if (!enabled) return;
         double correctionTicks = balltxDeg * TICKS_PER_DEG;
-        double newTarget = turret.getCurrentPosition() - correctionTicks;
+        double newTarget = turret.getCurrentTicks() - correctionTicks;
         telemetry.addData("newTarget", newTarget);
-        turret.setTargetPosition(newTarget);
+        turret.setTargetTicks(newTarget);
     }
     public boolean ballInView(){
         return foundBall;

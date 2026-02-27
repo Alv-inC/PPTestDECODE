@@ -20,7 +20,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Camera_Servo;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.New_Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
@@ -35,21 +37,22 @@ public class ballTesting extends LinearOpMode {
     public static int pipeline = 0;
     LimelightCamera camera;
     private Servo servo;
-    TurretPLUSIntake turret;
+    New_Turret turret;
     DcMotorEx intake;
     public static boolean trackBall, go, search, sequence, runIntake = false;
     public static double intakePower = 0;
     private Follower follower;
     Supplier<PathChain> pathChain;
     private ElapsedTime timer = new ElapsedTime();
+    private Camera_Servo cameraServo;
     public void runOpMode() {
         // ---- Init hardware ----
-        servo = hardwareMap.get(Servo.class, "camera");
-        servo.setPosition(0.5);
+        cameraServo = new Camera_Servo(hardwareMap);
+        cameraServo.setLow();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         camera = new LimelightCamera(hardwareMap, telemetry);
         intake = hardwareMap.get(DcMotorEx.class, "intake");
-        turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
+        turret = new New_Turret(hardwareMap, telemetry);
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(72, 0, Math.toRadians(90)));
         waitForStart();
@@ -71,14 +74,15 @@ public class ballTesting extends LinearOpMode {
                     .addPath(new Path(new BezierLine(follower::getPose, new Pose(result[0], result[1]))))
                     .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(result[2]), 0.8))
                     .build();
-//            telemetry.addData("x", pose.getX());
-//            telemetry.addData("y", pose.getX());
-//            telemetry.addData("heading", pose.getHeading());
-//            if(runIntake) intake.setPower(intakePower);
-//            if(go){
-//                follower.followPath(pathChain.get());
-//                go = false;
-//            }
+            Pose pose = follower.getPose();
+            telemetry.addData("x", pose.getX());
+            telemetry.addData("y", pose.getX());
+            telemetry.addData("heading", pose.getHeading());
+            if(runIntake) intake.setPower(intakePower);
+            if(go){
+                follower.followPath(pathChain.get());
+                go = false;
+            }
 //            if(search){
 //                turret.startScan();
 //                search = false;

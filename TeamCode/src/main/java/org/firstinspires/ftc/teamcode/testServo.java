@@ -12,13 +12,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 //0.53 up
 
 //camera
-//0.5 straight, , 0.6 up
+//0.52 straight, 0.63 up, 0.41 maxdown
 @TeleOp(name = "testServo")
 @Configurable
 public class testServo extends OpMode {
 
     public static double ph = 0.58; // Adjustable from FTC Dashboard
-    public static double pc = 0.67;
+    public static double pc = 0.52;
     public static double pb = 0;
     Servo block, camera, hood;
 
