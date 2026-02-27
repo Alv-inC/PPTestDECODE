@@ -54,7 +54,6 @@ public class flyWheel {
         //blocker
         block = hardwareMap.get(Servo.class, "block");
         block.setDirection(Servo.Direction.REVERSE);
-        block.setPosition(0);
 
         fly1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         fly2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -102,7 +101,7 @@ public class flyWheel {
     }
     public void constantShootAutoSlow(){
         p = 0.15;
-        targetVelocity = -1550;
+        targetVelocity = -2000;
     }
     public void constantShootAutoFast(){
         p = 0.15;
@@ -117,9 +116,6 @@ public class flyWheel {
         }
     public void downies(){
         block.setPosition(0.15);
-    }
-    public void zero(){
-        block.setPosition(0);
     }
     //far = -1550
 
@@ -139,6 +135,10 @@ public class flyWheel {
         block.setPosition(0);
         //p = 0;
         //targetVelocity = 0;
+    }
+    public void boom(){
+        p = 0;
+        targetVelocity = 0;
     }
     public double getFlyCurrent(){
         return fly1.getCurrent(CurrentUnit.AMPS) + fly2.getCurrent(CurrentUnit.AMPS);
