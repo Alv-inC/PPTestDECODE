@@ -4,9 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "BreakBeamTest")
-public class breakBeamTest extends OpMode {
+public class breakBeamTest {
     private DcMotorEx intake;
     private boolean object1Detected;
     private boolean object2Detected;
@@ -15,40 +16,69 @@ public class breakBeamTest extends OpMode {
     private DigitalChannel beamSensor2;
     private DigitalChannel beamSensor3;
 
+    //finding the port
+//    private boolean object4Detected;
+//    private boolean object5Detected;
+//    private boolean object6Detected;
+//    private DigitalChannel beamSensor4;
+//    private DigitalChannel beamSensor5;
+//    private DigitalChannel beamSensor6;
+//
+//    private boolean object7Detected;
+//    private boolean object8Detected;
+//    private DigitalChannel beamSensor7;
+//    private DigitalChannel beamSensor8;
 
-
-    @Override
-    public void init() {
+    public breakBeamTest(HardwareMap hardwareMap){
         beamSensor1 = hardwareMap.get(DigitalChannel.class, "bb1");
         beamSensor1.setMode(DigitalChannel.Mode.INPUT);
         beamSensor2 = hardwareMap.get(DigitalChannel.class, "bb2");
         beamSensor2.setMode(DigitalChannel.Mode.INPUT);
         beamSensor3 = hardwareMap.get(DigitalChannel.class, "bb3");
         beamSensor3.setMode(DigitalChannel.Mode.INPUT);
-        intake = hardwareMap.get(DcMotorEx.class, "intake");
-
-
     }
 
-    @Override
-    public void loop() {
-        // Read the sensor: false = broken (object detected), true = not broken
-        object1Detected = !beamSensor1.getState();
-        object2Detected = !beamSensor2.getState();
-        object3Detected = !beamSensor3.getState();
+public boolean isFull() {
+            object1Detected = !beamSensor1.getState();
+            object2Detected = !beamSensor2.getState();
+            object3Detected = !beamSensor3.getState();
 
-        if (object1Detected & object2Detected & object3Detected) {
-            telemetry.addData("Status", "FULLL");
-            gamepad1.rumble(1.0,1.0,2000);
-        } else {
-            telemetry.addData("Status", "NOT FULLL");
-        }
-        if(gamepad1.a){
-            intake.setPower(-1);
-        }
-        if(gamepad1.b){
-            intake.setPower(0);
-        }
 
+            if (object1Detected & object2Detected & object3Detected) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+//        //finding ports
+//        object4Detected = !beamSensor4.getState();
+//        object5Detected = !beamSensor5.getState();
+//        object6Detected = !beamSensor6.getState();
+//        object7Detected = !beamSensor7.getState();
+//        object8Detected = !beamSensor8.getState();
+
+//        if (object1Detected){
+//            telemetry.addData("Status", "ONE");
+//        }
+//        if (object2Detected){
+//            telemetry.addData("Status", "TWO");
+//        }
+//        if (object3Detected){
+//            telemetry.addData("Status", "THREE");
+//        }
+//        if (object4Detected){
+//            telemetry.addData("Status", "FOUR");
+//        }
+//        if (object5Detected){
+//            telemetry.addData("Status", "FIVE");
+//        }
+//        if (object6Detected){
+//            telemetry.addData("Status", "SIX");
+//        }
+//        if (object7Detected){
+//            telemetry.addData("Status", "SEVEN");
+//        }
+//        if (object8Detected){
+//            telemetry.addData("Status", "EIGHT");
+//        }
     }
-}
