@@ -115,7 +115,7 @@ public class flyWheel {
             block.setPosition(0);
         }
     public void downies(){
-        block.setPosition(0.15);
+        block.setPosition(0.11);
     }
     //far = -1550
 

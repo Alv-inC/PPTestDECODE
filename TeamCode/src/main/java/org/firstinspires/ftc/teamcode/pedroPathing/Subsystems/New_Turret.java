@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.Subsystems;
 
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,7 +21,8 @@ public class New_Turret {
     // PID constants
     public static double p = 0.01;
     public static double i = 0.0;
-    public static double d = 0.0012;
+    public static double d = 0.001;
+    public static double kS = 0;
 
     // Deadband (degrees)
     public static double POSITION_DEADBAND_DEG = 5;
@@ -46,7 +49,7 @@ public class New_Turret {
 
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         pid = new PIDController(p, i, d);
     }
@@ -67,6 +70,7 @@ public class New_Turret {
         } else {
             power = pid.calculate(currentTicks, targetTicks);
             power = clamp(power, -MAX_POWER, MAX_POWER);
+            power = power + Math.signum(currentTicks - targetTicks) * kS;
         }
 
         motor.setPower(power);

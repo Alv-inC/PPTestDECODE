@@ -85,7 +85,7 @@ public class blueAutov3 extends OpMode {
 
                                 new Pose(53.046, 84.960)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                ).setConstantHeadingInterpolation(Math.toRadians(35))
 
                 .build();
 
@@ -95,7 +95,8 @@ public class blueAutov3 extends OpMode {
                                 new Pose(58.953, 58.340),
                                 new Pose(21.065, 59.794)
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+                ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+
 
                 .build();
 
