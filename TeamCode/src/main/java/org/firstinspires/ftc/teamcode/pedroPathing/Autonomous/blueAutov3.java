@@ -83,26 +83,25 @@ public class blueAutov3 extends OpMode {
                         new BezierLine(
                                 new Pose(27.544, 128.895),
 
-                                new Pose(53.046, 84.960)
+                                new Pose(46.317, 99.091)
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(35))
+                ).setConstantHeadingInterpolation(Math.toRadians(135))
 
                 .build();
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(53.046, 84.960),
+                                new Pose(46.317, 99.091),
                                 new Pose(58.953, 58.340),
-                                new Pose(21.065, 59.794)
+                                new Pose(19.047, 59.794)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
-
+                ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                 .build();
 
         Path3 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(21.065, 59.794),
+                                new Pose(19.047, 59.794),
                                 new Pose(40.784, 64.871),
                                 new Pose(52.821, 84.059)
                         )
@@ -124,7 +123,7 @@ public class blueAutov3 extends OpMode {
                         new BezierLine(
                                 new Pose(10.579, 68.262),
 
-                                new Pose(4.065, 62.832)
+                                new Pose(2.330, 62.383)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(120))
 
@@ -132,7 +131,7 @@ public class blueAutov3 extends OpMode {
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(4.065, 62.832),
+                                new Pose(2.330, 62.383),
                                 new Pose(35.425, 65.391),
                                 new Pose(48.270, 85.184)
                         )
@@ -174,7 +173,7 @@ public class blueAutov3 extends OpMode {
                         new BezierLine(
                                 new Pose(21.981, 35.785),
 
-                                new Pose(52.71, 108.74)
+                                new Pose(52.710, 108.748)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -197,17 +196,16 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 1: // delay BEFORE shooting Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 0.9) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
                 }
                 break;
 
             case 2: // shooting window for Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.1) {
                     flyWheel.downies(); // STOP SHOOTING
-                    //flyWheel.constantShootAuto();
-                    turret.setTargetAngle(-55);
+                    //flyWheel.constantShootAuto();turret.setTargetAngle(-55);
                     setPathState(3);
                 }
                 break;
@@ -229,6 +227,7 @@ public class blueAutov3 extends OpMode {
             // ===============================
             case 4:
                 if (!follower.isBusy()) {
+
                     follower.followPath(Path3, true);
                     setPathState(5);
                 }
@@ -242,7 +241,7 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 6: // shooting window Shot 2
-                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.4) {
                     flyWheel.downies(); // STOP SHOOTING
                     setPathState(7);
                 }
@@ -282,7 +281,6 @@ public class blueAutov3 extends OpMode {
             case 10:
                 if (intakeFull || pathTimer.getElapsedTimeSeconds() > 2.3) {
                     follower.followPath(Path6, true);
-                    turret.setTargetAngle(-55);
                     setPathState(11);
                 }
                 break;
@@ -295,7 +293,7 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 12: // shooting window Shot 3
-                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.4) {
                     flyWheel.downies();
                     setPathState(13);
                 }
@@ -322,6 +320,7 @@ public class blueAutov3 extends OpMode {
             // ===============================
             case 14:
                 if (!follower.isBusy()) {
+                    flyWheel.downies();
                     follower.followPath(Path8, true);
                     setPathState(15);
                 }
@@ -335,7 +334,7 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 16:
-                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.4) {
                     flyWheel.downies();
 //                    teleTest.startingPose = follower.getPose();
 //                    telemetryM.addData("end data", follower.getPose());
@@ -426,13 +425,13 @@ public class blueAutov3 extends OpMode {
         int targetTagId = 20;
         limelight.trackTag(turret, targetTagId, isTracking);
         isTracking = limelight.tagInView();
-        if(!isTracking && !flag)turret.setTargetAngle(-7);
+//        if(!isTracking && !flag)//turret.setTargetAngle(-45);
         if(trackRN){
             turret.update();
         }
         if(updateEnd) {
             isTracking = false;
-            turret.setTargetAngle(0);
+//            turret.setTargetAngle(0);
             turret.update();
         }
         if (!hasStarted) {
