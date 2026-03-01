@@ -53,6 +53,8 @@ public class LimelightCamera {
     private int lastTagId = -1;
     private double ballDistance, ballLateralDistance = 0;
     private double launchPower = 0;
+
+    public static double launchpowermultiplier = 1.05;
     public static int farCoefficient = 330; //2.75 m
     public static int midCoefficient = 391; //1.75 m
     public static int closeCoefficient = 435; //1 m
@@ -102,7 +104,7 @@ public class LimelightCamera {
                     Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
                     tzMeters = tagPoseCam.getPosition().z;
                     double launchSpeed = computeLaunchVelocity(tzMeters);
-                    launchPower = velocityToTicksPerSecond(launchSpeed, tzMeters);
+                    launchPower = velocityToTicksPerSecond(launchSpeed, tzMeters) * launchpowermultiplier;
 
                     txDeg = fid.getTargetXDegrees();
                     telemetry.addData("txDeg", txDeg);
