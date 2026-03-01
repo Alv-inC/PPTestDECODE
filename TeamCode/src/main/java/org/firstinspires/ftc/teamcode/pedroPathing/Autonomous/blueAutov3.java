@@ -81,101 +81,101 @@ public class blueAutov3 extends OpMode {
         // === SHOTS PATHS ===
         Path1 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(27.544, 128.895),
+                                new Pose(27.544, 128.895).mirror(),
 
-                                new Pose(46.317, 99.091)
+                                new Pose(46.317, 95.502).mirror()
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(135))
+                ).setConstantHeadingInterpolation(Math.toRadians(45))
 
                 .build();
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(46.317, 99.091),
-                                new Pose(58.953, 58.340),
-                                new Pose(17.477, 60.243)
+                                new Pose(46.317, 95.502).mirror(),
+                                new Pose(53.569, 63.050).mirror(),
+                                new Pose(9.178, 64.729).mirror()
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+                ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                 .build();
 
         Path3 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(17.477, 60.243),
-                                new Pose(40.784, 64.871),
-                                new Pose(52.821, 84.059)
+                                new Pose(9.178, 64.729).mirror(),
+                                new Pose(40.784, 66.441).mirror(),
+                                new Pose(43.597, 84.508).mirror()
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+                ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                 .build();
 
         Path4 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(52.821, 84.059),
-                                new Pose(37.616, 64.067),
-                                new Pose(10.579, 68.262)
+                                new Pose(43.597, 84.508).mirror(),
+                                new Pose(37.616, 65.413).mirror(),
+                                new Pose(10.579, 68.262).mirror()
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(135))
+                ).setConstantHeadingInterpolation(Math.toRadians(45))
 
                 .build();
 
         Path5 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(10.579, 68.262),
+                                new Pose(10.579, 68.262).mirror(),
 
-                                new Pose(2.330, 62.383)
+                                new Pose(2.554, 62.832).mirror()
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(120))
+                ).setConstantHeadingInterpolation(Math.toRadians(30))
 
                 .build();
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(2.330, 62.383),
-                                new Pose(35.425, 65.391),
-                                new Pose(48.270, 85.184)
+                                new Pose(2.554, 62.832).mirror(),
+                                new Pose(35.425, 65.391).mirror(),
+                                new Pose(42.662, 90.567).mirror()
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(135))
+                ).setConstantHeadingInterpolation(Math.toRadians(45))
 
                 .build();
 
         Path7 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(48.270, 85.184),
-                                new Pose(38.126, 84.830),
-                                new Pose(22.495, 83.542)
+                                new Pose(42.662, 90.567).mirror(),
+                                new Pose(38.126, 84.830).mirror(),
+                                new Pose(9.262, 90.495).mirror()
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+                ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                 .build();
 
         Path8 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(22.495, 83.542),
+                                new Pose(9.262, 90.495).mirror(),
 
-                                new Pose(52.355, 84.822)
+                                new Pose(41.140, 89.757).mirror()
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+                ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                 .build();
 
         Path9 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(52.355, 84.822),
-                                new Pose(59.000, 32.285),
-                                new Pose(21.981, 35.785)
+                                new Pose(41.140, 89.757).mirror(),
+                                new Pose(50.028, 41.481).mirror(),
+                                new Pose(9.869, 43.290).mirror()
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+                ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                 .build();
 
         Path10 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(21.981, 35.785),
+                                new Pose(9.869, 43.290).mirror(),
 
-                                new Pose(52.710, 108.748)
+                                new Pose(38.804, 121.757).mirror()
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+                ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                 .build();
     }
