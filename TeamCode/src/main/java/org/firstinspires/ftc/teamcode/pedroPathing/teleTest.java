@@ -78,6 +78,7 @@ public class teleTest extends OpMode {
     private int lastGoodPower = NO_TAG_POWER;
     private breakBeamTest bbTest;
     private boolean intakeFull;
+    private boolean bbFlag = true;
 
     @Override
     public void init() {
@@ -136,7 +137,7 @@ public class teleTest extends OpMode {
         telemetryM.update();
 
         intakeFull = bbTest.isFull();
-        if(intakeFull) intake.setPower(0);
+        if(intakeFull && bbFlag) intake.setPower(0);
 
         telemetryM.addData("intake full", intakeFull);
 
@@ -239,6 +240,7 @@ public class teleTest extends OpMode {
             //flywheel.constantShootSlow();
             //pause(0.5);       // 0.5 second pause
             intake.setPower(-0.9);
+            bbFlag = false;
         }
         if(gamepad2.right_bumper){
             flywheel.uppies();
