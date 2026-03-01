@@ -54,7 +54,7 @@ public class LimelightCamera {
     private double ballDistance, ballLateralDistance = 0;
     private double launchPower = 0;
 
-    public static double launchpowermultiplier = 1;
+    public static double launchpowermultiplier = 1.05;
     public static int farCoefficient = 330; //2.75 m
     public static int midCoefficient = 391; //1.75 m
     public static int closeCoefficient = 435; //1 m
@@ -150,12 +150,12 @@ public class LimelightCamera {
     /**
      * Performs turret correction only if the target tag matches and trigger logic allows.
      */
-    public void trackTag(New_Turret turret, int targetTagId, boolean enabled) {
+    public void trackTag(New_Turret turret, int targetTagId, boolean enabled, double offset) {
         if (!validTarget || lastTagId != targetTagId || targetTagId == -1 || !enabled) return;
 
         double correctionTicks = txDeg * TICKS_PER_DEG;
         double newTarget = turret.getCurrentTicks() - correctionTicks;
-        turret.setTargetTicks(newTarget);
+        turret.setTargetTicks(newTarget + offset);
     }
     public void trackTag_New(TurretPLUSIntake turret, int targetTagId, boolean enabled) {
         telemetry.addData("target id", targetTagId);

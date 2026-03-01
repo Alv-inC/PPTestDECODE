@@ -54,7 +54,7 @@ public class teleTest extends OpMode {
     private double slowModeMultiplier = 0.5;
     private ElapsedTime timer = new ElapsedTime();
     private Servo camera;
-    private New_Turret turret;
+    private TurretPLUSIntake turret;
     private flyWheel flywheel;
     private DcMotorEx intake;
     private Hood hood;
@@ -97,7 +97,7 @@ public class teleTest extends OpMode {
         hood = new Hood(hardwareMap);
         hood.setHigh();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
-        turret = new New_Turret(hardwareMap, telemetry);
+        turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         limelight.switchPipeline(1);
         camera = hardwareMap.get(Servo.class, "camera");
@@ -157,7 +157,8 @@ public class teleTest extends OpMode {
 //        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5 || gamepad1.left_trigger >0.5 || gamepad1.right_trigger > 0.5);
         if (gamepad2.right_trigger > 0.5 || gamepad1.right_trigger > 0.5) trackingEnabled = true;
         if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) trackingEnabled = false;
-        limelight.trackTag(turret, 20, trackingEnabled);
+        limelight.trackTag_New(turret, 20, trackingEnabled);
+
         telemetryM.addData("bot pose", follower.getPose());
 
         if (limelight.tagInView()) {
@@ -189,8 +190,6 @@ public class teleTest extends OpMode {
 
         flywheel.update();
 
-        if (gamepad2.dpad_up) turret.setTargetAngle(0 - autoTurretAngle);
-
         limelight.logTelemetry(telemetryM);
 
         turret.update();
@@ -205,9 +204,9 @@ public class teleTest extends OpMode {
         }
         previousButtonState2a = gamepad2.a;
 
-        if (gamepad2.dpad_right & !intakeFull) {
-            intake.setPower(0.5);
-        }
+//        if (gamepad2.dpad_right & !intakeFull) {
+//            intake.setPower(0.5);
+//        }
 
         if (gamepad2.b && !intakeFull) {
             intake.setPower(-0.9);
@@ -235,16 +234,16 @@ public class teleTest extends OpMode {
             //pause(0.5);       // 0.5 second pause
         }
 
-        if (gamepad1.dpad_up) turret.setTargetAngle(0 - autoTurretAngle);
-        if (gamepad1.dpad_left) turret.setTargetAngle(90 - autoTurretAngle);
-        if (gamepad1.dpad_right) turret.setTargetAngle(-90 - autoTurretAngle);
+        if (gamepad1.dpad_up || gamepad2.dpad_up) turret.setTargetAngle(0 - autoTurretAngle);
+        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(120 - autoTurretAngle);
+        if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-120 - autoTurretAngle);
 
-        if (gamepad2.dpad_down) {
-            hood.setLow();
-        }
-        if (gamepad2.dpad_left) {
-            hood.setHigh();
-        }
+//        if (gamepad2.dpad_down) {
+//            hood.setLow();
+//        }
+//        if (gamepad2.dpad_left) {
+//            hood.setHigh();
+//        }
 
         if (!automatedDrive) {
             if (!slowMode) follower.setTeleOpDrive(

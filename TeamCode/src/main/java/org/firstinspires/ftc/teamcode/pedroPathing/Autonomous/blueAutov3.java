@@ -76,6 +76,12 @@ public class blueAutov3 extends OpMode {
     private double initTurretPosition = 0;
     private boolean updateEnd = false;
     public static Pose botPose;
+    private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
+    private static final int NO_TAG_POWER = -1000;
+    private long lastTagSeenMs = 0;
+    private int lastGoodPower = NO_TAG_POWER;
+    private boolean trackOffset = false;
+    public static double offsetVal = 15;
 
     public void buildPaths() {
         // === SHOTS PATHS ===
@@ -196,14 +202,14 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 1: // delay BEFORE shooting Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
                 }
                 break;
 
             case 2: // shooting window for Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
                     flyWheel.downies(); // STOP SHOOTING
                     //flyWheel.constantShootAuto();turret.setTargetAngle(-55);
                     setPathState(3);
@@ -216,7 +222,7 @@ public class blueAutov3 extends OpMode {
             case 3:
                 if (!follower.isBusy()) {
                     flag = false;
-                    hood.setHigh();
+                    hood.setAuto();
                     follower.followPath(Path2, true);
                     setPathState(4);
                 }
@@ -227,7 +233,9 @@ public class blueAutov3 extends OpMode {
             // ===============================
             case 4:
                 if (!follower.isBusy()) {
-
+                    if(pathTimer.getElapsedTimeSeconds() > 1){
+                        intake.setPower(0);
+                    }
                     follower.followPath(Path3, true);
                     setPathState(5);
                 }
@@ -235,13 +243,14 @@ public class blueAutov3 extends OpMode {
 
             case 5: // wait for path to Shot 2 to finish
                 if (!follower.isBusy()) {
+                    intake.setPower(-0.94);
                     flyWheel.uppies(); // START SHOOTING
                     setPathState(6);
                 }
                 break;
 
-            case 6: // shooting window Shot 2
-                if (pathTimer.getElapsedTimeSeconds() > 1.15) {
+            case 6: // shooting window Shot f2
+                if (pathTimer.getElapsedTimeSeconds() > 1.1) {
                     flyWheel.downies(); // STOP SHOOTING
                     setPathState(7);
                 }
@@ -280,6 +289,9 @@ public class blueAutov3 extends OpMode {
             // ===============================
             case 10:
                 if (intakeFull || pathTimer.getElapsedTimeSeconds() > 2) {
+                    if(pathTimer.getElapsedTimeSeconds() > 1){
+                        intake.setPower(0);
+                    }
                     follower.followPath(Path6, true);
                     setPathState(11);
                 }
@@ -287,13 +299,14 @@ public class blueAutov3 extends OpMode {
 
             case 11: // wait for Shot 3 path to finish
                 if (!follower.isBusy()) {
+                    intake.setPower(-0.94);
                     flyWheel.uppies(); // START SHOOTING
                     setPathState(12);
                 }
                 break;
 
             case 12: // shooting window Shot 3
-                if (pathTimer.getElapsedTimeSeconds() > 1.15) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.1) {
                     flyWheel.downies();
                     setPathState(13);
                 }
@@ -319,6 +332,9 @@ public class blueAutov3 extends OpMode {
             // ===============================
             case 14:
                 if (!follower.isBusy()) {
+                    if(pathTimer.getElapsedTimeSeconds() > 1){
+                        intake.setPower(0);
+                    }
                     flyWheel.downies();
                     follower.followPath(Path8, true);
                     setPathState(15);
@@ -327,13 +343,14 @@ public class blueAutov3 extends OpMode {
 
             case 15:
                 if (!follower.isBusy()) {
+                    intake.setPower(-0.94);
                     flyWheel.uppies();
                     setPathState(16);
                 }
                 break;
 
             case 16:
-                if (pathTimer.getElapsedTimeSeconds() > 1.15) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.1) {
                     flyWheel.downies();
 //                    teleTest.startingPose = follower.getPose();
 //                    telemetryM.addData("end data", follower.getPose());
@@ -348,6 +365,8 @@ public class blueAutov3 extends OpMode {
                 if (!follower.isBusy()) {
                     follower.followPath(Path9, true);
                     setPathState(18);
+                    updateEnd = true;
+                    trackRN = false;
                 }
                 break;
 //
@@ -356,12 +375,18 @@ public class blueAutov3 extends OpMode {
 //            // ===============================
             case 18:
                 if (!follower.isBusy()) {
+                    trackOffset = true;
                    follower.followPath(Path10, true);
+                    if(pathTimer.getElapsedTimeSeconds() > 1){
+                        intake.setPower(0);
+                    }
                     setPathState(19);
                 }
                 break;
             case 19:
-                if (pathTimer.getElapsedTimeSeconds() > 2.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.5
+                ) {
+                    intake.setPower(-0.94);
                     flyWheel.uppies();
                     setPathState(20);
                 }
@@ -423,15 +448,18 @@ public class blueAutov3 extends OpMode {
         intakeFull = bbTest.isFull();
         limelight.update();
         int targetTagId = 20;
-        limelight.trackTag(turret, targetTagId, isTracking);
+        if(!trackOffset) limelight.trackTag(turret, targetTagId, isTracking, 0);
+        else limelight.trackTag(turret, targetTagId, isTracking, offsetVal);
+
         isTracking = limelight.tagInView();
 //        if(!isTracking && !flag)//turret.setTargetAngle(-45);
         if(trackRN){
             turret.update();
         }
+
         if(updateEnd) {
             isTracking = false;
-//            turret.setTargetAngle(0);
+            turret.setTargetAngle(5);
             turret.update();
         }
         if (!hasStarted) {
@@ -443,6 +471,17 @@ public class blueAutov3 extends OpMode {
         follower.update();
         botPose = follower.getPose();
 
+        long now = System.currentTimeMillis();
+
+        if (limelight.tagInView()) {
+            lastTagSeenMs = now;
+            lastGoodPower = (int) limelight.getLaunchPower();
+        }
+
+        boolean tagRecentlySeen = (now - lastTagSeenMs) <= TAG_HOLD_MS;
+        int targetPower = tagRecentlySeen ? lastGoodPower : NO_TAG_POWER;
+
+        flyWheel.constantShootAtVelocity(targetPower);
         double power = limelight.getLaunchPower();
         if(limelight.tagInView() && !flag) flyWheel.setTargetVelocity(power);
         //else flyWheel.setTargetVelocity(initialPower);

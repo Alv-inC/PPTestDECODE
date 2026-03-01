@@ -25,7 +25,7 @@ public class New_Turret {
     public static double kS = 0;
 
     // Deadband (degrees)
-    public static double POSITION_DEADBAND_DEG = 5;
+    public static double POSITION_DEADBAND_DEG = 2;
 
     // Motion state
     private double targetTicks = 0;
