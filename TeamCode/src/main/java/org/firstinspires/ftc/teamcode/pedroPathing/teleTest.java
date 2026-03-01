@@ -100,6 +100,7 @@ public class teleTest extends OpMode {
         Pose poseToUse = (startingPose != null) ? startingPose : DEFAULT_POSE;
         telemetryM.addData("starting pose", poseToUse);
         telemetryM.update();
+        flywheel.downies();
         follower.setStartingPose(poseToUse);
 //        follower.update();
         pathChainBlueClose = () -> follower.pathBuilder() //Lazy Curve Generation
