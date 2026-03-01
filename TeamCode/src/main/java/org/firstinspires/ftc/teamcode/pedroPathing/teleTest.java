@@ -34,6 +34,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.New_Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
+import org.firstinspires.ftc.teamcode.pedroPathing.subSystemTuning.breakBeamTest;
 
 import java.util.function.Supplier;
 
@@ -75,16 +76,12 @@ public class teleTest extends OpMode {
     private static final int NO_TAG_POWER = -1000;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
-    private DcMotorEx lf, lb, rf, rb;
+    private breakBeamTest bbTest;
+    private boolean intakeFull;
 
     @Override
     public void init() {
-        //delete later
-        DcMotorEx lf = hardwareMap.get(DcMotorEx.class, "lf");
-        DcMotorEx lb = hardwareMap.get(DcMotorEx.class, "lb");
-        DcMotorEx rf = hardwareMap.get(DcMotorEx.class, "rf");
-        DcMotorEx rb = hardwareMap.get(DcMotorEx.class, "rb");
-        //delete later prob
+        bbTest = new breakBeamTest(hardwareMap);
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         flywheel = new flyWheel(hardwareMap, telemetry);
         flywheel.constantStop();
@@ -137,6 +134,11 @@ public class teleTest extends OpMode {
         //Call this once per loop
         follower.update();
         telemetryM.update();
+
+        intakeFull = bbTest.isFull();
+        if(intakeFull) intake.setPower(0);
+
+        telemetryM.addData("intake full", intakeFull);
 
 //        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5 || gamepad1.left_trigger >0.5 || gamepad1.right_trigger > 0.5);
         if(gamepad2.right_trigger > 0.5  || gamepad1.right_trigger > 0.5) trackingEnabled = true;
@@ -210,7 +212,7 @@ public class teleTest extends OpMode {
 
         turret.update();
 
-        if (gamepad2.a && !previousButtonState2a) {
+        if (gamepad2.a && !previousButtonState2a && !intakeFull) {
             if(!flag) {
                 intake.setPower(0.5);
             }
@@ -221,14 +223,14 @@ public class teleTest extends OpMode {
         }
         previousButtonState2a = gamepad2.a;
 
-        if(gamepad2.dpad_right){
+        if(gamepad2.dpad_right & !intakeFull){
             intake.setPower(0.5);
         }
 
-        if(gamepad2.b){
+        if(gamepad2.b && !intakeFull){
             intake.setPower(-0.9);
         }
-        if(gamepad2.y){
+        if(gamepad2.y && !intakeFull){
             intake.setPower(-0.4);
         }
         if(gamepad2.xWasPressed()) flywheel.downies();
@@ -236,6 +238,7 @@ public class teleTest extends OpMode {
             flywheel.uppies();
             //flywheel.constantShootSlow();
             //pause(0.5);       // 0.5 second pause
+            intake.setPower(-0.9);
         }
         if(gamepad2.right_bumper){
             flywheel.uppies();
