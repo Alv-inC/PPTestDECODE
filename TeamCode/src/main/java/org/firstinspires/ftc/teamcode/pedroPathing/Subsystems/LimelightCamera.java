@@ -54,7 +54,7 @@ public class LimelightCamera {
     private double ballDistance, ballLateralDistance = 0;
     private double launchPower = 0;
 
-    public static double launchpowermultiplier = 1.05;
+    public static double launchpowermultiplier = 1;
     public static int farCoefficient = 330; //2.75 m
     public static int midCoefficient = 391; //1.75 m
     public static int closeCoefficient = 435; //1 m
