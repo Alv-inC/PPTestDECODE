@@ -61,7 +61,7 @@ public class bbtestOP extends OpMode{
         object3Detected = !beamSensor3.getState();
 
 
-            telemetry.addData("BreakBeam 1 Status: ", object1Detected);
+        telemetry.addData("BreakBeam 1 Status: ", object1Detected);
         telemetry.addData("BreakBeam 2 Status: ", object2Detected);
         telemetry.addData("BreakBeam 3 Status: ", object3Detected);
     }
