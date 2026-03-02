@@ -158,6 +158,7 @@ public class teleTest extends OpMode {
 //        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5 || gamepad1.left_trigger >0.5 || gamepad1.right_trigger > 0.5);
         if (gamepad2.right_trigger > 0.5 || gamepad1.right_trigger > 0.5) trackingEnabled = true;
         if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) trackingEnabled = false;
+        turret.setTargetPosition(0);
         limelight.trackTag_New(turret, 20, trackingEnabled);
 
         telemetryM.addData("bot pose", follower.getPose());

@@ -58,7 +58,7 @@ public class blueAutov3 extends OpMode {
 
 
     private LimelightCamera limelight;
-    private New_Turret turret;
+    private TurretPLUSIntake turret;
     //subsystems
     private flyWheel flyWheel;
     private Hood hood;
@@ -368,6 +368,7 @@ public class blueAutov3 extends OpMode {
                     setPathState(18);
                     updateEnd = true;
                     trackRN = false;
+                    flag = true;
                 }
                 break;
 //
@@ -439,7 +440,7 @@ public class blueAutov3 extends OpMode {
         camera = new Camera_Servo(hardwareMap);
         camera.setHigh();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
-        turret = new New_Turret(hardwareMap, telemetry);
+        turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
         flyWheel.downies();
     }
@@ -449,11 +450,11 @@ public class blueAutov3 extends OpMode {
         intakeFull = bbTest.isFull();
         limelight.update();
         int targetTagId = 20;
-        if(!trackOffset) limelight.trackTag(turret, targetTagId, isTracking, 0);
-        else limelight.trackTag(turret, targetTagId, isTracking, offsetVal);
+        if(!trackOffset) limelight.trackTag_New(turret, targetTagId, isTracking);
+        else limelight.trackTag_New(turret, targetTagId, isTracking);
 
         isTracking = limelight.tagInView();
-//        if(!isTracking && !flag)//turret.setTargetAngle(-45);
+        if(!isTracking && !flag)turret.setTargetAngle(-45);
         if(trackRN){
             turret.update();
         }
