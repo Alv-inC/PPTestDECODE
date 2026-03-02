@@ -60,7 +60,10 @@ public class bbtestOP extends OpMode{
         object2Detected = !beamSensor2.getState();
         object3Detected = !beamSensor3.getState();
 
-
+        if(object1Detected && object2Detected && object3Detected){
+            gamepad1.rumble(1, 1, 500);
+        }
+        gamepad1.rumble(3000);
         telemetry.addData("BreakBeam 1 Status: ", object1Detected);
         telemetry.addData("BreakBeam 2 Status: ", object2Detected);
         telemetry.addData("BreakBeam 3 Status: ", object3Detected);

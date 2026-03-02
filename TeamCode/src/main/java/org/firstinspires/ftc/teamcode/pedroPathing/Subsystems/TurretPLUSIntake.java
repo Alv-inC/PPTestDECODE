@@ -33,7 +33,7 @@ public class TurretPLUSIntake {
     // ===== PID =====
     public static double p = 0.0006;
     public static double i = 0.0;
-    public static double d = 0.00007;
+    public static double d = 0.00006;
 
     public static double currentTicks;
     public static double power;
@@ -42,14 +42,15 @@ public class TurretPLUSIntake {
     public double targetPosition = 0;
 
     // Hold (simple deadband)
-    public static double HOLD_TOLERANCE_TICKS = 300; // tune this
+    public static double HOLD_TOLERANCE_TICKS = 100; // tune this
 
     // ===== Gear math =====
     public static double SMALL_GEAR_TICKS_PER_REV = 8192;
-    public static double GEAR_RATIO = (double) 125 / 33; // big / small
+    public static double GEAR_RATIO = (double) 125 / 35; // big / small
     public static double TICKS_PER_TURRET_REV = SMALL_GEAR_TICKS_PER_REV * GEAR_RATIO;
     public static double TICKS_PER_DEGREE = TICKS_PER_TURRET_REV / 360.0;
 
+    public static double kS = 0.08; // 0.05–0.15 typical for CR servos
     public TurretPLUSIntake(HardwareMap hardwareMap, Telemetry telemetry, DcMotorEx encoder1) {
         this.telemetry = telemetry;
 
@@ -86,11 +87,16 @@ public class TurretPLUSIntake {
         targetPosition = clamp(targetPosition, minTicks, maxTicks);
 
         // PID output
+        double error = targetPosition - currentTicks;
+
         power = pid.calculate(currentTicks, targetPosition);
 
-        // Hold deadband
-        if (Math.abs(targetPosition - currentTicks) <= HOLD_TOLERANCE_TICKS) {
+// If outside hold band, add static friction compensation
+        if (Math.abs(error) > HOLD_TOLERANCE_TICKS) {
+            power += Math.signum(error) * kS;
+        } else {
             power = 0;
+            pid.reset();
         }
 
         // Hard-stop protection: never drive farther past the limits

@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Camera_Servo;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
@@ -65,7 +66,7 @@ public class redAutov3 extends OpMode {
     private static final int MAX_SWITCH_CYCLES = 2;
     public static int initialPower = -950;
     private boolean hasStarted = false;
-    private Servo camera;
+    private Camera_Servo camera;
     public static double cameraDelay = 1.5;
     private boolean updateEnd = false;
     public static Pose botPose;
@@ -401,8 +402,8 @@ public class redAutov3 extends OpMode {
         buildPaths();
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
-        camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.65);
+        camera = new Camera_Servo(hardwareMap);
+        camera.setHigh();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();

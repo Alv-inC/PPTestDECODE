@@ -29,6 +29,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.blueAutov3;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.farBlue;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.farRed;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.redAutov3;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Camera_Servo;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.New_Turret;
@@ -53,7 +54,7 @@ public class teleTest extends OpMode {
     private boolean slowMode = false, trackBall;
     private double slowModeMultiplier = 0.5;
     private ElapsedTime timer = new ElapsedTime();
-    private Servo camera;
+    private Camera_Servo camera;
     private TurretPLUSIntake turret;
     private flyWheel flywheel;
     private DcMotorEx intake;
@@ -100,8 +101,8 @@ public class teleTest extends OpMode {
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         limelight.switchPipeline(1);
-        camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.65);
+        camera = new Camera_Servo(hardwareMap);
+        camera.setHigh();
         follower = Constants.createFollower(hardwareMap);
         startingPose = (startingPose != null) ? startingPose : blueAutov3.botPose;
         startingPose = (startingPose != null) ? startingPose : backupBlue.botPose;

@@ -31,18 +31,18 @@ public class LimelightCamera {
     public static double DEADBAND_DEG = 0.5;
     public static double CORRECTION_GAIN = 70;
     public static double MOTOR_TICKS_PER_REV = 384.5; // example: goBILDA 312 RPM
-    public static double GEAR_RATIO = (double) 125 /39;            // turret gear reduction
-    public static double TICKS_PER_TURRET_REV =
-            MOTOR_TICKS_PER_REV * GEAR_RATIO;
-    public static double TICKS_PER_DEG =
-            TICKS_PER_TURRET_REV / 360.0;
-//
-//    public static double SMALL_GEAR_TICKS_PER_REV = 8192;
-//    public static double GEAR_RATIO = (double) 125 /33; // big / small
+//    public static double GEAR_RATIO = (double) 125 /39;            // turret gear reduction
 //    public static double TICKS_PER_TURRET_REV =
-//            SMALL_GEAR_TICKS_PER_REV * GEAR_RATIO;
+//            MOTOR_TICKS_PER_REV * GEAR_RATIO;
 //    public static double TICKS_PER_DEG =
 //            TICKS_PER_TURRET_REV / 360.0;
+
+    public static double SMALL_GEAR_TICKS_PER_REV = 8192;
+    public static double GEAR_RATIO = (double) 125 /78; // big / small
+    public static double TICKS_PER_TURRET_REV =
+            SMALL_GEAR_TICKS_PER_REV * GEAR_RATIO;
+    public static double TICKS_PER_DEG =
+            TICKS_PER_TURRET_REV / 360.0;
     public static double CAMERA_MOUNT_ANGLE = -21;
     public static double CAMERA_HEIGHT = 0.3048;
     public static double TARGET_HEIGHT = 0.08;
