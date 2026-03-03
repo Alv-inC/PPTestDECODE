@@ -88,6 +88,7 @@ public class teleTest extends OpMode {
     private static final long BB_REARM_DELAY_MS = 2000; // set delay here (ms)
     private long bbRearmAtMs = 0;
     private boolean prevLeftBumper2 = false;
+    private int defaultTurretAngle = 0;
 
     @Override
     public void init() {
@@ -158,7 +159,7 @@ public class teleTest extends OpMode {
 //        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5 || gamepad1.left_trigger >0.5 || gamepad1.right_trigger > 0.5);
         if (gamepad2.right_trigger > 0.5 || gamepad1.right_trigger > 0.5) trackingEnabled = true;
         if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) trackingEnabled = false;
-//        turret.setTargetPosition(0);
+        turret.setTargetPosition(defaultTurretAngle);
         limelight.trackTag_New(turret, 20, trackingEnabled);
 
         telemetryM.addData("bot pose", follower.getPose());
@@ -236,9 +237,12 @@ public class teleTest extends OpMode {
             //pause(0.5);       // 0.5 second pause
         }
 
-        if (gamepad1.dpad_up || gamepad2.dpad_up) turret.setTargetAngle(0 - autoTurretAngle);
-        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(120 - autoTurretAngle);
-        if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-120 - autoTurretAngle);
+//        if (gamepad1.dpad_up || gamepad2.dpad_up) turret.setTargetAngle(0 - autoTurretAngle);
+//        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(135 - autoTurretAngle);
+//        if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-135 - autoTurretAngle);
+        if (gamepad1.dpad_up || gamepad2.dpad_up) defaultTurretAngle = 0;
+        if (gamepad1.dpad_left || gamepad2.dpad_left) defaultTurretAngle = 110;
+        if (gamepad1.dpad_right || gamepad2.dpad_right) defaultTurretAngle = -110;
 
 //        if (gamepad2.dpad_down) {
 //            hood.setLow();
@@ -246,7 +250,6 @@ public class teleTest extends OpMode {
 //        if (gamepad2.dpad_left) {
 //            hood.setHigh();
 //        }
-
         if (!automatedDrive) {
             if (!slowMode) follower.setTeleOpDrive(
                     -gamepad1.left_stick_y * 0.75,
@@ -254,10 +257,16 @@ public class teleTest extends OpMode {
                     -gamepad1.right_stick_x * 0.8 * 0.6,
                     true// Robot Centric
             );
-            else follower.setTeleOpDrive(
-                    -gamepad1.left_stick_y * slowModeMultiplier * 0.75,
-                    -gamepad1.left_stick_x * slowModeMultiplier * 0.85,
-                    -gamepad1.right_stick_x * slowModeMultiplier * 0.8 * 0.6,
+            else if(gamepad1.left_trigger > 0.5) follower.setTeleOpDrive(
+                    -gamepad1.left_stick_y * 0.4 * 0.75,
+                    -gamepad1.left_stick_x * 0.4 * 0.85,
+                    -gamepad1.right_stick_x * 0.4 * 0.8 * 0.6,
+                    true // Robot Centric
+            );
+            else if(gamepad1.right_trigger > 0.5) follower.setTeleOpDrive(
+                    -gamepad1.left_stick_y * 0.75 * 1.4,
+                    -gamepad1.left_stick_x * 0.85 * 1.4,
+                    -gamepad1.right_stick_x * 0.8 * 0.6 * 1.4,
                     true // Robot Centric
             );
         }

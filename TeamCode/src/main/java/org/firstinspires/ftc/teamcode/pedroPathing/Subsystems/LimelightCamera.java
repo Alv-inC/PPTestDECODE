@@ -54,7 +54,7 @@ public class LimelightCamera {
     private double ballDistance, ballLateralDistance = 0;
     private double launchPower = 0;
 
-    public static double launchpowermultiplier = 1.05;
+    public static double launchpowermultiplier = 1.08;
     public static int farCoefficient = 330; //2.75 m
     public static int midCoefficient = 391; //1.75 m
     public static int closeCoefficient = 435; //1 m
@@ -343,10 +343,10 @@ public class LimelightCamera {
                 {1.65, 365},
                 {1.96, 355},
                 {2.10, 345},
-                {2.30, 320},
-                {2.58, 320},
-                {2.79, 310},
-                {2.90, 310}
+                {2.30, 315},
+                {2.58, 315},
+                {2.79, 305},
+                {2.90, 305}
         };
 
         double closestY = points[0][1];

@@ -307,6 +307,9 @@ public class redAutov3 extends OpMode {
                 } else {
                     follower.followPath(Path7, true);
                     setPathState(14);
+                    updateEnd = true;
+                    trackRN = false;
+                    flag = true;
                 }
                 break;
 

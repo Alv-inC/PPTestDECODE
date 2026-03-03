@@ -91,7 +91,7 @@ public class blueAutov3 extends OpMode {
                         new BezierLine(
                                 new Pose(27.544, 128.895),
 
-                                new Pose(46.541, 97.520)
+                                new Pose(46.317, 99.091)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(135))
 
@@ -99,9 +99,9 @@ public class blueAutov3 extends OpMode {
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(46.541, 97.520),
-                                new Pose(51.775, 55.424),
-                                new Pose(17.477, 60.467)
+                                new Pose(46.317, 99.091),
+                                new Pose(60.971, 61.704),
+                                new Pose(21.065, 62.710)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -109,8 +109,8 @@ public class blueAutov3 extends OpMode {
 
         Path3 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(17.477, 60.467),
-                                new Pose(40.560, 65.992),
+                                new Pose(21.065, 62.710),
+                                new Pose(40.784, 64.871),
                                 new Pose(52.821, 84.059)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
@@ -120,7 +120,7 @@ public class blueAutov3 extends OpMode {
         Path4 = follower.pathBuilder().addPath(
                         new BezierCurve(
                                 new Pose(52.821, 84.059),
-                                new Pose(37.616, 65.413),
+                                new Pose(37.616, 64.067),
                                 new Pose(10.579, 68.262)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(135))
@@ -131,7 +131,7 @@ public class blueAutov3 extends OpMode {
                         new BezierLine(
                                 new Pose(10.579, 68.262),
 
-                                new Pose(2.330, 63.056)
+                                new Pose(2.330, 62.383)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(120))
 
@@ -139,8 +139,8 @@ public class blueAutov3 extends OpMode {
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(2.330, 63.056),
-                                new Pose(35.200, 65.840),
+                                new Pose(2.330, 62.383),
+                                new Pose(35.425, 65.391),
                                 new Pose(48.270, 85.184)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(135))
@@ -151,7 +151,7 @@ public class blueAutov3 extends OpMode {
                         new BezierCurve(
                                 new Pose(48.270, 85.184),
                                 new Pose(38.126, 84.830),
-                                new Pose(22.495, 83.991)
+                                new Pose(22.271, 83.991)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -159,7 +159,7 @@ public class blueAutov3 extends OpMode {
 
         Path8 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(22.495, 83.991),
+                                new Pose(22.271, 83.991),
 
                                 new Pose(52.355, 84.822)
                         )
@@ -173,7 +173,7 @@ public class blueAutov3 extends OpMode {
 
                                 new Pose(46.579, 114.103)
                         )
-                ).setTangentHeadingInterpolation()
+                ).setConstantHeadingInterpolation(Math.toRadians(180))
 
                 .build();
     }
@@ -184,11 +184,12 @@ public class blueAutov3 extends OpMode {
             // AUTO INIT + START → SHOT 1
             // ===============================
             case 0:
-                trackRN = true;
                 intake.setPower(-0.94);
+                turret.setTargetPosition(0);
                 flyWheel.downies();
                 flyWheel.constantShootAutoSlow(); // ONLY ONCE
                 follower.followPath(Path1, true);
+                hood.setMid();
                 setPathState(1);
                 break;
 
@@ -212,9 +213,9 @@ public class blueAutov3 extends OpMode {
             // ===============================
             case 3:
                 if (!follower.isBusy()) {
-                    flag = false;
                     hood.setHigh();
                     follower.followPath(Path2, true);
+                    trackRN = true;
                     setPathState(4);
                 }
                 break;
@@ -224,7 +225,12 @@ public class blueAutov3 extends OpMode {
             // ===============================
             case 4:
                 if (!follower.isBusy()) {
-
+                    if(pathTimer.getElapsedTimeSeconds() > 1.8){
+                        flag = false;
+                    }
+                    if(pathTimer.getElapsedTimeSeconds() > 1){
+                        intake.setPower(0);
+                    }
                     follower.followPath(Path3, true);
                     setPathState(5);
                 }
@@ -232,13 +238,14 @@ public class blueAutov3 extends OpMode {
 
             case 5: // wait for path to Shot 2 to finish
                 if (!follower.isBusy()) {
+                    intake.setPower(-0.94);
                     flyWheel.uppies(); // START SHOOTING
                     setPathState(6);
                 }
                 break;
 
             case 6: // shooting window Shot 2
-                if (pathTimer.getElapsedTimeSeconds() > 1.15) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
                     flyWheel.downies(); // STOP SHOOTING
                     setPathState(7);
                 }
@@ -276,7 +283,10 @@ public class blueAutov3 extends OpMode {
             // SHIMMY UP → SHOT 3
             // ===============================
             case 10:
-                if (intakeFull || pathTimer.getElapsedTimeSeconds() > 2) {
+                if (intakeFull || pathTimer.getElapsedTimeSeconds() > 1.55) {
+                    if(pathTimer.getElapsedTimeSeconds() > 1){
+                        intake.setPower(0);
+                    }
                     follower.followPath(Path6, true);
                     setPathState(11);
                 }
@@ -284,6 +294,7 @@ public class blueAutov3 extends OpMode {
 
             case 11: // wait for Shot 3 path to finish
                 if (!follower.isBusy()) {
+                    intake.setPower(-0.94);
                     flyWheel.uppies(); // START SHOOTING
                     setPathState(12);
                 }
@@ -308,6 +319,9 @@ public class blueAutov3 extends OpMode {
                 } else {
                     follower.followPath(Path7, true);
                     setPathState(14);
+                    updateEnd = true;
+                    trackRN = false;
+                    flag = true;
                 }
                 break;
 
@@ -318,12 +332,16 @@ public class blueAutov3 extends OpMode {
                 if (!follower.isBusy()) {
                     flyWheel.downies();
                     follower.followPath(Path8, true);
+                    if(pathTimer.getElapsedTimeSeconds() > 1){
+                        intake.setPower(0);
+                    }
                     setPathState(15);
                 }
                 break;
 
             case 15:
                 if (!follower.isBusy()) {
+                    intake.setPower(-0.94);
                     flyWheel.uppies();
                     setPathState(16);
                 }
