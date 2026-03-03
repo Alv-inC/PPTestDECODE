@@ -48,8 +48,8 @@ public class redAutov3 extends OpMode {
     public PathChain Path8;
     public PathChain Path9;
     public PathChain Path10;
-    private boolean isTracking, flag = true;
-
+    private boolean isTracking =false;
+    private boolean flag = true;
     private PathChain secondLine;
     private PathChain thirdLine;
 
@@ -183,7 +183,6 @@ public class redAutov3 extends OpMode {
             // AUTO INIT + START → SHOT 1
             // ===============================
             case 0:
-                flag = true;
                 trackRN = true;
                 intake.setPower(-0.94);
                 flyWheel.downies();

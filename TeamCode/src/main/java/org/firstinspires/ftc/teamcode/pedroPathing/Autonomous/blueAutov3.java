@@ -50,7 +50,8 @@ public class blueAutov3 extends OpMode {
     public PathChain Path8;
     public PathChain Path9;
     public PathChain Path10;
-    private boolean isTracking, flag = false;
+    private boolean isTracking =false;
+    private boolean flag = true;
 
     private PathChain secondLine;
     private PathChain thirdLine;
@@ -90,7 +91,7 @@ public class blueAutov3 extends OpMode {
                         new BezierLine(
                                 new Pose(27.544, 128.895),
 
-                                new Pose(46.317, 99.091)
+                                new Pose(46.541, 97.520)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(135))
 
@@ -98,9 +99,9 @@ public class blueAutov3 extends OpMode {
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(46.317, 99.091),
-                                new Pose(51.775, 54.751),
-                                new Pose(18.374, 60.019)
+                                new Pose(46.541, 97.520),
+                                new Pose(51.775, 55.424),
+                                new Pose(17.477, 60.467)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -108,8 +109,8 @@ public class blueAutov3 extends OpMode {
 
         Path3 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(18.374, 60.019),
-                                new Pose(40.784, 64.871),
+                                new Pose(17.477, 60.467),
+                                new Pose(40.560, 65.992),
                                 new Pose(52.821, 84.059)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
@@ -119,7 +120,7 @@ public class blueAutov3 extends OpMode {
         Path4 = follower.pathBuilder().addPath(
                         new BezierCurve(
                                 new Pose(52.821, 84.059),
-                                new Pose(37.616, 64.067),
+                                new Pose(37.616, 65.413),
                                 new Pose(10.579, 68.262)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(135))
@@ -130,7 +131,7 @@ public class blueAutov3 extends OpMode {
                         new BezierLine(
                                 new Pose(10.579, 68.262),
 
-                                new Pose(2.330, 62.383)
+                                new Pose(2.330, 63.056)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(120))
 
@@ -138,8 +139,8 @@ public class blueAutov3 extends OpMode {
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(2.330, 62.383),
-                                new Pose(35.425, 65.391),
+                                new Pose(2.330, 63.056),
+                                new Pose(35.200, 65.840),
                                 new Pose(48.270, 85.184)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(135))
@@ -150,7 +151,7 @@ public class blueAutov3 extends OpMode {
                         new BezierCurve(
                                 new Pose(48.270, 85.184),
                                 new Pose(38.126, 84.830),
-                                new Pose(21.598, 83.991)
+                                new Pose(22.495, 83.991)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -158,7 +159,7 @@ public class blueAutov3 extends OpMode {
 
         Path8 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(21.598, 83.991),
+                                new Pose(22.495, 83.991),
 
                                 new Pose(52.355, 84.822)
                         )
@@ -176,7 +177,6 @@ public class blueAutov3 extends OpMode {
 
                 .build();
     }
-
     public void autonomousPathUpdate() {
         switch (pathState) {
 
@@ -184,7 +184,6 @@ public class blueAutov3 extends OpMode {
             // AUTO INIT + START → SHOT 1
             // ===============================
             case 0:
-                flag = true;
                 trackRN = true;
                 intake.setPower(-0.94);
                 flyWheel.downies();
@@ -194,14 +193,14 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 1: // delay BEFORE shooting Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 0.5) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
                 }
                 break;
 
             case 2: // shooting window for Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.1) {
                     flyWheel.downies(); // STOP SHOOTING
                     //flyWheel.constantShootAuto();turret.setTargetAngle(-55);
                     setPathState(3);

@@ -101,7 +101,7 @@ public class flyWheel {
     }
     public void constantShootAutoSlow(){
         p = 0.15;
-        targetVelocity = -1950;
+        targetVelocity = -2000;
     }
     public void constantShootAutoFast(){
         p = 0.15;

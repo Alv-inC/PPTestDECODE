@@ -20,78 +20,98 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
             */
 @Autonomous(name = "[TESTING|AutoPathing]", group = "Tests")
 public class testAutoPathing extends OpMode {
-    private Follower follower;
-    private DcMotorEx intake;
-    private Timer pathTimer, actionTimer, opmodeTimer;
-    private int pathState;
+                private Follower follower;
+                private DcMotorEx intake;
+                private Timer pathTimer, actionTimer, opmodeTimer;
+                private int pathState;
 
-    //MAYBE LATER PUT ALL THE POSES INSIDE A INITIALIZATION FUNCTION
-    private final Pose startPose = new Pose(56.92710280373832,8.446728971962548, Math.toRadians(135));
-    public PathChain Path1;
-    public PathChain Path2;
-    public PathChain Path3;
-    public PathChain Path4;
-    public PathChain Path5;
-    public PathChain Path6;
-
-
-    private boolean hasStarted = false;
+                //MAYBE LATER PUT ALL THE POSES INSIDE A INITIALIZATION FUNCTION
+                private final Pose startPose = new Pose(56.92710280373832, 8.446728971962548, Math.toRadians(180)).mirror();
+                public PathChain Path1;
+                public PathChain Path2;
+                public PathChain Path3;
+                public PathChain Path4;
+                public PathChain Path5;
+                public PathChain Path6;
+                public PathChain Path7;
 
 
+                private boolean hasStarted = false;
 
 
-    //DEFINE THE PATHS --> REPLACE POSE WITH FINAL POS LATER
-    public void buildPaths() {Path1 = follower.pathBuilder().addPath(
-                    new BezierLine(
-                            new Pose(56.927, 8.447),
+                //DEFINE THE PATHS --> REPLACE POSE WITH FINAL POS LATER
+                public void buildPaths() {
+                    Path1 = follower.pathBuilder().addPath(
+                                    new BezierLine(
+                                            new Pose(56.927, 8.447).mirror(),
 
-                            new Pose(56.523, 14.542)
-                    )
-            ).setConstantHeadingInterpolation(Math.toRadians(180))
+                                            new Pose(56.523, 14.542).mirror()
+                                    )
+                            ).setConstantHeadingInterpolation(Math.toRadians(0))
 
-            .build();
+                            .build();
 
-        Path2 = follower.pathBuilder().addPath(
-                        new BezierCurve(
-                                new Pose(56.523, 14.542),
-                                new Pose(28.921, 16.079),
-                                new Pose(8.869, 9.393)
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    Path2 = follower.pathBuilder().addPath(
+                                    new BezierCurve(
+                                            new Pose(56.523, 14.542).mirror(),
+                                            new Pose(28.921, 16.079).mirror(),
+                                            new Pose(7.523, 7.598).mirror()
+                                    )
+                            ).setConstantHeadingInterpolation(Math.toRadians(0))
 
-                .build();
+                            .build();
 
-        Path3 = follower.pathBuilder().addPath(
-                        new BezierLine(
-                                new Pose(8.869, 9.393),
+                    Path3 = follower.pathBuilder().addPath(
+                                    new BezierLine(
+                                            new Pose(7.523, 7.598).mirror(),
 
-                                new Pose(56.280, 15.224)
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+                                            new Pose(56.280, 15.224).mirror()
+                                    )
+                            ).setConstantHeadingInterpolation(Math.toRadians(0))
 
-                .build();
+                            .build();
 
-        Path4 = follower.pathBuilder().addPath(
-                        new BezierCurve(
-                                new Pose(56.280, 15.224),
-                                new Pose(58.381, 39.654),
-                                new Pose(0.000, 48.220),
-                                new Pose(11.439, 14.804)
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+                    Path4 = follower.pathBuilder().addPath(
+                                    new BezierCurve(
+                                            new Pose(56.280, 15.224).mirror(),
+                                            new Pose(58.381, 39.654).mirror(),
+                                            new Pose(0.000, 48.220).mirror(),
+                                            new Pose(8.523, 13.234).mirror()
+                                    )
+                            ).setConstantHeadingInterpolation(Math.toRadians(0))
 
-                .build();
+                            .build();
 
-        Path6 = follower.pathBuilder().addPath(
-                        new BezierLine(
-                                new Pose(11.439, 14.804),
+                    Path5 = follower.pathBuilder().addPath(
+                                    new BezierLine(
+                                            new Pose(8.523, 13.234).mirror(),
 
-                                new Pose(56.318, 15.514)
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(180))
+                                            new Pose(56.318, 15.514).mirror()
+                                    )
+                            ).setConstantHeadingInterpolation(Math.toRadians(0))
 
-                .build();
-    }
+                            .build();
+
+                    Path6 = follower.pathBuilder().addPath(
+                                    new BezierLine(
+                                            new Pose(56.318, 15.514).mirror(),
+
+                                            new Pose(7.981, 9.159).mirror()
+                                    )
+                            ).setConstantHeadingInterpolation(Math.toRadians(0))
+
+                            .build();
+
+                    Path7 = follower.pathBuilder().addPath(
+                                    new BezierLine(
+                                            new Pose(7.981, 9.159).mirror(),
+
+                                            new Pose(55.738, 15.944).mirror()
+                                    )
+                            ).setConstantHeadingInterpolation(Math.toRadians(0))
+
+                            .build();
+                }
 
     public void autonomousPathUpdate() {
         switch (pathState) {
@@ -127,6 +147,7 @@ public class testAutoPathing extends OpMode {
                     setPathState(5);
                 }
                 break;
+
             case 5:
                 if(!follower.isBusy()){
                     setPathState(6);
@@ -138,7 +159,12 @@ public class testAutoPathing extends OpMode {
                     setPathState(7);
                 }
                 break;
-
+            case 7:
+                if (!follower.isBusy()) {
+                    follower.followPath(Path7, true);
+                    setPathState(8);
+                }
+                break;
 
         }
     }
