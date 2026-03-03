@@ -69,7 +69,7 @@ public class blueAutov3 extends OpMode {
     private boolean trackRN = false;
     private float tiltAngle = 135;
     private int switchCycles = 0;
-    private static final int MAX_SWITCH_CYCLES = 2;
+    private static final int MAX_SWITCH_CYCLES = 3;
     public static int initialPower = -950;
     private boolean hasStarted = false;
     private Servo camera;
