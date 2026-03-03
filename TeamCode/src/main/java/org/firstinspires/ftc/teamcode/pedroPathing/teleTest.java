@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
+
 import static org.firstinspires.ftc.teamcode.pedroPathing.Constants.driveConstants;
 
 import android.graphics.PostProcessor;
@@ -28,6 +29,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.blueAutov3;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.farBlue;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.farRed;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.redAutov3;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Camera_Servo;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.New_Turret;
@@ -52,8 +54,8 @@ public class teleTest extends OpMode {
     private boolean slowMode = false, trackBall;
     private double slowModeMultiplier = 0.5;
     private ElapsedTime timer = new ElapsedTime();
-    private Servo camera;
-    private New_Turret turret;
+    private Camera_Servo camera;
+    private TurretPLUSIntake turret;
     private flyWheel flywheel;
     private DcMotorEx intake;
     private Hood hood;
@@ -76,8 +78,16 @@ public class teleTest extends OpMode {
     private static final int NO_TAG_POWER = -1000;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
+
     private breakBeamTest bbTest;
     private boolean intakeFull;
+
+    private boolean bbFlag = true;
+
+    // Breakbeam flag re-arm logic
+    private static final long BB_REARM_DELAY_MS = 2000; // set delay here (ms)
+    private long bbRearmAtMs = 0;
+    private boolean prevLeftBumper2 = false;
 
     @Override
     public void init() {
@@ -88,11 +98,11 @@ public class teleTest extends OpMode {
         hood = new Hood(hardwareMap);
         hood.setHigh();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
-        turret = new New_Turret(hardwareMap, telemetry);
+        turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         limelight.switchPipeline(1);
-        camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.65);
+        camera = new Camera_Servo(hardwareMap);
+        camera.setHigh();
         follower = Constants.createFollower(hardwareMap);
         startingPose = (startingPose != null) ? startingPose : blueAutov3.botPose;
         startingPose = (startingPose != null) ? startingPose : backupBlue.botPose;
@@ -123,32 +133,35 @@ public class teleTest extends OpMode {
 
     @Override
     public void start() {
-        //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
-        //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
-        //If you don't pass anything in, it uses the default (false)
         follower.startTeleopDrive();
     }
 
     @Override
     public void loop() {
         limelight.update();
-        //Call this once per loop
         follower.update();
         telemetryM.update();
 
+        long now = System.currentTimeMillis();
+
+        // Re-arm bbFlag after delay (non-blocking)
+        if (!bbFlag && bbRearmAtMs != 0 && now >= bbRearmAtMs) {
+            bbFlag = true;
+            bbRearmAtMs = 0;
+        }
+
         intakeFull = bbTest.isFull();
-        if(intakeFull) intake.setPower(0);
+        if (intakeFull && bbFlag) intake.setPower(0);
 
         telemetryM.addData("intake full", intakeFull);
 
 //        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5 || gamepad1.left_trigger >0.5 || gamepad1.right_trigger > 0.5);
-        if(gamepad2.right_trigger > 0.5  || gamepad1.right_trigger > 0.5) trackingEnabled = true;
-        if(gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) trackingEnabled = false;
-        limelight.trackTag(turret, 20, trackingEnabled);
+        if (gamepad2.right_trigger > 0.5 || gamepad1.right_trigger > 0.5) trackingEnabled = true;
+        if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) trackingEnabled = false;
+//        turret.setTargetPosition(0);
+        limelight.trackTag_New(turret, 20, trackingEnabled);
+
         telemetryM.addData("bot pose", follower.getPose());
-//        if(limelight.tagInView()) flywheel.constantShootAtVelocity((int)limelight.getLaunchPower());
-//        else flywheel.constantShootAtVelocity(-1000);
-        long now = System.currentTimeMillis();
 
         if (limelight.tagInView()) {
             lastTagSeenMs = now;
@@ -159,10 +172,14 @@ public class teleTest extends OpMode {
         int targetPower = tagRecentlySeen ? lastGoodPower : NO_TAG_POWER;
 
         flywheel.constantShootAtVelocity(targetPower);
-//removed reset to 0
-        //limelight.trackBall(turret, trackBall);
+
         follower.update();
-        double[] result = limelight.calculateBallPose(follower.getPose().getX(), follower.getPose().getY(), Math.toDegrees(follower.getHeading()), turret.getCurrentAngle()*1.25);
+        double[] result = limelight.calculateBallPose(
+                follower.getPose().getX(),
+                follower.getPose().getY(),
+                Math.toDegrees(follower.getHeading()),
+                turret.getCurrentAngle() * 1.25
+        );
         telemetry.addData("x", result[0]);
         telemetry.addData("y", result[1]);
         telemetry.addData("h", result[2]);
@@ -172,183 +189,115 @@ public class teleTest extends OpMode {
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(result[0], result[1]))))
                 .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(result[2]), 0.8))
                 .build();
-       // if(gamepad1.left_bumper) camera.setPosition(0.26);
-//        if(gamepad1.right_bumper) camera.setPosition(0.6);
-
-//        int targetTagId = -1;
-//        if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5 || true) {
-//            limelight.switchPipeline(1);
-//            targetTagId = 20;
-//            limelight.trackTag(turret, targetTagId, trackingEnabled);
-//
-//        }
-//        else if (gamepad2.right_trigger > 0.5 || gamepad1.right_trigger > 0.5) {
-//            limelight.switchPipeline(1);
-//            targetTagId = 24;
-//            limelight.trackTag(turret, targetTagId, trackingEnabled);
-//
-//        }
 
         flywheel.update();
-//        if(gamepad1.xWasPressed()){
-//            limelight.switchPipeline(0);
-//            turret.startScan();
-//            if(limelight.ballInView()){
-//                turret.stopScan();
-//                trackBall = true;
-//            }
-//        }
-//        if(gamepad1.bWasPressed()){
-//            turret.stopScan();
-//            trackBall = false;
-//        }
-//        if(gamepad1.yWasPressed() && trackBall){
-//            automatedDrive = true;
-//            follower.followPath(ballPathChain.get());
-//        }
-
-        if (gamepad2.dpad_up) turret.setTargetAngle(0-autoTurretAngle);
 
         limelight.logTelemetry(telemetryM);
 
         turret.update();
 
         if (gamepad2.a && !previousButtonState2a && !intakeFull) {
-            if(!flag) {
+            if (!flag) {
                 intake.setPower(0.5);
-            }
-            else{
+            } else {
                 flag = false;
                 intake.setPower(0);
             }
         }
         previousButtonState2a = gamepad2.a;
 
-        if(gamepad2.dpad_right & !intakeFull){
-            intake.setPower(0.5);
-        }
+//        if (gamepad2.dpad_right & !intakeFull) {
+//            intake.setPower(0.5);
+//        }
 
-        if(gamepad2.b && !intakeFull){
+        if (gamepad2.b && !intakeFull) {
             intake.setPower(-0.9);
         }
-        if(gamepad2.y && !intakeFull){
+        if (gamepad2.y && !intakeFull) {
             intake.setPower(-0.4);
         }
-        if(gamepad2.xWasPressed()) flywheel.downies();
-        if(gamepad2.left_bumper){
+        if (gamepad2.xWasPressed()) flywheel.downies();
+
+        // Edge-trigger left bumper so the timer doesn't keep getting pushed while held
+        boolean lb2Pressed = gamepad2.left_bumper && !prevLeftBumper2;
+        prevLeftBumper2 = gamepad2.left_bumper;
+
+        if (lb2Pressed) {
             flywheel.uppies();
-            //flywheel.constantShootSlow();
-            //pause(0.5);       // 0.5 second pause
             intake.setPower(-0.9);
+
+            bbFlag = false;
+            bbRearmAtMs = now + BB_REARM_DELAY_MS;
         }
-        if(gamepad2.right_bumper){
+
+        if (gamepad2.right_bumper) {
             flywheel.uppies();
             //flywheel.constantShoot();
             //pause(0.5);       // 0.5 second pause
         }
 
-        if(gamepad1.dpad_up)turret.setTargetAngle(0-autoTurretAngle);
-        if(gamepad1.dpad_left)turret.setTargetAngle(90-autoTurretAngle);
-        if(gamepad1.dpad_right)turret.setTargetAngle(-90-autoTurretAngle);
+        if (gamepad1.dpad_up || gamepad2.dpad_up) turret.setTargetAngle(0 - autoTurretAngle);
+        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(120 - autoTurretAngle);
+        if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-120 - autoTurretAngle);
 
-
-
-        if(gamepad2.dpad_down){
-            hood.setLow();
-        }
-        if(gamepad2.dpad_left){
-            hood.setHigh();
-        }
+//        if (gamepad2.dpad_down) {
+//            hood.setLow();
+//        }
+//        if (gamepad2.dpad_left) {
+//            hood.setHigh();
+//        }
 
         if (!automatedDrive) {
-            //Make the last parameter false for field-centric
-            //In case the drivers want to use a "slowMode" you can scale the vectors
-
-            //This is the normal version to use in the TeleOp
             if (!slowMode) follower.setTeleOpDrive(
                     -gamepad1.left_stick_y * 0.75,
                     -gamepad1.left_stick_x * 0.85,
                     -gamepad1.right_stick_x * 0.8 * 0.6,
                     true// Robot Centric
             );
-
-                //This is how it looks with slowMode on
             else follower.setTeleOpDrive(
                     -gamepad1.left_stick_y * slowModeMultiplier * 0.75,
                     -gamepad1.left_stick_x * slowModeMultiplier * 0.85,
                     -gamepad1.right_stick_x * slowModeMultiplier * 0.8 * 0.6,
                     true // Robot Centric
             );
-
-
         }
 
-//        if(gamepad1.leftStickButtonWasPressed()){
-//            follower.followPath(pathChainBlueClose.get());
-//            automatedDrive = true;
-//            //turret.setTargetPosition(0);
-//        }
-//        if(gamepad1.rightStickButtonWasPressed()){
-//            follower.followPath(pathChainBlueFar.get());
-//            automatedDrive = true;
-//            //turret.setTargetPosition(0);
-//        }
-        if(gamepad1.xWasPressed()){
+        if (gamepad1.xWasPressed()) {
             follower.followPath(pathChainBlueGate.get());
             automatedDrive = true;
         }
-        if(gamepad1.yWasPressed()){
+        if (gamepad1.yWasPressed()) {
             follower.followPath(pathChainBluePark.get());
             automatedDrive = true;
         }
 
-        //Stop automated following if the follower is done
         if (automatedDrive && (gamepad1.bWasPressed() || !follower.isBusy())) {
             follower.pausePathFollowing();
             follower.startTeleopDrive();
             automatedDrive = false;
         }
 
-//        Slow Mode
         if (gamepad1.rightBumperWasPressed()) {
             follower.setMaxPower(0.7);
         }
-        if(gamepad1.leftBumperWasPressed()){
+        if (gamepad1.leftBumperWasPressed()) {
             follower.setMaxPower(1);
         }
 
-//        //Optional way to change slow mode strength
-//        if (gamepad1.xWasPressed()) {
-//            slowModeMultiplier += 0.25;
-//        }
-//
-//        //Optional way to change slow mode strength
-//        if (gamepad1.yWasPressed()) {
-//            slowModeMultiplier -= 0.25;
-//        }
-
-//        telemetryM.debug("position", follower.getPose());
-//        telemetryM.debug("velocity", follower.getVelocity());
-//        telemetryM.debug("automatedDrive", automatedDrive);
         LynxModule hub = hardwareMap.get(LynxModule.class, "Control Hub");
         double hubCurrent = hub.getI2cBusCurrent(CurrentUnit.AMPS);
 
         telemetryM.addData("HUB CURRENT", intake.getCurrent(CurrentUnit.AMPS));
         telemetryM.addData("flywheel Current", flywheel.getFlyCurrent());
         telemetryM.addData("HUB CURRENT", hubCurrent);
-//        telemetry.addData("LF Current", .getCurrent(CurrentUnit.AMPS));
-//        telemetry.addData("RF Current", rf.getCurrent(CurrentUnit.AMPS));
-//        telemetry.addData("LB Current", lb.getCurrent(CurrentUnit.AMPS));
-//        telemetry.addData("RB Current", rb.getCurrent(CurrentUnit.AMPS));
         telemetry.update();
     }
+
     private void pause(double seconds) {
         double start = timer.seconds();
         while (timer.seconds() - start < seconds) {
-            // allow opmode to update
             follower.update();
             flywheel.update();
         }
     }
-
 }
