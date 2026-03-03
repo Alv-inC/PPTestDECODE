@@ -183,6 +183,7 @@ public class redAutov3 extends OpMode {
             // AUTO INIT + START → SHOT 1
             // ===============================
             case 0:
+                flag = true;
                 trackRN = true;
                 intake.setPower(-0.94);
                 flyWheel.downies();
@@ -448,9 +449,8 @@ public class redAutov3 extends OpMode {
         boolean tagRecentlySeen = (now - lastTagSeenMs) <= TAG_HOLD_MS;
         int targetPower = tagRecentlySeen ? lastGoodPower : NO_TAG_POWER;
 
-        flyWheel.constantShootAtVelocity(targetPower);
-        double power = limelight.getLaunchPower();
-        if(limelight.tagInView() && !flag) flyWheel.setTargetVelocity(power);
+        if(!flag) flyWheel.constantShootAtVelocity(targetPower);
+
         //else flyWheel.setTargetVelocity(initialPower);
         flyWheel.update();
         autonomousPathUpdate();

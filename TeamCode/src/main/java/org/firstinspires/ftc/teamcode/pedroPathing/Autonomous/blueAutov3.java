@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.Autonomous;
 
+import android.graphics.Camera;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -16,6 +18,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Camera_Servo;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.New_Turret;
@@ -47,7 +50,7 @@ public class blueAutov3 extends OpMode {
     public PathChain Path8;
     public PathChain Path9;
     public PathChain Path10;
-    private boolean isTracking, flag = true;
+    private boolean isTracking, flag = false;
 
     private PathChain secondLine;
     private PathChain thirdLine;
@@ -57,7 +60,7 @@ public class blueAutov3 extends OpMode {
 
 
     private LimelightCamera limelight;
-    private New_Turret turret;
+    private TurretPLUSIntake turret;
     //subsystems
     private flyWheel flyWheel;
     private Hood hood;
@@ -72,11 +75,15 @@ public class blueAutov3 extends OpMode {
     private static final int MAX_SWITCH_CYCLES = 3;
     public static int initialPower = -950;
     private boolean hasStarted = false;
-    private Servo camera;
+    private Camera_Servo camera;
     private double initTurretPosition = 0;
     private boolean updateEnd = false;
     public static Pose botPose;
 
+    private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
+    private static final int NO_TAG_POWER = -1000;
+    private long lastTagSeenMs = 0;
+    private int lastGoodPower = NO_TAG_POWER;
     public void buildPaths() {
         // === SHOTS PATHS ===
         Path1 = follower.pathBuilder().addPath(
@@ -177,6 +184,7 @@ public class blueAutov3 extends OpMode {
             // AUTO INIT + START → SHOT 1
             // ===============================
             case 0:
+                flag = true;
                 trackRN = true;
                 intake.setPower(-0.94);
                 flyWheel.downies();
@@ -338,6 +346,9 @@ public class blueAutov3 extends OpMode {
                 if (!follower.isBusy()) {
                     follower.followPath(Path9, true);
                     setPathState(18);
+                    updateEnd = true;
+                    trackRN = false;
+                    flag = true;
                 }
                 break;
 //
@@ -393,10 +404,10 @@ public class blueAutov3 extends OpMode {
         buildPaths();
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
-        camera = hardwareMap.get(Servo.class, "camera");
-        camera.setPosition(0.65);
+        camera = new Camera_Servo(hardwareMap);
+        camera.setHigh();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
-        turret = new New_Turret(hardwareMap, telemetry);
+        turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
         hood.setLow();
         flyWheel.downies();
     }
@@ -406,15 +417,16 @@ public class blueAutov3 extends OpMode {
         intakeFull = bbTest.isFull();
         limelight.update();
         int targetTagId = 20;
-        limelight.trackTag(turret, targetTagId, isTracking);
+        limelight.trackTag_New(turret, targetTagId, isTracking);
         isTracking = limelight.tagInView();
-//        if(!isTracking && !flag)//turret.setTargetAngle(-45);
+        if(!isTracking && !flag)turret.setTargetAngle(-45);
         if(trackRN){
             turret.update();
         }
+
         if(updateEnd) {
             isTracking = false;
-//            turret.setTargetAngle(0);
+            turret.setTargetAngle(-5);
             turret.update();
         }
         if (!hasStarted) {
@@ -426,9 +438,17 @@ public class blueAutov3 extends OpMode {
         follower.update();
         botPose = follower.getPose();
 
-        double power = limelight.getLaunchPower();
-        if(limelight.tagInView() && !flag) flyWheel.setTargetVelocity(power);
-        //else flyWheel.setTargetVelocity(initialPower);
+        long now = System.currentTimeMillis();
+
+        if (limelight.tagInView()) {
+            lastTagSeenMs = now;
+            lastGoodPower = (int) limelight.getLaunchPower();
+        }
+
+        boolean tagRecentlySeen = (now - lastTagSeenMs) <= TAG_HOLD_MS;
+        int targetPower = tagRecentlySeen ? lastGoodPower : NO_TAG_POWER;
+
+        if(!flag) flyWheel.constantShootAtVelocity(targetPower);
         flyWheel.update();
         autonomousPathUpdate();
 
