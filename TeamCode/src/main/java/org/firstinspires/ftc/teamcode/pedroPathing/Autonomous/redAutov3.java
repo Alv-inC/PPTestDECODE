@@ -69,7 +69,7 @@ public class redAutov3 extends OpMode {
     private boolean trackRN = false;
     private float tiltAngle = 45;
     private int switchCycles = 0;
-    private static final int MAX_SWITCH_CYCLES = 2;
+    private static final int MAX_SWITCH_CYCLES = 3;
     public static int initialPower = -950;
     private boolean hasStarted = false;
     private Servo camera;
@@ -160,22 +160,12 @@ public class redAutov3 extends OpMode {
                 .build();
 
         Path9 = follower.pathBuilder().addPath(
-                        new BezierCurve(
-                                new Pose(38.673, 91.103).mirror(),
-                                new Pose(50.028, 41.481).mirror(),
-                                new Pose(9.869, 43.290).mirror()
-                        )
-                ).setConstantHeadingInterpolation(Math.toRadians(0))
-
-                .build();
-
-        Path10 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(9.869, 43.290).mirror(),
+                                new Pose(38.673, 91.103).mirror(),
 
-                                new Pose(34.766, 128.262).mirror()
+                                new Pose(43.206, 117.336).mirror()
                         )
-                ).setConstantHeadingInterpolation(Math.toRadians(0))
+                ).setTangentHeadingInterpolation()
 
                 .build();
     }
@@ -355,19 +345,13 @@ public class redAutov3 extends OpMode {
 //            // → SHOT 5
 //            // ===============================
             case 18:
-                if (!follower.isBusy()) {
-                    follower.followPath(Path10, true);
-                    setPathState(19);
-                }
-                break;
-            case 19:
                 if (pathTimer.getElapsedTimeSeconds() > 1.8) {
-                    flyWheel.uppies();
-                    setPathState(20);
                 }
                 teleTest.startingPose = follower.getPose();
                 telemetryM.addData("end data", follower.getPose());
                 break;
+
+
 //
 //            case 19:
 //                if (!follower.isBusy()) {

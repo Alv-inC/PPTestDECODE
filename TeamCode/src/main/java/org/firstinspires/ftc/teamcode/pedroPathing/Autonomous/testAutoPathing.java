@@ -26,7 +26,7 @@ public class testAutoPathing extends OpMode {
     private int pathState;
 
     //MAYBE LATER PUT ALL THE POSES INSIDE A INITIALIZATION FUNCTION
-    private final Pose startPose = new Pose(27.543925233644863,128.8953271028037, Math.toRadians(135));
+    private final Pose startPose = new Pose(56.92710280373832,8.446728971962548, Math.toRadians(135));
     public PathChain Path1;
     public PathChain Path2;
     public PathChain Path3;
