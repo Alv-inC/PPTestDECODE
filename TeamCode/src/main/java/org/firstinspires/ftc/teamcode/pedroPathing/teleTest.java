@@ -219,23 +219,25 @@ public class teleTest extends OpMode {
         }
         if (gamepad2.xWasPressed()) flywheel.downies();
 
-        // Edge-trigger left bumper so the timer doesn't keep getting pushed while held
-        boolean lb2Pressed = gamepad2.left_bumper && !prevLeftBumper2;
-        prevLeftBumper2 = gamepad2.left_bumper;
+        if(gamepad2.left_bumper)camera.setHigh_far();
+        if(gamepad2.right_bumper)camera.setHigh();
+//        // Edge-trigger left bumper so the timer doesn't keep getting pushed while held
+//        boolean lb2Pressed = gamepad2.left_bumper && !prevLeftBumper2;
+//        prevLeftBumper2 = gamepad2.left_bumper;
 
-        if (lb2Pressed) {
-            flywheel.uppies();
-            intake.setPower(-0.9);
+//        if (lb2Pressed) {
+//            flywheel.uppies();
+//            intake.setPower(-0.9);
+//
+//            bbFlag = false;
+//            bbRearmAtMs = now + BB_REARM_DELAY_MS;
+//        }
 
-            bbFlag = false;
-            bbRearmAtMs = now + BB_REARM_DELAY_MS;
-        }
-
-        if (gamepad2.right_bumper) {
-            flywheel.uppies();
-            //flywheel.constantShoot();
-            //pause(0.5);       // 0.5 second pause
-        }
+//        if (gamepad2.right_bumper) {
+//            flywheel.uppies();
+//            //flywheel.constantShoot();
+//            //pause(0.5);       // 0.5 second pause
+//        }
 
 //        if (gamepad1.dpad_up || gamepad2.dpad_up) turret.setTargetAngle(0 - autoTurretAngle);
 //        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(135 - autoTurretAngle);

@@ -9,8 +9,8 @@ import dev.frozenmilk.dairy.cachinghardware.CachingDcMotorEx;
 public class Camera_Servo {
     private Servo hood;
     private final HardwareMap hardwareMap;
-
-    private final double hood_high = 0.42; //
+    private final double high_far = 0.42;
+    private final double hood_high = 0.46; //
     private final double hood_mid = 0.38;
     private final double hood_low = 0.41-0.29+0.15; //
     public Camera_Servo(HardwareMap hardwareMap){
@@ -28,5 +28,6 @@ public class Camera_Servo {
     public void setHigh(){
         hood.setPosition(hood_high);
     }
+    public void setHigh_far() {hood.setPosition(high_far);}
 
 }
