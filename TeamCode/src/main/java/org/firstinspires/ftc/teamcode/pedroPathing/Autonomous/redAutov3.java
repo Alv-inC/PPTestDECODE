@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.Autonomous;
 
+import android.graphics.Camera;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -50,6 +52,7 @@ public class redAutov3 extends OpMode {
     public PathChain Path10;
     private boolean isTracking =false;
     private boolean flag = true;
+
     private PathChain secondLine;
     private PathChain thirdLine;
 
@@ -68,21 +71,20 @@ public class redAutov3 extends OpMode {
 
     private boolean intakeFull = false;
     private boolean trackRN = false;
-    private float tiltAngle = 45;
+    private float tiltAngle = 135;
     private int switchCycles = 0;
     private static final int MAX_SWITCH_CYCLES = 3;
     public static int initialPower = -950;
     private boolean hasStarted = false;
     private Camera_Servo camera;
     private double initTurretPosition = 0;
-    private boolean updateEnd = false;
+    private boolean updateEnd = true;
     public static Pose botPose;
 
     private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
-    private static final int NO_TAG_POWER = -1000;
+    private static int NO_TAG_POWER = -1680;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
-
     public void buildPaths() {
         // === SHOTS PATHS ===
         Path1 = follower.pathBuilder().addPath(
@@ -99,7 +101,7 @@ public class redAutov3 extends OpMode {
                         new BezierCurve(
                                 new Pose(46.317, 95.502).mirror(),
                                 new Pose(53.569, 63.050).mirror(),
-                                new Pose(9.178, 64.729).mirror()
+                                new Pose(7.607, 64.729).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -107,7 +109,7 @@ public class redAutov3 extends OpMode {
 
         Path3 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(9.178, 64.729).mirror(),
+                                new Pose(7.607, 64.729).mirror(),
                                 new Pose(40.784, 66.441).mirror(),
                                 new Pose(43.597, 84.508).mirror()
                         )
@@ -118,8 +120,8 @@ public class redAutov3 extends OpMode {
         Path4 = follower.pathBuilder().addPath(
                         new BezierCurve(
                                 new Pose(43.597, 84.508).mirror(),
-                                new Pose(37.616, 65.413).mirror(),
-                                new Pose(10.579, 68.262).mirror()
+                                new Pose(35.373, 70.347).mirror(),
+                                new Pose(9.458, 68.710).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(45))
 
@@ -127,9 +129,9 @@ public class redAutov3 extends OpMode {
 
         Path5 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(10.579, 68.262).mirror(),
+                                new Pose(9.458, 68.710).mirror(),
 
-                                new Pose(2.554, 62.832).mirror()
+                                new Pose(1.657, 63.280).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(30))
 
@@ -137,7 +139,7 @@ public class redAutov3 extends OpMode {
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(2.554, 62.832).mirror(),
+                                new Pose(1.657, 63.280).mirror(),
                                 new Pose(35.425, 65.391).mirror(),
                                 new Pose(42.662, 90.567).mirror()
                         )
@@ -148,7 +150,7 @@ public class redAutov3 extends OpMode {
         Path7 = follower.pathBuilder().addPath(
                         new BezierCurve(
                                 new Pose(42.662, 90.567).mirror(),
-                                new Pose(38.126, 84.830).mirror(),
+                                new Pose(39.471, 88.643).mirror(),
                                 new Pose(9.262, 90.495).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
@@ -169,13 +171,12 @@ public class redAutov3 extends OpMode {
                         new BezierLine(
                                 new Pose(38.673, 91.103).mirror(),
 
-                                new Pose(43.206, 117.336).mirror()
+                                new Pose(24.140, 91.318).mirror()
                         )
-                ).setTangentHeadingInterpolation()
+                ).setConstantHeadingInterpolation(Math.toRadians(0))
 
                 .build();
     }
-
     public void autonomousPathUpdate() {
         switch (pathState) {
 
@@ -183,23 +184,24 @@ public class redAutov3 extends OpMode {
             // AUTO INIT + START → SHOT 1
             // ===============================
             case 0:
-                trackRN = true;
                 intake.setPower(-0.94);
+                turret.setTargetPosition(0);
                 flyWheel.downies();
-                flyWheel.constantShootAutoSlow(); // ONLY ONCE
+                //flyWheel.constantShootAutoSlow(); // ONLY ONCE
                 follower.followPath(Path1, true);
+                hood.setMid();
                 setPathState(1);
                 break;
 
             case 1: // delay BEFORE shooting Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 0.85) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
                 }
                 break;
 
             case 2: // shooting window for Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 1.15) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.85) {
                     flyWheel.downies(); // STOP SHOOTING
                     //flyWheel.constantShootAuto();turret.setTargetAngle(-55);
                     setPathState(3);
@@ -211,9 +213,12 @@ public class redAutov3 extends OpMode {
             // ===============================
             case 3:
                 if (!follower.isBusy()) {
-                    flag = false;
+                    NO_TAG_POWER = -1000;
                     hood.setHigh();
                     follower.followPath(Path2, true);
+                    updateEnd = false;
+                    trackRN = true;
+                    flag = false;
                     setPathState(4);
                 }
                 break;
@@ -223,7 +228,12 @@ public class redAutov3 extends OpMode {
             // ===============================
             case 4:
                 if (!follower.isBusy()) {
-
+//                    if(pathTimer.getElapsedTimeSeconds() > 1){
+//                        flag = false;
+//                    }
+                    if(pathTimer.getElapsedTimeSeconds() > 1.8){
+                        intake.setPower(0);
+                    }
                     follower.followPath(Path3, true);
                     setPathState(5);
                 }
@@ -231,13 +241,14 @@ public class redAutov3 extends OpMode {
 
             case 5: // wait for path to Shot 2 to finish
                 if (!follower.isBusy()) {
+                    intake.setPower(-0.94);
                     flyWheel.uppies(); // START SHOOTING
                     setPathState(6);
                 }
                 break;
 
             case 6: // shooting window Shot 2
-                if (pathTimer.getElapsedTimeSeconds() > 1.15) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
                     flyWheel.downies(); // STOP SHOOTING
                     setPathState(7);
                 }
@@ -275,7 +286,10 @@ public class redAutov3 extends OpMode {
             // SHIMMY UP → SHOT 3
             // ===============================
             case 10:
-                if (intakeFull || pathTimer.getElapsedTimeSeconds() > 2) {
+                if (intakeFull || pathTimer.getElapsedTimeSeconds() > 1.35) {
+                    if(pathTimer.getElapsedTimeSeconds() > 1.8){
+                        intake.setPower(0);
+                    }
                     follower.followPath(Path6, true);
                     setPathState(11);
                 }
@@ -283,13 +297,14 @@ public class redAutov3 extends OpMode {
 
             case 11: // wait for Shot 3 path to finish
                 if (!follower.isBusy()) {
+                    intake.setPower(-0.94);
                     flyWheel.uppies(); // START SHOOTING
                     setPathState(12);
                 }
                 break;
 
             case 12: // shooting window Shot 3
-                if (pathTimer.getElapsedTimeSeconds() > 1.15) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
                     flyWheel.downies();
                     setPathState(13);
                 }
@@ -307,9 +322,7 @@ public class redAutov3 extends OpMode {
                 } else {
                     follower.followPath(Path7, true);
                     setPathState(14);
-                    updateEnd = true;
-                    trackRN = false;
-                    flag = true;
+
                 }
                 break;
 
@@ -320,19 +333,24 @@ public class redAutov3 extends OpMode {
                 if (!follower.isBusy()) {
                     flyWheel.downies();
                     follower.followPath(Path8, true);
+
+                    if(pathTimer.getElapsedTimeSeconds() > 1.1){
+                        intake.setPower(0);
+                    }
                     setPathState(15);
                 }
                 break;
 
             case 15:
                 if (!follower.isBusy()) {
+                    intake.setPower(-0.94);
                     flyWheel.uppies();
                     setPathState(16);
                 }
                 break;
 
             case 16:
-                if (pathTimer.getElapsedTimeSeconds() > 1.15) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.1) {
                     flyWheel.downies();
 //                    teleTest.startingPose = follower.getPose();
 //                    telemetryM.addData("end data", follower.getPose());
@@ -344,12 +362,13 @@ public class redAutov3 extends OpMode {
             // → THIRD LINE
             // ===============================
             case 17:
+
                 if (!follower.isBusy()) {
+                        updateEnd = true;
+                        trackRN = false;
+                        flag = true;
                     follower.followPath(Path9, true);
                     setPathState(18);
-                    updateEnd = true;
-                    trackRN = false;
-                    flag = true;
                 }
                 break;
 //
@@ -357,13 +376,12 @@ public class redAutov3 extends OpMode {
 //            // → SHOT 5
 //            // ===============================
             case 18:
-                if (pathTimer.getElapsedTimeSeconds() > 1.8) {
+                if (!follower.isBusy()) {
+                    setPathState(20);
                 }
                 teleTest.startingPose = follower.getPose();
                 telemetryM.addData("end data", follower.getPose());
                 break;
-
-
 //
 //            case 19:
 //                if (!follower.isBusy()) {
@@ -420,7 +438,6 @@ public class redAutov3 extends OpMode {
         limelight.update();
         int targetTagId = 24;
         limelight.trackTag_New(turret, targetTagId, isTracking);
-
         isTracking = limelight.tagInView();
         if(!isTracking && !flag)turret.setTargetAngle(45);
         if(trackRN){
@@ -429,7 +446,7 @@ public class redAutov3 extends OpMode {
 
         if(updateEnd) {
             isTracking = false;
-            turret.setTargetAngle(5);
+            turret.setTargetAngle(0);
             turret.update();
         }
         if (!hasStarted) {
@@ -451,9 +468,7 @@ public class redAutov3 extends OpMode {
         boolean tagRecentlySeen = (now - lastTagSeenMs) <= TAG_HOLD_MS;
         int targetPower = tagRecentlySeen ? lastGoodPower : NO_TAG_POWER;
 
-        if(!flag) flyWheel.constantShootAtVelocity(targetPower);
-
-        //else flyWheel.setTargetVelocity(initialPower);
+        flyWheel.constantShootAtVelocity(targetPower);
         flyWheel.update();
         autonomousPathUpdate();
 

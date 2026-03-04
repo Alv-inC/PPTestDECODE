@@ -64,9 +64,11 @@ public class farBlue extends OpMode {
         Path1 = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(56.927, 8.447),
+
                                 new Pose(56.523, 14.542)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
+
                 .build();
 
         Path2 = follower.pathBuilder().addPath(
@@ -76,48 +78,58 @@ public class farBlue extends OpMode {
                                 new Pose(7.523, 7.598)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
+
                 .build();
 
         Path3 = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(7.523, 7.598),
-                                new Pose(56.280, 15.224)
+
+                                new Pose(53.589, 15.449)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
+
                 .build();
 
         Path4 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(56.280, 15.224),
-                                new Pose(55.465, 32.477),
+                                new Pose(53.589, 15.449),
+                                new Pose(61.521, 42.346),
                                 new Pose(0.000, 48.220),
-                                new Pose(9.196, 24.000)
+                                new Pose(8.299, 14.804)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
+
                 .build();
 
         Path5 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(9.196, 24.000),
-                                new Pose(56.318, 15.514)
+                                new Pose(8.299, 14.804),
+
+                                new Pose(52.953, 14.841)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
+
                 .build();
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(56.318, 15.514),
+                                new Pose(52.953, 14.841),
+
                                 new Pose(7.981, 9.159)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
+
                 .build();
 
         Path7 = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(7.981, 9.159),
-                                new Pose(55.738, 15.944)
+
+                                new Pose(53.047, 15.271)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
+
                 .build();
     }
 

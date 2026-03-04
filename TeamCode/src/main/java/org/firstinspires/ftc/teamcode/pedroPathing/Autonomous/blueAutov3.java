@@ -78,7 +78,7 @@ public class blueAutov3 extends OpMode {
     private boolean hasStarted = false;
     private Camera_Servo camera;
     private double initTurretPosition = 0;
-    private boolean updateEnd = false;
+    private boolean updateEnd = true;
     public static Pose botPose;
 
     private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
@@ -120,7 +120,7 @@ public class blueAutov3 extends OpMode {
         Path4 = follower.pathBuilder().addPath(
                         new BezierCurve(
                                 new Pose(52.821, 84.059),
-                                new Pose(37.616, 64.067),
+                                new Pose(37.616, 65.861),
                                 new Pose(10.579, 68.262)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(135))
@@ -171,7 +171,7 @@ public class blueAutov3 extends OpMode {
                         new BezierLine(
                                 new Pose(52.355, 84.822),
 
-                                new Pose(46.579, 114.103)
+                                new Pose(33.794, 84.720)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -194,14 +194,14 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 1: // delay BEFORE shooting Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 0.85) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
                 }
                 break;
 
             case 2: // shooting window for Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 1.05) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.85) {
                     flyWheel.downies(); // STOP SHOOTING
                     //flyWheel.constantShootAuto();turret.setTargetAngle(-55);
                     setPathState(3);
@@ -216,7 +216,9 @@ public class blueAutov3 extends OpMode {
                     NO_TAG_POWER = -1000;
                     hood.setHigh();
                     follower.followPath(Path2, true);
+                    updateEnd = false;
                     trackRN = true;
+                    flag = false;
                     setPathState(4);
                 }
                 break;
@@ -226,10 +228,10 @@ public class blueAutov3 extends OpMode {
             // ===============================
             case 4:
                 if (!follower.isBusy()) {
-                    if(pathTimer.getElapsedTimeSeconds() > 1.8){
-                        flag = false;
-                    }
-                    if(pathTimer.getElapsedTimeSeconds() > 1){
+//                    if(pathTimer.getElapsedTimeSeconds() > 1){
+//                        flag = false;
+//                    }
+                    if(pathTimer.getElapsedTimeSeconds() > 1.5){
                         intake.setPower(0);
                     }
                     follower.followPath(Path3, true);
@@ -285,7 +287,7 @@ public class blueAutov3 extends OpMode {
             // ===============================
             case 10:
                 if (intakeFull || pathTimer.getElapsedTimeSeconds() > 1.35) {
-                    if(pathTimer.getElapsedTimeSeconds() > 1){
+                    if(pathTimer.getElapsedTimeSeconds() > 1.5){
                         intake.setPower(0);
                     }
                     follower.followPath(Path6, true);
@@ -320,9 +322,7 @@ public class blueAutov3 extends OpMode {
                 } else {
                     follower.followPath(Path7, true);
                     setPathState(14);
-                    updateEnd = true;
-                    trackRN = false;
-                    flag = true;
+
                 }
                 break;
 
@@ -333,7 +333,8 @@ public class blueAutov3 extends OpMode {
                 if (!follower.isBusy()) {
                     flyWheel.downies();
                     follower.followPath(Path8, true);
-                    if(pathTimer.getElapsedTimeSeconds() > 1){
+
+                    if(pathTimer.getElapsedTimeSeconds() > 1.1){
                         intake.setPower(0);
                     }
                     setPathState(15);
@@ -361,12 +362,13 @@ public class blueAutov3 extends OpMode {
             // → THIRD LINE
             // ===============================
             case 17:
+
                 if (!follower.isBusy()) {
+                        updateEnd = true;
+                        trackRN = false;
+                        flag = true;
                     follower.followPath(Path9, true);
                     setPathState(18);
-                    updateEnd = true;
-                    trackRN = false;
-                    flag = true;
                 }
                 break;
 //
@@ -444,7 +446,7 @@ public class blueAutov3 extends OpMode {
 
         if(updateEnd) {
             isTracking = false;
-            turret.setTargetAngle(-5);
+            turret.setTargetAngle(0);
             turret.update();
         }
         if (!hasStarted) {
