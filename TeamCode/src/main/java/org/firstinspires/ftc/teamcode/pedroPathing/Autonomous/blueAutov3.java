@@ -193,7 +193,7 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 1: // delay BEFORE shooting Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.7) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
                 }
@@ -238,7 +238,7 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 6: // shooting window Shot 2
-                if (pathTimer.getElapsedTimeSeconds() > 1.15) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.35) {
                     flyWheel.downies(); // STOP SHOOTING
                     setPathState(7);
                 }
