@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 @Configurable
 public class TurretPLUSIntake {
     // ===== Limits =====
-    public static double MAX_ANGLE_DEG = 100.0; // +/- 100 degrees from zero (no offset)
+    public static double MAX_ANGLE_DEG = 115; // +/- 100 degrees from zero (no offset)
 
     // ===== Scan mode (optional) =====
     public static boolean scanEnabled = false;
