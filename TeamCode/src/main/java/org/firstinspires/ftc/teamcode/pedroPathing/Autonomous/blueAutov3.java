@@ -82,7 +82,7 @@ public class blueAutov3 extends OpMode {
     public static Pose botPose;
 
     private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
-    private static final int NO_TAG_POWER = -1000;
+    private static int NO_TAG_POWER = -1530;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
     public void buildPaths() {
@@ -187,21 +187,21 @@ public class blueAutov3 extends OpMode {
                 intake.setPower(-0.94);
                 turret.setTargetPosition(0);
                 flyWheel.downies();
-                flyWheel.constantShootAutoSlow(); // ONLY ONCE
+                //flyWheel.constantShootAutoSlow(); // ONLY ONCE
                 follower.followPath(Path1, true);
                 hood.setMid();
                 setPathState(1);
                 break;
 
             case 1: // delay BEFORE shooting Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 0.8) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.85) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
                 }
                 break;
 
             case 2: // shooting window for Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 1.1) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.05) {
                     flyWheel.downies(); // STOP SHOOTING
                     //flyWheel.constantShootAuto();turret.setTargetAngle(-55);
                     setPathState(3);
@@ -213,6 +213,7 @@ public class blueAutov3 extends OpMode {
             // ===============================
             case 3:
                 if (!follower.isBusy()) {
+                    NO_TAG_POWER = -1000;
                     hood.setHigh();
                     follower.followPath(Path2, true);
                     trackRN = true;
@@ -245,7 +246,7 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 6: // shooting window Shot 2
-                if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
                     flyWheel.downies(); // STOP SHOOTING
                     setPathState(7);
                 }
@@ -283,7 +284,7 @@ public class blueAutov3 extends OpMode {
             // SHIMMY UP → SHOT 3
             // ===============================
             case 10:
-                if (intakeFull || pathTimer.getElapsedTimeSeconds() > 1.55) {
+                if (intakeFull || pathTimer.getElapsedTimeSeconds() > 1.35) {
                     if(pathTimer.getElapsedTimeSeconds() > 1){
                         intake.setPower(0);
                     }
@@ -301,7 +302,7 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 12: // shooting window Shot 3
-                if (pathTimer.getElapsedTimeSeconds() > 1.15) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
                     flyWheel.downies();
                     setPathState(13);
                 }
@@ -348,7 +349,7 @@ public class blueAutov3 extends OpMode {
                 break;
 
             case 16:
-                if (pathTimer.getElapsedTimeSeconds() > 1.15) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.1) {
                     flyWheel.downies();
 //                    teleTest.startingPose = follower.getPose();
 //                    telemetryM.addData("end data", follower.getPose());
@@ -465,7 +466,7 @@ public class blueAutov3 extends OpMode {
         boolean tagRecentlySeen = (now - lastTagSeenMs) <= TAG_HOLD_MS;
         int targetPower = tagRecentlySeen ? lastGoodPower : NO_TAG_POWER;
 
-        if(!flag) flyWheel.constantShootAtVelocity(targetPower);
+        flyWheel.constantShootAtVelocity(targetPower);
         flyWheel.update();
         autonomousPathUpdate();
 

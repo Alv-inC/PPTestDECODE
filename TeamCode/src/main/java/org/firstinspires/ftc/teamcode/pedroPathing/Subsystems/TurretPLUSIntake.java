@@ -50,7 +50,7 @@ public class TurretPLUSIntake {
     public static double TICKS_PER_TURRET_REV = SMALL_GEAR_TICKS_PER_REV * GEAR_RATIO;
     public static double TICKS_PER_DEGREE = TICKS_PER_TURRET_REV / 360.0;
 
-    public static double kS = 0.08; // 0.05–0.15 typical for CR servos
+    public static double kS = 0.1; // 0.05–0.15 typical for CR servos
     public TurretPLUSIntake(HardwareMap hardwareMap, Telemetry telemetry, DcMotorEx encoder1) {
         this.telemetry = telemetry;
 
@@ -99,9 +99,6 @@ public class TurretPLUSIntake {
             pid.reset();
         }
 
-        // Hard-stop protection: never drive farther past the limits
-        if (currentTicks <= minTicks && power < 0) power = 0;
-        if (currentTicks >= maxTicks && power > 0) power = 0;
 
         power = clamp(power, -1.0, 1.0);
 

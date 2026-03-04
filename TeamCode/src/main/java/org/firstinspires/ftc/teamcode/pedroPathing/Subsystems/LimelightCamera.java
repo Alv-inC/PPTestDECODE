@@ -159,11 +159,20 @@ public class LimelightCamera {
     }
     public void trackTag_New(TurretPLUSIntake turret, int targetTagId, boolean enabled) {
         telemetry.addData("target id", targetTagId);
+
         if (!validTarget || targetTagId != lastTagId || targetTagId == -1 || !enabled) return;
 
         double correctionTicks = txDeg * TICKS_PER_DEG;
         double newTarget = turret.getCurrentPosition() - correctionTicks;
+
+        // Clamp target to turret limits
+        double maxTicks = TurretPLUSIntake.MAX_ANGLE_DEG * TurretPLUSIntake.TICKS_PER_DEGREE;
+        double minTicks = -maxTicks;
+
+        newTarget = Math.max(minTicks, Math.min(maxTicks, newTarget));
+
         telemetry.addData("newTarget", newTarget);
+
         turret.setTargetPosition(newTarget);
     }
     public void trackBall(New_Turret turret, boolean enabled) {
