@@ -82,7 +82,7 @@ public class redAutov3 extends OpMode {
     public static Pose botPose;
 
     private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
-    private static int NO_TAG_POWER = -1780;
+    private static int NO_TAG_POWER = -1830;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
     public void buildPaths() {
@@ -101,7 +101,7 @@ public class redAutov3 extends OpMode {
                         new BezierCurve(
                                 new Pose(46.317, 95.502).mirror(),
                                 new Pose(53.569, 63.050).mirror(),
-                                new Pose(7.607, 64.729).mirror()
+                                new Pose(7, 64.729).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -109,7 +109,7 @@ public class redAutov3 extends OpMode {
 
         Path3 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(7.607, 64.729).mirror(),
+                                new Pose(7, 64.729).mirror(),
                                 new Pose(40.784, 66.441).mirror(),
                                 new Pose(43.597, 84.508).mirror()
                         )
