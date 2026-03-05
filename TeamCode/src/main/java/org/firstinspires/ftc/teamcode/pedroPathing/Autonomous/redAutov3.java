@@ -82,7 +82,7 @@ public class redAutov3 extends OpMode {
     public static Pose botPose;
 
     private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
-    private static int NO_TAG_POWER = -1680;
+    private static int NO_TAG_POWER = -1780;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
     public void buildPaths() {
@@ -231,7 +231,7 @@ public class redAutov3 extends OpMode {
 //                    if(pathTimer.getElapsedTimeSeconds() > 1){
 //                        flag = false;
 //                    }
-                    if(pathTimer.getElapsedTimeSeconds() > 1.8){
+                    if(pathTimer.getElapsedTimeSeconds() > 2.3){
                         intake.setPower(0);
                     }
                     follower.followPath(Path3, true);
@@ -287,7 +287,7 @@ public class redAutov3 extends OpMode {
             // ===============================
             case 10:
                 if (intakeFull || pathTimer.getElapsedTimeSeconds() > 1.35) {
-                    if(pathTimer.getElapsedTimeSeconds() > 1.8){
+                    if(pathTimer.getElapsedTimeSeconds() > 1.9){
                         intake.setPower(0);
                     }
                     follower.followPath(Path6, true);

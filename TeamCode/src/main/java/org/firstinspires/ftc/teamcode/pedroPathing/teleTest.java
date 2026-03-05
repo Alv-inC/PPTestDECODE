@@ -214,24 +214,21 @@ public class teleTest extends OpMode {
         if (gamepad2.b && !intakeFull) {
             intake.setPower(-0.9);
         }
-        if (gamepad2.y && !intakeFull) {
-            intake.setPower(-0.4);
-        }
+//        if (gamepad2.y && !intakeFull) {
+//            intake.setPower(-0.4);
+//        }
         if (gamepad2.xWasPressed()) flywheel.downies();
 
         if(gamepad2.left_bumper)camera.setHigh_far();
         if(gamepad2.right_bumper)camera.setHigh();
-//        // Edge-trigger left bumper so the timer doesn't keep getting pushed while held
-//        boolean lb2Pressed = gamepad2.left_bumper && !prevLeftBumper2;
-//        prevLeftBumper2 = gamepad2.left_bumper;
+        // Edge-trigger left bumper so the timer doesn't keep getting pushed while held
+        if (gamepad2.yWasPressed()) {
+            flywheel.uppies();
+            intake.setPower(-0.9);
 
-//        if (lb2Pressed) {
-//            flywheel.uppies();
-//            intake.setPower(-0.9);
-//
-//            bbFlag = false;
-//            bbRearmAtMs = now + BB_REARM_DELAY_MS;
-//        }
+            bbFlag = false;
+            bbRearmAtMs = now + BB_REARM_DELAY_MS;
+        }
 
 //        if (gamepad2.right_bumper) {
 //            flywheel.uppies();
@@ -273,14 +270,14 @@ public class teleTest extends OpMode {
             );
         }
 
-        if (gamepad1.xWasPressed()) {
-            follower.followPath(pathChainBlueGate.get());
-            automatedDrive = true;
-        }
-        if (gamepad1.yWasPressed()) {
-            follower.followPath(pathChainBluePark.get());
-            automatedDrive = true;
-        }
+//        if (gamepad1.xWasPressed()) {
+//            follower.followPath(pathChainBlueGate.get());
+//            automatedDrive = true;
+//        }
+//        if (gamepad1.yWasPressed()) {
+//            follower.followPath(pathChainBluePark.get());
+//            automatedDrive = true;
+//        }
 
         if (automatedDrive && (gamepad1.bWasPressed() || !follower.isBusy())) {
             follower.pausePathFollowing();
