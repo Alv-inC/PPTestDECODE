@@ -75,7 +75,7 @@ public class farBlue extends OpMode {
                         new BezierCurve(
                                 new Pose(56.523, 14.542),
                                 new Pose(28.921, 16.079),
-                                new Pose(7.075, 7.374)
+                                new Pose(6.402, 6.925)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -83,7 +83,7 @@ public class farBlue extends OpMode {
 
         Path3 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(7.075, 7.374),
+                                new Pose(6.402, 6.925),
 
                                 new Pose(51.121, 14.551)
                         )
@@ -116,7 +116,7 @@ public class farBlue extends OpMode {
                         new BezierLine(
                                 new Pose(51.607, 13.047),
 
-                                new Pose(7.981, 9.159)
+                                new Pose(6.636, 6.692)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -124,7 +124,7 @@ public class farBlue extends OpMode {
 
         Path7 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(7.981, 9.159),
+                                new Pose(6.636, 6.692),
 
                                 new Pose(51.477, 13.028)
                         )
@@ -244,12 +244,8 @@ public class farBlue extends OpMode {
 
             case 11:
                 if (!follower.isBusy()) {
-                    if(count > 1){
-                        setPathState(100);
-                    }else{
                         follower.followPath(Path6, true);
                         setPathState(12);
-                    }
                 }
                 break;
 
@@ -258,8 +254,11 @@ public class farBlue extends OpMode {
                     if(pathTimer.getElapsedTimeSeconds() > 1.5){
                         intake.setPower(0);
                     }
-                    follower.followPath(Path7, true);
-
+                    if(count > 1){
+                        setPathState(100);
+                    }else {
+                        follower.followPath(Path7, true);
+                    }
                     setPathState(13);
                 }
                 break;
