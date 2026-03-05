@@ -1,84 +1,68 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.subSystemTuning;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 public class breakBeamTest {
-    private DcMotorEx intake;
-    private boolean object1Detected;
-    private boolean object2Detected;
-    private boolean object3Detected;
     private DigitalChannel beamSensor1;
     private DigitalChannel beamSensor2;
     private DigitalChannel beamSensor3;
 
-    //finding the port
-//    private boolean object4Detected;
-//    private boolean object5Detected;
-//    private boolean object6Detected;
-//    private DigitalChannel beamSensor4;
-//    private DigitalChannel beamSensor5;
-//    private DigitalChannel beamSensor6;
-//
-//    private boolean object7Detected;
-//    private boolean object8Detected;
-//    private DigitalChannel beamSensor7;
-//    private DigitalChannel beamSensor8;
+    private boolean object1Detected, object2Detected, object3Detected;
+
+    // For edge detect
+    private boolean prev1 = false, prev2 = false, prev3 = false;
+
+    // Latched hit flag (set true once, then cleared when read)
+    private boolean hitAnyLatched = false;
+
+    // Debounce / cooldown so one ball doesn't spam hits
+    private static final long HIT_COOLDOWN_MS = 200;
+    private long lastHitMs = 0;
 
     public breakBeamTest(HardwareMap hardwareMap){
         beamSensor1 = hardwareMap.get(DigitalChannel.class, "bb1");
         beamSensor1.setMode(DigitalChannel.Mode.INPUT);
+
         beamSensor2 = hardwareMap.get(DigitalChannel.class, "bb2");
         beamSensor2.setMode(DigitalChannel.Mode.INPUT);
+
         beamSensor3 = hardwareMap.get(DigitalChannel.class, "bb3");
         beamSensor3.setMode(DigitalChannel.Mode.INPUT);
     }
 
-public boolean isFull() {
-            object1Detected = !beamSensor1.getState();
-            object2Detected = !beamSensor2.getState();
-            object3Detected = !beamSensor3.getState();
+    /** Call once per OpMode loop. */
+    public void update() {
+        boolean cur1 = !beamSensor1.getState(); // beam broken
+        boolean cur2 = !beamSensor2.getState();
+        boolean cur3 = !beamSensor3.getState();
 
+        long now = System.currentTimeMillis();
 
-            if (object1Detected & object2Detected & object3Detected) {
-                return true;
-            } else {
-                return false;
-            }
+        boolean hit1 = cur1 && !prev1;
+        boolean hit2 = cur2 && !prev2;
+        boolean hit3 = cur3 && !prev3;
+
+        if ((hit1 || hit2 || hit3) && (now - lastHitMs) >= HIT_COOLDOWN_MS) {
+            hitAnyLatched = true;
+            lastHitMs = now;
         }
-//        //finding ports
-//        object4Detected = !beamSensor4.getState();
-//        object5Detected = !beamSensor5.getState();
-//        object6Detected = !beamSensor6.getState();
-//        object7Detected = !beamSensor7.getState();
-//        object8Detected = !beamSensor8.getState();
 
-//        if (object1Detected){
-//            telemetry.addData("Status", "ONE");
-//        }
-//        if (object2Detected){
-//            telemetry.addData("Status", "TWO");
-//        }
-//        if (object3Detected){
-//            telemetry.addData("Status", "THREE");
-//        }
-//        if (object4Detected){
-//            telemetry.addData("Status", "FOUR");
-//        }
-//        if (object5Detected){
-//            telemetry.addData("Status", "FIVE");
-//        }
-//        if (object6Detected){
-//            telemetry.addData("Status", "SIX");
-//        }
-//        if (object7Detected){
-//            telemetry.addData("Status", "SEVEN");
-//        }
-//        if (object8Detected){
-//            telemetry.addData("Status", "EIGHT");
-//        }
+        prev1 = cur1; prev2 = cur2; prev3 = cur3;
+
+        object1Detected = cur1;
+        object2Detected = cur2;
+        object3Detected = cur3;
     }
+
+    /** Returns true once per hit, then resets. */
+    public boolean consumeHitAny() {
+        boolean out = hitAnyLatched;
+        hitAnyLatched = false;
+        return out;
+    }
+
+    public boolean isFull() {
+        return object1Detected && object2Detected && object3Detected;
+    }
+}

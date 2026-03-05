@@ -59,6 +59,8 @@ public class LimelightCamera {
     public static int midCoefficient = 391; //1.75 m
     public static int closeCoefficient = 435; //1 m
 
+    private int ThetargetTagId = -1;
+
     public LimelightCamera(HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
         this.limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -97,18 +99,19 @@ public class LimelightCamera {
                 if (!fiducials.isEmpty()) {
                     telemetry.addLine("found tag");
                     validTarget = true;
-                    foundTag = true;
                     LLResultTypes.FiducialResult fid = fiducials.get(0); // first tag by default
                     lastTagId = fid.getFiducialId();
+                    if(lastTagId == ThetargetTagId) {
+                        foundTag = true;
+                        Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
+                        tzMeters = tagPoseCam.getPosition().z;
+                        double launchSpeed = computeLaunchVelocity(tzMeters);
+                        launchPower = velocityToTicksPerSecond(launchSpeed, tzMeters) * launchpowermultiplier;
 
-                    Pose3D tagPoseCam = fid.getTargetPoseCameraSpace();
-                    tzMeters = tagPoseCam.getPosition().z;
-                    double launchSpeed = computeLaunchVelocity(tzMeters);
-                    launchPower = velocityToTicksPerSecond(launchSpeed, tzMeters) * launchpowermultiplier;
-
-                    txDeg = fid.getTargetXDegrees();
-                    telemetry.addData("txDeg", txDeg);
-                    if (Math.abs(txDeg) < DEADBAND_DEG) txDeg = 0.0;
+                        txDeg = fid.getTargetXDegrees();
+                        telemetry.addData("txDeg", txDeg);
+                        if (Math.abs(txDeg) < DEADBAND_DEG) txDeg = 0.0;
+                    }
                 }
             }
             else if(PIPELINE_INDEX==0 || PIPELINE_INDEX==3){
@@ -158,6 +161,7 @@ public class LimelightCamera {
         turret.setTargetTicks(newTarget + offset);
     }
     public void trackTag_New(TurretPLUSIntake turret, int targetTagId, boolean enabled) {
+        ThetargetTagId = targetTagId;
         telemetry.addData("target id", targetTagId);
 
         if (!validTarget || targetTagId != lastTagId || targetTagId == -1 || !enabled) return;
