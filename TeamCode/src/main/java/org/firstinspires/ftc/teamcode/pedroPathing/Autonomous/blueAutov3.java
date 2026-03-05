@@ -82,7 +82,7 @@ public class blueAutov3 extends OpMode {
     public static Pose botPose;
 
     private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
-    private static int NO_TAG_POWER = -1530;
+    private static int NO_TAG_POWER = -1620;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
     public void buildPaths() {

@@ -11,7 +11,7 @@ public class Hood {
     private final HardwareMap hardwareMap;
 
     private final double hood_high = 0.16; //47.5 degrees
-    private final double hood_mid = 0.42;
+    private final double hood_mid = 0.3;
     private final double hood_low = 0.54; //35.3
     private final double auto = 0.21;
     public Hood(HardwareMap hardwareMap){

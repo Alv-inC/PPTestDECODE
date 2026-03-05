@@ -41,7 +41,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.subSystemTuning.breakBeamTest
 import java.util.function.Supplier;
 
 @Configurable
-@TeleOp(name = "testTele")
+@TeleOp(name = "red tele")
 public class TeleTest2 extends OpMode {
     public static double initialTurretPosition = 0;
     private Follower follower;
@@ -75,7 +75,7 @@ public class TeleTest2 extends OpMode {
     public static double x, y, r = 0;
     boolean trackingEnabled = true;
     private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
-    private static final int NO_TAG_POWER = -1000;
+    private static int NO_TAG_POWER = -1000;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
 
@@ -237,8 +237,14 @@ public class TeleTest2 extends OpMode {
 //        }
         if (gamepad2.xWasPressed() ||gamepad2.squareWasPressed()) flywheel.downies();
 
-        if(gamepad2.left_bumper)camera.setHigh_far();
-        if(gamepad2.right_bumper)camera.setHigh();
+        if(gamepad2.left_bumper){
+            camera.setHigh_far();
+            NO_TAG_POWER = -1500;
+        }
+        if(gamepad2.right_bumper){
+            camera.setHigh();
+            NO_TAG_POWER = -1000;
+        }
         // Edge-trigger left bumper so the timer doesn't keep getting pushed while held
         if (gamepad2.yWasPressed() || gamepad2.triangleWasPressed()) {
             flywheel.uppies();
@@ -258,8 +264,8 @@ public class TeleTest2 extends OpMode {
 //        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(135 - autoTurretAngle);
 //        if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-135 - autoTurretAngle);
         if (gamepad1.dpad_up || gamepad2.dpad_up) turret.setTargetAngle(0);
-        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(110);
-        if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-110);
+        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(45);
+        if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-45);
 
 //        if (gamepad2.dpad_down) {
 //            hood.setLow();
