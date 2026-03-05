@@ -283,7 +283,10 @@ public class farBlue extends OpMode {
                 }
                 break;
             case 100:
-
+                if(pathTimer.getElapsedTimeSeconds() > 0.5){
+                    trackRN = false;
+                    updateEnd = true;
+                }
                 break;
         }
     }

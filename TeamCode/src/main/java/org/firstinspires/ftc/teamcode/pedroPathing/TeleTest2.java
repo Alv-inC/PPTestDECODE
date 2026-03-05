@@ -91,6 +91,8 @@ public class TeleTest2 extends OpMode {
     private int defaultTurretAngle = 0;
 
     private boolean lastTagInView = false;
+
+    private boolean lastIntakeFull = false;
     @Override
     public void init() {
         bbTest = new breakBeamTest(hardwareMap);
@@ -150,11 +152,6 @@ public class TeleTest2 extends OpMode {
 
         bbTest.update();
 
-        if (bbTest.consumeHitAny()) {
-            gamepad1.rumbleBlips(1);   // quick blip
-            // or: gamepad1.rumble(150);
-        }
-
         // Re-arm bbFlag after delay (non-blocking)
         if (!bbFlag && bbRearmAtMs != 0 && now >= bbRearmAtMs) {
             bbFlag = true;
@@ -162,6 +159,9 @@ public class TeleTest2 extends OpMode {
         }
 
         intakeFull = bbTest.isFull();
+        if(intakeFull && intakeFull != lastIntakeFull) gamepad2.rumbleBlips(1);
+        lastIntakeFull = intakeFull;
+
         if (intakeFull && bbFlag) intake.setPower(0);
 
         telemetryM.addData("intake full", intakeFull);
