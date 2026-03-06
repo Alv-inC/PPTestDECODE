@@ -187,7 +187,7 @@ public class blueAutov3 extends OpMode {
                 intake.setPower(-0.94);
                 turret.setTargetPosition(0);
                 flyWheel.downies();
-                //flyWheel.constantShootAutoSlow(); // ONLY ONCE
+                //flyWheel.constantShootAutoSlow(); // ONLY ONCE      
                 follower.followPath(Path1, true);
                 hood.setMid();
                 setPathState(1);
