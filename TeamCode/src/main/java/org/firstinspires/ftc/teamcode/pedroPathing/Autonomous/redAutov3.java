@@ -82,7 +82,7 @@ public class redAutov3 extends OpMode {
     public static Pose botPose;
 
     private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
-    private static int NO_TAG_POWER = -1830;
+    private static int NO_TAG_POWER = -1770;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
     public void buildPaths() {
@@ -121,7 +121,7 @@ public class redAutov3 extends OpMode {
                         new BezierCurve(
                                 new Pose(43.597, 84.508).mirror(),
                                 new Pose(35.373, 70.347).mirror(),
-                                new Pose(9.458, 68.710).mirror()
+                                new Pose(9, 67.710).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(45))
 
@@ -129,7 +129,7 @@ public class redAutov3 extends OpMode {
 
         Path5 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(9.458, 68.710).mirror(),
+                                new Pose(9, 67.710).mirror(),
 
                                 new Pose(1.657, 63.280).mirror()
                         )
@@ -189,7 +189,6 @@ public class redAutov3 extends OpMode {
                 flyWheel.downies();
                 //flyWheel.constantShootAutoSlow(); // ONLY ONCE
                 follower.followPath(Path1, true);
-                hood.setMid();
                 setPathState(1);
                 break;
 
@@ -287,7 +286,7 @@ public class redAutov3 extends OpMode {
             // ===============================
             case 10:
                 if (intakeFull || pathTimer.getElapsedTimeSeconds() > 1.35) {
-                    if(pathTimer.getElapsedTimeSeconds() > 1.9){
+                    if(pathTimer.getElapsedTimeSeconds() > 1.1){
                         intake.setPower(0);
                     }
                     follower.followPath(Path6, true);
@@ -428,7 +427,7 @@ public class redAutov3 extends OpMode {
         camera.setHigh();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
-        hood.setLow();
+        hood.setMid();
         flyWheel.downies();
     }
 

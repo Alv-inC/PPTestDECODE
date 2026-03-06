@@ -82,7 +82,7 @@ public class blueAutov3 extends OpMode {
     public static Pose botPose;
 
     private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
-    private static int NO_TAG_POWER = -1830;
+    private static int NO_TAG_POWER = -1770;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
     public void buildPaths() {
@@ -121,7 +121,7 @@ public class blueAutov3 extends OpMode {
                         new BezierCurve(
                                 new Pose(52.821, 84.059),
                                 new Pose(37.616, 65.861),
-                                new Pose(10.579, 68.262)
+                                new Pose(9.234, 66.916)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(135))
 
@@ -129,9 +129,9 @@ public class blueAutov3 extends OpMode {
 
         Path5 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(10.579, 68.262),
+                                new Pose(9.234, 66.916),
 
-                                new Pose(2.330, 62.383)
+                                new Pose(2.330, 62.607)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(120))
 
@@ -139,7 +139,7 @@ public class blueAutov3 extends OpMode {
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(2.330, 62.383),
+                                new Pose(2.330, 62.607),
                                 new Pose(35.425, 65.391),
                                 new Pose(48.270, 85.184)
                         )
@@ -231,7 +231,7 @@ public class blueAutov3 extends OpMode {
 //                    if(pathTimer.getElapsedTimeSeconds() > 1){
 //                        flag = false;
 //                    }
-                    if(pathTimer.getElapsedTimeSeconds() > 1.85){
+                    if(pathTimer.getElapsedTimeSeconds() > 1.55){
                         intake.setPower(0);
                     }
                     follower.followPath(Path3, true);
@@ -287,7 +287,7 @@ public class blueAutov3 extends OpMode {
             // ===============================
             case 10:
                 if (intakeFull || pathTimer.getElapsedTimeSeconds() > 1.35) {
-                    if(pathTimer.getElapsedTimeSeconds() > 1.5){
+                    if(pathTimer.getElapsedTimeSeconds() > 1.1){
                         intake.setPower(0);
                     }
                     follower.followPath(Path6, true);
