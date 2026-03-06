@@ -41,7 +41,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.subSystemTuning.breakBeamTest
 import java.util.function.Supplier;
 
 @Configurable
-@TeleOp(name = "testTele")
+@TeleOp(name = "blue tele")
 public class teleTest extends OpMode {
     public static double initialTurretPosition = 0;
     private Follower follower;
@@ -75,7 +75,7 @@ public class teleTest extends OpMode {
     public static double x, y, r = 0;
     boolean trackingEnabled = true;
     private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
-    private static final int NO_TAG_POWER = -1000;
+    private static int NO_TAG_POWER = -1000;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
 
@@ -90,6 +90,9 @@ public class teleTest extends OpMode {
     private boolean prevLeftBumper2 = false;
     private int defaultTurretAngle = 0;
 
+    private boolean lastTagInView = false;
+
+    private boolean lastIntakeFull = false;
     @Override
     public void init() {
         bbTest = new breakBeamTest(hardwareMap);
@@ -113,6 +116,8 @@ public class teleTest extends OpMode {
         telemetryM.update();
         flywheel.downies();
         follower.setStartingPose(poseToUse);
+        gamepad2.setLedColor(1.0, 0.0, 0.0, 100000);
+
 //        follower.update();
         pathChainBlueClose = () -> follower.pathBuilder() //Lazy Curve Generation
                 .addPath(new Path(new BezierLine(follower::getPose, new Pose(59, 95))))
@@ -145,6 +150,8 @@ public class teleTest extends OpMode {
 
         long now = System.currentTimeMillis();
 
+        bbTest.update();
+
         // Re-arm bbFlag after delay (non-blocking)
         if (!bbFlag && bbRearmAtMs != 0 && now >= bbRearmAtMs) {
             bbFlag = true;
@@ -152,6 +159,9 @@ public class teleTest extends OpMode {
         }
 
         intakeFull = bbTest.isFull();
+        if(intakeFull && intakeFull != lastIntakeFull) gamepad2.rumbleBlips(1);
+        lastIntakeFull = intakeFull;
+
         if (intakeFull && bbFlag) intake.setPower(0);
 
         telemetryM.addData("intake full", intakeFull);
@@ -164,10 +174,18 @@ public class teleTest extends OpMode {
 
         telemetryM.addData("bot pose", follower.getPose());
 
-        if (limelight.tagInView()) {
+        boolean inView = limelight.tagInView();
+        if (inView) {
             lastTagSeenMs = now;
             lastGoodPower = (int) limelight.getLaunchPower();
         }
+
+        if(inView != lastTagInView){
+            if(!inView)gamepad2.setLedColor(1.0, 0.0, 0.0, 100000);
+            else gamepad2.setLedColor(0.0, 1.0, 0.0, 100000);
+        }
+
+        lastTagInView = limelight.tagInView();
 
         boolean tagRecentlySeen = (now - lastTagSeenMs) <= TAG_HOLD_MS;
         int targetPower = tagRecentlySeen ? lastGoodPower : NO_TAG_POWER;
@@ -197,7 +215,7 @@ public class teleTest extends OpMode {
 
         turret.update();
 
-        if (gamepad2.a && !previousButtonState2a && !intakeFull) {
+        if ((gamepad2.a || gamepad2.cross)&& !previousButtonState2a && !intakeFull) {
             if (!flag) {
                 intake.setPower(0.5);
             } else {
@@ -205,24 +223,30 @@ public class teleTest extends OpMode {
                 intake.setPower(0);
             }
         }
-        previousButtonState2a = gamepad2.a;
+        previousButtonState2a = gamepad2.a || gamepad2.cross;
 
 //        if (gamepad2.dpad_right & !intakeFull) {
 //            intake.setPower(0.5);
 //        }
 
-        if (gamepad2.b && !intakeFull) {
+        if ((gamepad2.b || gamepad2.circle) && !intakeFull) {
             intake.setPower(-0.9);
         }
 //        if (gamepad2.y && !intakeFull) {
 //            intake.setPower(-0.4);
 //        }
-        if (gamepad2.xWasPressed()) flywheel.downies();
+        if (gamepad2.xWasPressed() ||gamepad2.squareWasPressed()) flywheel.downies();
 
-        if(gamepad2.left_bumper)camera.setHigh_far();
-        if(gamepad2.right_bumper)camera.setHigh();
+        if(gamepad2.left_bumper){
+            camera.setHigh_far();
+            NO_TAG_POWER = -1500;
+        }
+        if(gamepad2.right_bumper){
+            camera.setHigh();
+            NO_TAG_POWER = -1000;
+        }
         // Edge-trigger left bumper so the timer doesn't keep getting pushed while held
-        if (gamepad2.yWasPressed()) {
+        if (gamepad2.yWasPressed() || gamepad2.triangleWasPressed()) {
             flywheel.uppies();
             intake.setPower(-0.9);
 
@@ -240,8 +264,8 @@ public class teleTest extends OpMode {
 //        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(135 - autoTurretAngle);
 //        if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-135 - autoTurretAngle);
         if (gamepad1.dpad_up || gamepad2.dpad_up) turret.setTargetAngle(0);
-        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(110);
-        if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-110);
+        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(45);
+        if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-45);
 
 //        if (gamepad2.dpad_down) {
 //            hood.setLow();

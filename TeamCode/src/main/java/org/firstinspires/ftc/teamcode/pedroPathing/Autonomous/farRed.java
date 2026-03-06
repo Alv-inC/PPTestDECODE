@@ -55,6 +55,11 @@ public class farRed extends OpMode {
     private int count = 0;
     private static final int MAX_SWITCH_CYCLES = 2;
 
+    private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
+    private static int NO_TAG_POWER = -1700;
+    private long lastTagSeenMs = 0;
+    private int lastGoodPower = NO_TAG_POWER;
+
     private boolean hasStarted = false;
     private Camera_Servo camera;
     private boolean trackRN = true;
@@ -75,7 +80,7 @@ public class farRed extends OpMode {
                         new BezierCurve(
                                 new Pose(56.523, 14.542).mirror(),
                                 new Pose(28.921, 16.079).mirror(),
-                                new Pose(6.402, 6.925).mirror()
+                                new Pose(7.5, 6.5).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -83,7 +88,7 @@ public class farRed extends OpMode {
 
         Path3 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(6.402, 6.925).mirror(),
+                                new Pose(7.5, 6.5).mirror(),
 
                                 new Pose(51.121, 14.551).mirror()
                         )
@@ -116,7 +121,7 @@ public class farRed extends OpMode {
                         new BezierLine(
                                 new Pose(51.607, 13.047).mirror(),
 
-                                new Pose(6.636, 6.692).mirror()
+                                new Pose(7.5, 6.692).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(0))
 
@@ -124,7 +129,7 @@ public class farRed extends OpMode {
 
         Path7 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(6.636, 6.692).mirror(),
+                                new Pose(7.5, 6.692).mirror(),
 
                                 new Pose(51.477, 13.028).mirror()
                         )
@@ -174,7 +179,7 @@ public class farRed extends OpMode {
 
             case 4:
                 if (!follower.isBusy()) {
-                    if(pathTimer.getElapsedTimeSeconds() > 1.5){
+                    if(pathTimer.getElapsedTimeSeconds() > 1.7){
                         intake.setPower(0);
                     }
                     follower.followPath(Path3, true);
@@ -184,18 +189,18 @@ public class farRed extends OpMode {
 
             case 5:
                 if (!follower.isBusy()) {
-                    if (pathTimer.getElapsedTimeSeconds() > 1.2) {
+                    if (pathTimer.getElapsedTimeSeconds() > 2.5) {
                         flyWheel.uppies();
-                        if (pathTimer.getElapsedTimeSeconds() > 1.25) {
+                        if (pathTimer.getElapsedTimeSeconds() > 2.55) {
                             intake.setPower(-0.94);
+                            setPathState(6);
                         }
-                        setPathState(6);
                     }
                 }
                 break;
 
             case 6:
-                if (pathTimer.getElapsedTimeSeconds() > 1.9) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.6) {
                     flyWheel.downies();
                     setPathState(7);
                 }
@@ -214,7 +219,7 @@ public class farRed extends OpMode {
             case 8:
                 if (!follower.isBusy()) {
                     count += 1;
-                    if(pathTimer.getElapsedTimeSeconds() > 1.5){
+                    if(pathTimer.getElapsedTimeSeconds() > 1.7){
                         intake.setPower(0);
                     }
                     follower.followPath(Path5, true);
@@ -224,19 +229,19 @@ public class farRed extends OpMode {
 
             case 9:
                 if (!follower.isBusy()) {
-                    if(pathTimer.getElapsedTimeSeconds() > 1.2){
+                    if(pathTimer.getElapsedTimeSeconds() > 2){
                         flyWheel.uppies();
-                        if (pathTimer.getElapsedTimeSeconds() > 1.25) {
+                        if (pathTimer.getElapsedTimeSeconds() > 2.05) {
                             intake.setPower(-0.94);
+                            setPathState(10);
                         }
 
                     }
-                    setPathState(10);
                 }
                 break;
 
             case 10:
-                if (pathTimer.getElapsedTimeSeconds() > 1.9) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.6) {
                     flyWheel.downies();
                     setPathState(11);
                 }
@@ -246,16 +251,21 @@ public class farRed extends OpMode {
                 if (!follower.isBusy()) {
                     follower.followPath(Path6, true);
                     setPathState(12);
+                    if(count > 1){
+                        trackRN = false;
+                        updateEnd = true;
+                    }
                 }
                 break;
 
             case 12:
                 if (!follower.isBusy()) {
-                    if(pathTimer.getElapsedTimeSeconds() > 1.5){
+                    if(pathTimer.getElapsedTimeSeconds() > 1.7){
                         intake.setPower(0);
                     }
                     if(count > 1){
                         setPathState(100);
+
                     }else {
                         follower.followPath(Path7, true);
                     }
@@ -265,18 +275,18 @@ public class farRed extends OpMode {
 
             case 13:
                 if (!follower.isBusy()) {
-                    if(pathTimer.getElapsedTimeSeconds() > 1.2){
+                    if(pathTimer.getElapsedTimeSeconds() > 2){
                         flyWheel.uppies();
-                        if (pathTimer.getElapsedTimeSeconds() > 1.25) {
+                        if (pathTimer.getElapsedTimeSeconds() > 2.05) {
                             intake.setPower(-0.94);
+                            setPathState(14);
                         }
-                        setPathState(14);
                     }
                 }
                 break;
 
             case 14:
-                if (pathTimer.getElapsedTimeSeconds() > 1.9) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.6) {
                     flyWheel.downies();
                     setPathState(7);
                 }
@@ -324,7 +334,7 @@ public class farRed extends OpMode {
         }
         if(updateEnd) {
             isTracking = false;
-            turret.setTargetAngle(70);
+            turret.setTargetAngle(-65);
             turret.update();
         }
 
@@ -334,11 +344,21 @@ public class farRed extends OpMode {
             hasStarted = true;
             pathState = 0; // ensure the FSM begins from the right state
         }
-        double power = limelight.getLaunchPower();
-        if(limelight.tagInView()) flyWheel.setTargetVelocity(power);
+
         follower.update();
         botPose = follower.getPose();
 
+        long now = System.currentTimeMillis();
+
+        if (limelight.tagInView()) {
+            lastTagSeenMs = now;
+            lastGoodPower = (int) limelight.getLaunchPower();
+        }
+
+        boolean tagRecentlySeen = (now - lastTagSeenMs) <= TAG_HOLD_MS;
+        int targetPower = tagRecentlySeen ? lastGoodPower : NO_TAG_POWER;
+
+        flyWheel.constantShootAtVelocity(targetPower);
         flyWheel.update();
         autonomousPathUpdate();
 
