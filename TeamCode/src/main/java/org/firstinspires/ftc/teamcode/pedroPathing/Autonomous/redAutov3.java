@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.Autonomous;
 
-import android.graphics.Camera;
-
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -14,18 +12,14 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Camera_Servo;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
-import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.New_Turret;
-import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
-import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 import org.firstinspires.ftc.teamcode.pedroPathing.subSystemTuning.breakBeamTest;
 import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
@@ -121,7 +115,7 @@ public class redAutov3 extends OpMode {
                         new BezierCurve(
                                 new Pose(43.597, 84.508).mirror(),
                                 new Pose(35.373, 70.347).mirror(),
-                                new Pose(9, 67.710).mirror()
+                                new Pose(9, 64).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(45))
 
@@ -129,9 +123,9 @@ public class redAutov3 extends OpMode {
 
         Path5 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(9, 67.710).mirror(),
+                                new Pose(9, 64).mirror(),
 
-                                new Pose(1.657, 63.280).mirror()
+                                new Pose(1.75, 61).mirror()
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(30))
 
@@ -139,7 +133,7 @@ public class redAutov3 extends OpMode {
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(1.657, 63.280).mirror(),
+                                new Pose(1.75, 61).mirror(),
                                 new Pose(35.425, 65.391).mirror(),
                                 new Pose(42.662, 90.567).mirror()
                         )
@@ -193,14 +187,14 @@ public class redAutov3 extends OpMode {
                 break;
 
             case 1: // delay BEFORE shooting Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.7) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
                 }
                 break;
 
             case 2: // shooting window for Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 0.85) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.9) {
                     flyWheel.downies(); // STOP SHOOTING
                     //flyWheel.constantShootAuto();turret.setTargetAngle(-55);
                     setPathState(3);
@@ -213,7 +207,7 @@ public class redAutov3 extends OpMode {
             case 3:
                 if (!follower.isBusy()) {
                     NO_TAG_POWER = -1000;
-                    hood.setHigh();
+                    //hood.setHigh();
                     follower.followPath(Path2, true);
                     updateEnd = false;
                     trackRN = true;
@@ -427,7 +421,7 @@ public class redAutov3 extends OpMode {
         camera.setHigh();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
-        hood.setMid();
+        hood.setHigh();
         flyWheel.downies();
     }
 

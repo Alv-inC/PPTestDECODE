@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.Subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
@@ -20,7 +21,7 @@ import java.util.Map;
  * Wrapper for Limelight3A camera for tag detection and turret alignment.
  * Handles initialization, pipeline management, and per-tag tracking logic.
  */
-@Config
+@Configurable
 public class LimelightCamera {
 
     private final Limelight3A limelight;
@@ -54,7 +55,7 @@ public class LimelightCamera {
     private double ballDistance, ballLateralDistance = 0;
     private double launchPower = 0;
 
-    public static double launchpowermultiplier = 1.05;
+    public static double launchpowermultiplier = 1.06;
     public static int farCoefficient = 330; //2.75 m
     public static int midCoefficient = 391; //1.75 m
     public static int closeCoefficient = 435; //1 m
@@ -153,6 +154,9 @@ public class LimelightCamera {
     /**
      * Performs turret correction only if the target tag matches and trigger logic allows.
      */
+    public void setTargetTagId(int id){
+        ThetargetTagId = id;
+    }
     public void trackTag(New_Turret turret, int targetTagId, boolean enabled, double offset) {
         if (!validTarget || lastTagId != targetTagId || targetTagId == -1 || !enabled) return;
 
@@ -160,8 +164,28 @@ public class LimelightCamera {
         double newTarget = turret.getCurrentTicks() - correctionTicks;
         turret.setTargetTicks(newTarget + offset);
     }
+    public static double getTurretAngleToTarget(
+            double robotX,
+            double robotY,
+            double robotHeadingDeg,
+            double targetX,
+            double targetY
+    ) {
+
+        double dx = targetX - robotX;
+        double dy = targetY - robotY;
+
+        double targetHeadingDeg = Math.toDegrees(Math.atan2(dy, dx));
+
+        double turretAngleDeg = targetHeadingDeg - robotHeadingDeg + 90;
+
+        while (turretAngleDeg > 180) turretAngleDeg -= 360;
+        while (turretAngleDeg < -180) turretAngleDeg += 360;
+
+        return turretAngleDeg;
+    }
     public void trackTag_New(TurretPLUSIntake turret, int targetTagId, boolean enabled) {
-        ThetargetTagId = targetTagId;
+        //ThetargetTagId = targetTagId;
         telemetry.addData("target id", targetTagId);
 
         if (!validTarget || targetTagId != lastTagId || targetTagId == -1 || !enabled) return;
@@ -170,14 +194,33 @@ public class LimelightCamera {
         double newTarget = turret.getCurrentPosition() - correctionTicks;
 
         // Clamp target to turret limits
-        double maxTicks = TurretPLUSIntake.MAX_ANGLE_DEG * TurretPLUSIntake.TICKS_PER_DEGREE;
-        double minTicks = -maxTicks;
-
-        newTarget = Math.max(minTicks, Math.min(maxTicks, newTarget));
+//        double maxTicks = TurretPLUSIntake.MAX_ANGLE_DEG * TurretPLUSIntake.TICKS_PER_DEGREE;
+//        double minTicks = -maxTicks;
+//
+//        newTarget = Math.max(minTicks, Math.min(maxTicks, newTarget));
 
         telemetry.addData("newTarget", newTarget);
 
         turret.setTargetPosition(newTarget);
+    }
+    public void trackTag_New_new(turretturret turret, int targetTagId, boolean enabled) {
+        //ThetargetTagId = targetTagId;
+        telemetry.addData("target id", targetTagId);
+
+        if (!validTarget || targetTagId != lastTagId || targetTagId == -1 || !enabled) return;
+
+        //double correctionTicks = txDeg * TICKS_PER_DEG;
+        double newTarget = turret.getAngleDegrees() - txDeg;
+
+        // Clamp target to turret limits
+//        double maxTicks = TurretPLUSIntake.MAX_ANGLE_DEG * TurretPLUSIntake.TICKS_PER_DEGREE;
+//        double minTicks = -maxTicks;
+//
+//        newTarget = Math.max(minTicks, Math.min(maxTicks, newTarget));
+
+        telemetry.addData("newTarget", newTarget);
+
+        turret.setTargetDegrees(newTarget);
     }
     public void trackBall(New_Turret turret, boolean enabled) {
         if (!enabled) return;
@@ -347,19 +390,41 @@ public class LimelightCamera {
         return result;
     }
     public static double getClosestY(double inputX) {
+//        double[][] points = {
+//                {0.73, 615},
+//                {0.93, 505},
+//                {1.12, 500},
+//                {1.30, 440},
+//                {1.49, 395},
+//                {1.65, 365},
+//                {1.96, 355},
+//                {2.10, 345},
+//                {2.30, 315},
+//                {2.58, 315},
+//                {2.79, 305},
+//                {2.90, 300}
+//        };
         double[][] points = {
-                {0.73, 600},
-                {0.93, 480},
-                {1.12, 440},
-                {1.30, 420},
-                {1.49, 390},
-                {1.65, 365},
-                {1.96, 355},
-                {2.10, 345},
-                {2.30, 315},
-                {2.58, 315},
-                {2.79, 305},
-                {2.90, 300}
+                {0.67, 550}, //, 0.38
+                {0.73, 518}, //, 0.38
+                {0.82, 507}, //, 0.38
+                {0.9, 460}, //, 0.38
+                {1, 420}, //1104, 0.38
+                {1.1, 390}, //1104, 0.38
+                {1.2, 360}, //1104, 0.38
+                {1.3, 355}, //1104, 0.38
+                {1.4, 350}, //1104, 0.38
+                {1.5, 345}, //1104, 0.38
+                {1.6, 340}, //1104, 0.38
+                {1.7, 332}, //1104, 0.38
+                {1.8, 326}, //1104, 0.38
+                {1.9, 320},
+                {2, 320},//above is all close, hood 0.38
+                {2.45, 3.15},
+                {2.55, 312},
+                {2.75, 310},
+                {3, 308}
+
         };
 
         double closestY = points[0][1];

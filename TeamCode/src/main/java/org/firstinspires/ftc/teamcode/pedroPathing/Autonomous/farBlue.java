@@ -9,18 +9,14 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Camera_Servo;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
-import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
-import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
-import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
 @Autonomous(name = "[NEW]farBLUE", group = "Tests")
 public class farBlue extends OpMode {
@@ -147,7 +143,7 @@ public class farBlue extends OpMode {
             // START → PATH1 → SHOOT
             // =========================
             case 0:
-                hood.setHigh();
+                //hood.setHighFar();
                 follower.followPath(Path1, true);
                 setPathState(1);
                 break;
@@ -316,10 +312,10 @@ public class farBlue extends OpMode {
         follower.setStartingPose(startPose);
         limelight = new LimelightCamera(hardwareMap, telemetry);
         camera = new Camera_Servo(hardwareMap);
-        camera.setHigh();
+        camera.setHigh_far();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
-        hood.setLow();
+        hood.setHighFar();
         flyWheel.downies();
     }
 

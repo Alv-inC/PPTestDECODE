@@ -31,9 +31,9 @@ public class TurretPLUSIntake {
     private final Telemetry telemetry;
 
     // ===== PID =====
-    public static double p = 0.0006;
+    public static double p = 0.0004;
     public static double i = 0.0;
-    public static double d = 0.00005;
+    public static double d = 0.00006;
 
     public static double currentTicks;
     public static double power;
@@ -56,7 +56,7 @@ public class TurretPLUSIntake {
 
         leftServo = hardwareMap.get(CRServo.class, "turret2");
         rightServo = hardwareMap.get(CRServo.class, "turret1");
-        this.encoder = encoder1;
+        this.encoder = hardwareMap.get(DcMotorEx.class, "turret");
 
         resetEncoder();
 

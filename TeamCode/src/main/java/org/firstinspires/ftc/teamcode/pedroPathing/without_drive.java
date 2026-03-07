@@ -12,34 +12,29 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.backupBlue;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.blueAutov3;
 import org.firstinspires.ftc.teamcode.pedroPathing.Autonomous.farBlue;
-import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Alliance;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.BreakPad;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Camera_Servo;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
-import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.turretturret;
 import org.firstinspires.ftc.teamcode.pedroPathing.subSystemTuning.breakBeamTest;
 
 import java.util.function.Supplier;
 
 @Configurable
-@TeleOp(name = "blue tele")
-public class teleTest extends OpMode {
+@TeleOp(name = "without drive blue tele")
+public class without_drive extends OpMode {
     public static double initialTurretPosition = 0;
-    private Follower follower;
     private static final Pose DEFAULT_POSE =
-            new Pose(72.41025641025641, 0, Math.toRadians(90));
+            new Pose(72.41025641025641, 0, 90);
     public static Pose startingPose; //See ExampleAuto to understand how to use this
     private boolean automatedDrive = false;
     private Supplier<PathChain> pathChainBlueFar, pathChainBlueClose, pathChainBluePark, pathChainBlueGate, ballPathChain;
@@ -49,7 +44,6 @@ public class teleTest extends OpMode {
     private ElapsedTime timer = new ElapsedTime();
     private Camera_Servo camera;
     private TurretPLUSIntake turret;
-
     private flyWheel flywheel;
     private DcMotorEx intake;
     private Hood hood;
@@ -69,7 +63,7 @@ public class teleTest extends OpMode {
     public static double x, y, r = 0;
     boolean trackingEnabled = true;
     private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
-    private static int NO_TAG_POWER = -800;
+    private static int NO_TAG_POWER = -1000;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
 
@@ -87,7 +81,7 @@ public class teleTest extends OpMode {
     private boolean lastTagInView = false;
 
     private boolean lastIntakeFull = false;
-//    private BreakPad breakPad;
+    private BreakPad breakPad;
     @Override
     public void init() {
         bbTest = new breakBeamTest(hardwareMap);
@@ -95,52 +89,33 @@ public class teleTest extends OpMode {
         flywheel = new flyWheel(hardwareMap, telemetry);
         flywheel.constantStop();
         hood = new Hood(hardwareMap);
-        hood.setHigh();
+        hood.setHighFar();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
-
         limelight = new LimelightCamera(hardwareMap, telemetry);
         limelight.switchPipeline(1);
         camera = new Camera_Servo(hardwareMap);
         camera.setHigh();
-//        breakPad = new BreakPad(hardwareMap);
-        follower = Constants.createFollower(hardwareMap);
+        breakPad = new BreakPad(hardwareMap);
+        startingPose = (startingPose != null) ? startingPose : blueAutov3.botPose;
+        startingPose = (startingPose != null) ? startingPose : backupBlue.botPose;
+        startingPose = (startingPose != null) ? startingPose : farBlue.botPose;
+        Pose poseToUse = (startingPose != null) ? startingPose : DEFAULT_POSE;
+        telemetryM.addData("starting pose", poseToUse);
 
         flywheel.downies();
-
         gamepad2.setLedColor(1.0, 0.0, 0.0, 100000);
-        follower.setMaxPower(0.9);
 
-        follower.setStartingPose(DEFAULT_POSE);
-        follower.setPose(DEFAULT_POSE);
-//        follower.update();
-        pathChainBlueClose = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(59, 95))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(135), 0.8))
-                .build();
-        pathChainBlueFar = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(70, 25))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(125), 0.8))
-                .build();
-        pathChainBluePark = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(105, 25))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(0), 0.8))
-                .build();
-        pathChainBlueGate = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(16, 70))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(180), 0.8))
-                .build();
+
     } // blue 25, 60, 170 red 40, 80, 80
 
     @Override
     public void start() {
-        follower.startTeleopDrive(true);
     }
 
     @Override
     public void loop() {
         limelight.update();
-        follower.update();
         telemetryM.update();
 
         long now = System.currentTimeMillis();
@@ -164,12 +139,11 @@ public class teleTest extends OpMode {
 //        boolean trackingEnabled = (gamepad2.left_trigger > 0.5 || gamepad2.right_trigger > 0.5 || gamepad1.left_trigger >0.5 || gamepad1.right_trigger > 0.5);
         if (gamepad2.right_trigger > 0.5 || gamepad1.right_trigger > 0.5) trackingEnabled = true;
         if (gamepad2.left_trigger > 0.5 || gamepad1.left_trigger > 0.5) trackingEnabled = false;
-        Pose robotPose = follower.getPose();
+//        turret.setTargetPosition(defaultTurretAngle);
+        limelight.trackTag_New(turret, 20, trackingEnabled);
+
 
         boolean inView = limelight.tagInView();
-        if(inView)limelight.trackTag_New(turret, 20, trackingEnabled);
-
-
         if (inView) {
             lastTagSeenMs = now;
             lastGoodPower = (int) limelight.getLaunchPower();
@@ -195,7 +169,14 @@ public class teleTest extends OpMode {
         telemetryM.addData("Power", flyWheel.power);
 
 
-        follower.update();
+        telemetry.addData("calculated power", limelight.getLaunchPower());
+        telemetry.addData("tz", limelight.getTzMeters());
+
+        telemetry.addData("Target Velocity", flyWheel.targetVelocity);
+        telemetry.addData("Current Velocity", flyWheel.currentVelocity);
+        telemetry.addData("Power", flyWheel.power);
+
+        telemetry.update();
 
         flywheel.update();
 
@@ -222,23 +203,23 @@ public class teleTest extends OpMode {
 //            intake.setPower(-0.4);
 //        }
         if (gamepad2.xWasPressed() ||gamepad2.squareWasPressed()){
-//            breakPad.setUp();
+            breakPad.setUp();
             flywheel.downies();
         }
 
         if(gamepad2.left_bumper){
             camera.setHigh_far();
-            NO_TAG_POWER = -1200;
+            NO_TAG_POWER = -1500;
             hood.setHighFar();
         }
         if(gamepad2.right_bumper){
-            hood.setHigh();
+            hood.setHighFar();
             camera.setHigh();
-            NO_TAG_POWER = -800;
+            NO_TAG_POWER = -1000;
         }
         // Edge-trigger left bumper so the timer doesn't keep getting pushed while held
         if (gamepad2.yWasPressed() || gamepad2.triangleWasPressed()) {
-//            breakPad.setDown();
+            breakPad.setDown();
             flywheel.uppies();
             intake.setPower(-0.9);
 
@@ -255,9 +236,6 @@ public class teleTest extends OpMode {
 //        if (gamepad1.dpad_up || gamepad2.dpad_up) turret.setTargetAngle(0 - autoTurretAngle);
 //        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(135 - autoTurretAngle);
 //        if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-135 - autoTurretAngle);
-//        if (gamepad1.dpad_up || gamepad2.dpad_up) turret.setTargetAngle(0);
-//        if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(45);
-//        if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-45);
         if (gamepad1.dpad_up || gamepad2.dpad_up) turret.setTargetAngle(0);
         if (gamepad1.dpad_left || gamepad2.dpad_left) turret.setTargetAngle(45);
         if (gamepad1.dpad_right || gamepad2.dpad_right) turret.setTargetAngle(-45);
@@ -270,26 +248,8 @@ public class teleTest extends OpMode {
 //        if (gamepad2.dpad_left) {
 //            hood.setHigh();
 //        }
-        if (!automatedDrive) {
-            if(gamepad1.right_trigger < 0.1 && gamepad1.left_trigger < 0.1)follower.setTeleOpDrive(
-                    -gamepad1.left_stick_y * 0.85,
-                    -gamepad1.left_stick_x * 0.95,
-                    -gamepad1.right_stick_x * 0.9 * 0.6,
-                    true// Robot Centric
-            );
-            else if(gamepad1.left_trigger > 0.1) follower.setTeleOpDrive(
-                    -gamepad1.left_stick_y * 0.45 * 0.85,
-                    -gamepad1.left_stick_x * 0.45 * 0.95,
-                    -gamepad1.right_stick_x * 0.45 * 0.9 * 0.6,
-                    true // Robot Centric
-            );
-            else if(gamepad1.right_trigger > 0.5) follower.setTeleOpDrive(
-                    -gamepad1.left_stick_y * 0.85 * 1.4,
-                    -gamepad1.left_stick_x * 0.95 * 1.4,
-                    -gamepad1.right_stick_x * 0.8 * 0.7 * 1.4,
-                    true // Robot Centric
-            );
-        }
+
+
 
 //        if (gamepad1.xWasPressed()) {
 //            follower.followPath(pathChainBlueGate.get());
@@ -300,18 +260,7 @@ public class teleTest extends OpMode {
 //            automatedDrive = true;
 //        }
 
-        if (automatedDrive && (gamepad1.bWasPressed() || !follower.isBusy())) {
-            follower.pausePathFollowing();
-            follower.startTeleopDrive();
-            automatedDrive = false;
-        }
 
-        if (gamepad1.rightBumperWasPressed()) {
-            follower.setMaxPower(0.7);
-        }
-        if (gamepad1.leftBumperWasPressed()) {
-            follower.setMaxPower(1);
-        }
 
         LynxModule hub = hardwareMap.get(LynxModule.class, "Control Hub");
         double hubCurrent = hub.getI2cBusCurrent(CurrentUnit.AMPS);
@@ -321,11 +270,11 @@ public class teleTest extends OpMode {
 //        telemetryM.addData("HUB CURRENT", hubCurrent);
     }
 
-    private void pause(double seconds) {
-        double start = timer.seconds();
-        while (timer.seconds() - start < seconds) {
-            follower.update();
-            flywheel.update();
-        }
-    }
+//    private void pause(double seconds) {
+//        double start = timer.seconds();
+//        while (timer.seconds() - start < seconds) {
+//            follower.update();
+//            flywheel.update();
+//        }
+//    }
 }

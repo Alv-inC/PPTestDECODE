@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.Autonomous;
 
-import android.graphics.Camera;
-
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -14,18 +12,14 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Camera_Servo;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Hood;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.LimelightCamera;
-import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.New_Turret;
-import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.TurretPLUSIntake;
 import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.flyWheel;
-import org.firstinspires.ftc.teamcode.pedroPathing.Subsystems.intake;
 import org.firstinspires.ftc.teamcode.pedroPathing.subSystemTuning.breakBeamTest;
 import org.firstinspires.ftc.teamcode.pedroPathing.teleTest;
 
@@ -82,7 +76,7 @@ public class blueAutov3 extends OpMode {
     public static Pose botPose;
 
     private static final long TAG_HOLD_MS = 200;   // 0.2s hold to ignore flicker
-    private static int NO_TAG_POWER = -1770;
+    private static int NO_TAG_POWER = -2050;
     private long lastTagSeenMs = 0;
     private int lastGoodPower = NO_TAG_POWER;
     public void buildPaths() {
@@ -101,7 +95,7 @@ public class blueAutov3 extends OpMode {
                         new BezierCurve(
                                 new Pose(46.317, 99.091),
                                 new Pose(60.971, 61.704),
-                                new Pose(21.065, 62.710)
+                                new Pose(20.065, 62.710)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -109,7 +103,7 @@ public class blueAutov3 extends OpMode {
 
         Path3 = follower.pathBuilder().addPath(
                         new BezierCurve(
-                                new Pose(21.065, 62.710),
+                                new Pose(20.065, 62.710),
                                 new Pose(40.784, 64.871),
                                 new Pose(52.821, 84.059)
                         )
@@ -189,19 +183,19 @@ public class blueAutov3 extends OpMode {
                 flyWheel.downies();
                 //flyWheel.constantShootAutoSlow(); // ONLY ONCE      
                 follower.followPath(Path1, true);
-                hood.setMid();
+//                hood.setMid();
                 setPathState(1);
                 break;
 
             case 1: // delay BEFORE shooting Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 0.6) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.55) {
                     flyWheel.uppies(); // START SHOOTING WHILE MOVING
                     setPathState(2);
                 }
                 break;
 
             case 2: // shooting window for Shot 1
-                if (pathTimer.getElapsedTimeSeconds() > 0.85) {
+                if (pathTimer.getElapsedTimeSeconds() > 0.80) {
                     flyWheel.downies(); // STOP SHOOTING
                     //flyWheel.constantShootAuto();turret.setTargetAngle(-55);
                     setPathState(3);
@@ -214,7 +208,7 @@ public class blueAutov3 extends OpMode {
             case 3:
                 if (!follower.isBusy()) {
                     NO_TAG_POWER = -1000;
-                    hood.setHigh();
+//                    hood.setHigh();
                     follower.followPath(Path2, true);
                     updateEnd = false;
                     trackRN = true;
@@ -231,7 +225,7 @@ public class blueAutov3 extends OpMode {
 //                    if(pathTimer.getElapsedTimeSeconds() > 1){
 //                        flag = false;
 //                    }
-                    if(pathTimer.getElapsedTimeSeconds() > 1.55){
+                    if(pathTimer.getElapsedTimeSeconds() > 1.8){
                         intake.setPower(0);
                     }
                     follower.followPath(Path3, true);
@@ -416,6 +410,7 @@ public class blueAutov3 extends OpMode {
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
         flyWheel = new flyWheel(hardwareMap, telemetry);
         hood = new Hood(hardwareMap);
+        hood.setHigh();
         bbTest = new breakBeamTest(hardwareMap);
         pathTimer = new Timer();
         opmodeTimer = new Timer();
@@ -428,7 +423,6 @@ public class blueAutov3 extends OpMode {
         camera.setHigh();
         intake = hardwareMap.get(DcMotorEx.class, "intake");
         turret = new TurretPLUSIntake(hardwareMap, telemetry, intake);
-        hood.setLow();
         flyWheel.downies();
     }
 

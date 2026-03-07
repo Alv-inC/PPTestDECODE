@@ -64,7 +64,7 @@ public class turretturret  {
 
     /* ---------------- INTERPOLATION TABLES ---------------- */
 
-    private static final Interpolation2D farTurretInterpolation =
+    public static final Interpolation2D farTurretInterpolation =
             new BilinearInterpolation(
                     new double[]{43,71,100},
                     new double[]{6,27},
@@ -74,7 +74,7 @@ public class turretturret  {
                             {79,75}
                     });
 
-    private static final Interpolation2D closeTurretInterpolation =
+    public static final Interpolation2D closeTurretInterpolation =
             new BilinearInterpolation(
                     new double[]{38,61,85},
                     new double[]{135.5,111,88,63},
